@@ -1,0 +1,19 @@
+panel,label,value,tone,sort_order
+warehouse,Dock congestion,43%,warning,0
+warehouse,Picking delay,6 min,warning,1
+warehouse,Inventory imbalance,-21%,danger,2
+warehouse,Vehicle availability,86%,success,3
+warehouse,Load utilization,91%,success,4
+warehouse,Stock accuracy,99%,success,5
+collections_metrics,Accounts at risk,"12,868",default,6
+collections_metrics,Predicted roll-forward,"3,469",default,7
+collections_metrics,Recovery opportunity,₹22 Cr,default,8
+collections_metrics,Field visit optimization,-30% cost,default,9
+collections_metrics,Compliance alerts,4 flagged,default,10
+collections_metrics,Promise-to-pay keep rate,77%,default,11
+rvsf,Job-card delay prediction,6 hrs,warning,12
+rvsf,Throughput,149 vehicles / day,success,13
+rvsf,Bottleneck,De-pollution bay,danger,14
+rvsf,dMRV completeness,78%,warning,15
+rvsf,Compliance risk,Low,success,16
+rvsf,Parts recovery rate,77%,success,17

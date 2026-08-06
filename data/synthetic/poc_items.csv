@@ -1,0 +1,7 @@
+name,bucket,priority,complexity,sort_order
+Anomaly detection 2 — Dealer Network,Revenue Intelligence,Low,High,0
+Dynamic pricing — Loan Book,Credit & Risk Intelligence,High,Medium,1
+Anomaly detection — Ai Platform,Platform & MLOps,High,Low,2
+Demand forecasting — Immersive Workflows,Immersive Experience,High,High,3
+Alt-data underwriting — Dealer Network,Revenue Intelligence,Low,Medium,4
+Churn prediction — Decision Ledger,Trust & Compliance,High,High,5

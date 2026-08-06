@@ -1,0 +1,43 @@
+# --- Dependencies / build artifacts ---
+node_modules/
+dist/
+dist-ssr/
+.output/
+.wrangler/
+.vinxi/
+.nitro/
+.tanstack/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# --- Environment & secrets ---
+.env
+.env.*
+!.env.example
+.dev.vars
+
+# --- Tooling caches ---
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- Local databases & containers ---
+pgdata/
+*.db
+
+# --- Logs & OS / editor noise ---
+logs/
+*.log
+.DS_Store
+.idea/
+.vscode/
+
+# --- Lovable sync cache ---
+.lovable/

@@ -1,0 +1,9 @@
+code,title,impact,confidence,risk,status,decided_at,sort_order
+REC-SYN-001,Launch exchange bonus for XUV700 in North Zone,+₹24.9 Cr bookings,83,high,pending,,0
+REC-SYN-002,Escalate 127 stale leads at Pune dealers,Recover ₹27.0 L / month,68,low,pending,,1
+REC-SYN-003,Pre-approve rural thin-file customers,+8.7% finance conversion,86,medium,pending,,2
+REC-SYN-004,Rebalance allocation towards West Zone,-3.6 days delivery delay,82,medium,pending,,3
+REC-SYN-005,Reprice low-traceability carbon credits,+11.6% closure probability,88,low,pending,,4
+REC-SYN-006,Bundle insurance renewal with service plan,+₹37.7 L cross-sell,78,low,pending,,5
+REC-SYN-007,Shift SLA-risk corridors to air split,-11.1% SLA breach risk,84,medium,pending,,6
+REC-SYN-008,Deploy WhatsApp NBA across 128 dealers,+12.9% follow-up conversion,71,medium,pending,,7

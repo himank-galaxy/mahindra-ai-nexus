@@ -1,0 +1,48 @@
+[project]
+name = "mahindra-ai-backend"
+version = "1.0.0"
+description = "Production backend for the Mahindra AI Command Center (FastAPI + PostgreSQL)."
+requires-python = ">=3.12"
+
+# ----------------------------------------------------------------------
+# Tooling configuration (dependencies live in requirements.txt)
+# ----------------------------------------------------------------------
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+src = ["app", "tests"]
+
+[tool.ruff.lint]
+select = [
+    "E", "W",     # pycodestyle
+    "F",          # pyflakes
+    "I",          # isort
+    "B",          # bugbear
+    "UP",         # pyupgrade
+    "S",          # bandit (security)
+    "C4",         # comprehensions
+    "SIM",        # simplify
+]
+ignore = [
+    "S101",       # assert is fine in tests
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S105", "S106", "PLR2004"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = false
+warn_unused_ignores = true
+warn_redundant_casts = true
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["asyncpg.*", "structlog.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"

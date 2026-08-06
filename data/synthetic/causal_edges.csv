@@ -1,0 +1,13 @@
+source_label,target_label,sort_order
+Campaign Spend,Lead Quality,0
+Lead Quality,Dealer Follow-up,1
+Dealer Follow-up,Test Drive,2
+Test Drive,Booking,3
+Finance Approval,Booking,4
+Booking,Vehicle Allocation,5
+Vehicle Allocation,Delivery Delay,6
+Delivery Delay,Customer Satisfaction,7
+Service Experience,Customer Satisfaction,8
+Customer Satisfaction,Repeat Purchase,9
+Warranty Claims,Customer Satisfaction,10
+Service Experience,Warranty Claims,11

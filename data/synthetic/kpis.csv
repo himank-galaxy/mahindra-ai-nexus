@@ -1,0 +1,7 @@
+code,label,value,trend,trend_up,confidence,sort_order
+rev,Predicted Revenue Uplift,₹87.0 Cr,+6.3%,true,86,0
+leak,Leakage Prevented,₹30.4 Cr,-11.2%,true,92,1
+book,Booking Conversion,65.7%,+2.2 pts,true,81,2
+fin,Finance Approval Rate,77%,+6%,true,81,3
+del,Delivery Delay,8.0 d,-1.3 d,true,83,4
+csat,Customer Satisfaction,NPS 72,+2,true,91,5

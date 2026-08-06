@@ -1,0 +1,7 @@
+label,status,sort_order
+Consent check,OK,0
+Bias / fairness check,OK,1
+Regulatory rule check,OK,2
+Business policy check,2 pending,3
+Audit trail complete,OK,4
+Data retention check,OK,5

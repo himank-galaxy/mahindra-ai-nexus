@@ -1,0 +1,25 @@
+code,name,region,city,leads,hot_leads,test_drives_pending,booking_prob,revenue_at_risk,leakage_pct,bay_util_pct,sort_order
+syn-d001,Surat Autolinks,West,Surat,218,18,10,59,₹3.9 Cr,72,94,0
+syn-d002,Jaipur Auto Galaxy,North,Jaipur,90,10,4,51,₹1.2 Cr,72,72,1
+syn-d003,Vijayawada Automobiles,South,Vijayawada,200,56,22,71,₹9.7 Cr,21,74,2
+syn-d004,Guwahati Auto Prime,East,Guwahati,85,11,4,61,₹2.1 Cr,57,69,3
+syn-d005,Ahmedabad Auto Prime,West,Ahmedabad,154,21,11,55,₹5.4 Cr,69,68,4
+syn-d006,Ludhiana Automobiles,North,Ludhiana,85,10,4,52,₹1.1 Cr,62,58,5
+syn-d007,Coimbatore Autolinks,South,Coimbatore,205,29,12,54,₹3.0 Cr,69,62,6
+syn-d008,Kolkata Wheels,East,Kolkata,158,30,11,58,₹4.7 Cr,50,60,7
+syn-d009,Surat SUV Center,West,Surat,140,22,11,65,₹3.4 Cr,43,88,8
+syn-d010,Ludhiana Auto Galaxy,North,Ludhiana,180,43,19,78,₹7.4 Cr,28,67,9
+syn-d011,Vijayawada Auto Galaxy,South,Vijayawada,67,11,4,58,₹2.6 Cr,63,87,10
+syn-d012,Raipur Auto Galaxy,East,Raipur,213,88,52,83,₹9.5 Cr,18,81,11
+syn-d013,Surat Wheels,West,Surat,101,12,6,58,₹1.8 Cr,68,84,12
+syn-d014,Jaipur Mobility Hub,North,Jaipur,170,26,10,59,₹2.2 Cr,54,82,13
+syn-d015,Kochi Automobiles,South,Kochi,168,37,20,63,₹5.6 Cr,44,69,14
+syn-d016,Kolkata Mobility Hub,East,Kolkata,205,46,21,69,₹10.4 Cr,25,88,15
+syn-d017,Nagpur Auto Galaxy,West,Nagpur,80,20,6,80,₹2.0 Cr,17,66,16
+syn-d018,Chandigarh Mobility Hub,North,Chandigarh,173,46,20,67,₹7.6 Cr,27,89,17
+syn-d019,Coimbatore Auto Zone,South,Coimbatore,120,10,5,57,₹2.2 Cr,67,90,18
+syn-d020,Ranchi SUV Center,East,Ranchi,163,23,7,62,₹3.1 Cr,67,56,19
+syn-d021,Mumbai Auto Zone,West,Mumbai,198,50,29,73,₹5.0 Cr,29,69,20
+syn-d022,Delhi Motors,North,Delhi,189,55,30,89,₹9.4 Cr,8,67,21
+syn-d023,Coimbatore SUV Center,South,Coimbatore,73,27,8,79,₹4.1 Cr,12,79,22
+syn-d024,Guwahati Motors,East,Guwahati,113,32,18,76,₹8.0 Cr,29,58,23

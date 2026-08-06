@@ -1,0 +1,152 @@
+dealer_code,name,vehicle,score,prob,action,revenue,status,test_drive_slot,message_sent_at,converted_at,sort_order
+syn-d001,Bahadurjit Padmanabhan,Bolero,17,44,Send festive bonus campaign,₹8.8 L,cool,,,,0
+syn-d001,Krishna Bala,Bolero,33,55,Schedule test drive this weekend,₹10.2 L,warm,Sat 11:00,,,1
+syn-d001,Xavier Tank,XUV700,15,37,WhatsApp follow-up with exchange offer,₹16.5 L,warm,,,,2
+syn-d001,Samesh Bandi,Thar,31,46,Send festive bonus campaign,₹17.2 L,warm,Sat 17:00,,,3
+syn-d002,Ucchal Deshmukh,Scorpio-N,28,51,Escalate to sales manager (stale > 48h),₹20.3 L,cool,Sun 16:30,,,0
+syn-d002,Frederick Taneja,Scorpio-N,16,38,Share EMI calculator link,₹20.1 L,warm,Sat 11:00,,,1
+syn-d002,Jagrati Bhalla,Scorpio-N,54,59,Escalate to sales manager (stale > 48h),₹24.0 L,cool,Sun 16:30,,,2
+syn-d002,Odika Shan,Bolero,43,58,Call with finance pre-approval pitch,₹10.0 L,warm,,,,3
+syn-d002,Ladli Master,Scorpio-N,50,55,Send festive bonus campaign,₹13.8 L,cool,Sat 11:00,,,4
+syn-d002,Jonathan Sarkar,XUV700,31,47,Share EMI calculator link,₹19.6 L,cool,Sun 16:30,,,5
+syn-d002,Hemang D’Alia,XUV 3XO,35,56,Call with finance pre-approval pitch,₹13.8 L,warm,Sat 11:00,,,6
+syn-d003,Ikbal Khalsa,Thar,96,91,Call with finance pre-approval pitch,₹13.2 L,hot,Sat 17:00,,,0
+syn-d003,Raksha Badal,Thar,82,79,Call with finance pre-approval pitch,₹15.9 L,hot,,,,1
+syn-d003,Warjas Mall,Bolero,80,74,Call with finance pre-approval pitch,₹7.9 L,hot,,,,2
+syn-d003,Sachi Nigam,XUV700,80,74,Send festive bonus campaign,₹17.3 L,hot,Sat 17:00,,,3
+syn-d003,Hemangini Gopal,Thar,79,80,Call with finance pre-approval pitch,₹12.4 L,hot,Sun 16:30,,,4
+syn-d003,Shivani Saran,XUV700,94,82,Schedule test drive this weekend,₹14.1 L,hot,Sat 17:00,,,5
+syn-d003,Isha Dewan,Bolero,72,74,Call with finance pre-approval pitch,₹8.3 L,message_sent,Sun 16:30,2026-07-28T10:30:00+00:00,,6
+syn-d003,Faras Deep,XUV 3XO,86,84,Escalate to sales manager (stale > 48h),₹8.7 L,hot,Sat 11:00,,,7
+syn-d004,Anamika Narula,Bolero,31,49,Send festive bonus campaign,₹9.4 L,warm,Sat 17:00,,,0
+syn-d004,Jagat Patla,Bolero,29,46,Call with finance pre-approval pitch,₹10.2 L,warm,Sat 11:00,,,1
+syn-d004,Bachittar Malhotra,Scorpio-N,29,44,Schedule test drive this weekend,₹19.5 L,cool,Sat 17:00,,,2
+syn-d004,Damini Pandey,Bolero,34,55,WhatsApp follow-up with exchange offer,₹8.8 L,warm,Sun 16:30,,,3
+syn-d004,Amaira Sengupta,Scorpio-N,63,72,Call with finance pre-approval pitch,₹20.0 L,converted,Sun 16:30,2026-07-28T10:30:00+00:00,2026-07-30T14:05:00+00:00,4
+syn-d004,Praneel Kara,Scorpio-N,54,60,Send festive bonus campaign,₹23.7 L,cool,Sat 17:00,,,5
+syn-d004,Michael Patla,Bolero,25,49,WhatsApp follow-up with exchange offer,₹8.7 L,warm,Sat 17:00,,,6
+syn-d004,Tejas Deol,XUV700,64,71,Escalate to sales manager (stale > 48h),₹20.5 L,message_sent,Sun 16:30,2026-07-28T10:30:00+00:00,,7
+syn-d005,Chakradhar Khosla,XUV700,14,33,WhatsApp follow-up with exchange offer,₹23.9 L,cool,Sat 11:00,,,0
+syn-d005,Meghana Buch,Thar,43,58,Schedule test drive this weekend,₹13.4 L,cool,Sat 11:00,,,1
+syn-d005,Kevin Dixit,Bolero,27,42,Escalate to sales manager (stale > 48h),₹7.8 L,warm,Sun 16:30,,,2
+syn-d005,Ekapad Sengupta,Bolero,41,51,Send festive bonus campaign,₹8.2 L,cool,Sat 11:00,,,3
+syn-d005,Sai Ramakrishnan,XUV 3XO,28,45,Call with finance pre-approval pitch,₹9.2 L,cool,Sat 11:00,,,4
+syn-d005,Triveni Tara,XUV700,42,57,WhatsApp follow-up with exchange offer,₹23.6 L,warm,Sun 16:30,,,5
+syn-d006,Omaja Palan,Bolero,52,66,Escalate to sales manager (stale > 48h),₹10.2 L,cool,Sat 11:00,,,0
+syn-d006,Arunima Sule,XUV 3XO,57,61,Escalate to sales manager (stale > 48h),₹14.5 L,message_sent,Sun 16:30,2026-07-28T10:30:00+00:00,,1
+syn-d006,Onkar Amble,Bolero,53,60,Share EMI calculator link,₹9.6 L,cool,Sun 16:30,,,2
+syn-d006,Jairaj Ramaswamy,XUV 3XO,18,44,Send festive bonus campaign,₹10.9 L,warm,Sat 11:00,,,3
+syn-d006,Arjun Chowdhury,XUV 3XO,49,63,WhatsApp follow-up with exchange offer,₹9.6 L,warm,Sat 11:00,,,4
+syn-d006,Amrita Kalla,XUV 3XO,45,62,Escalate to sales manager (stale > 48h),₹9.7 L,cool,Sat 11:00,,,5
+syn-d006,Parth Sur,XUV700,49,63,Schedule test drive this weekend,₹20.1 L,warm,Sun 16:30,,,6
+syn-d007,Zaitra Wable,Thar,57,69,Share EMI calculator link,₹15.7 L,converted,Sat 17:00,2026-07-28T10:30:00+00:00,2026-07-30T14:05:00+00:00,0
+syn-d007,Manbir Narayan,Scorpio-N,23,48,Call with finance pre-approval pitch,₹22.8 L,cool,Sat 11:00,,,1
+syn-d007,Mitali Krishna,XUV 3XO,35,47,Escalate to sales manager (stale > 48h),₹11.4 L,warm,,,,2
+syn-d007,Ganga Chhabra,XUV700,40,52,WhatsApp follow-up with exchange offer,₹18.4 L,cool,Sat 11:00,,,3
+syn-d007,Ekani Sanghvi,Scorpio-N,30,43,Schedule test drive this weekend,₹14.3 L,warm,Sat 11:00,,,4
+syn-d007,Harshil Bath,Bolero,46,62,Call with finance pre-approval pitch,₹8.2 L,warm,Sat 11:00,,,5
+syn-d007,Nitesh Toor,Scorpio-N,22,46,WhatsApp follow-up with exchange offer,₹22.3 L,warm,Sat 17:00,,,6
+syn-d008,Yug Panchal,Scorpio-N,42,52,Share EMI calculator link,₹21.8 L,warm,Sat 17:00,,,0
+syn-d008,Imaran Mann,XUV 3XO,42,57,Schedule test drive this weekend,₹11.1 L,cool,,,,1
+syn-d008,Neel Modi,Scorpio-N,48,54,Call with finance pre-approval pitch,₹15.3 L,cool,Sat 11:00,,,2
+syn-d008,Kamala Wali,XUV 3XO,49,54,WhatsApp follow-up with exchange offer,₹11.8 L,warm,,,,3
+syn-d009,Ishita Nayar,Scorpio-N,66,71,Send festive bonus campaign,₹21.1 L,converted,Sun 16:30,2026-07-28T10:30:00+00:00,2026-07-30T14:05:00+00:00,0
+syn-d009,Bhavna Modi,Thar,46,63,Escalate to sales manager (stale > 48h),₹17.4 L,warm,Sat 11:00,,,1
+syn-d009,Jyoti Pant,XUV700,75,80,Call with finance pre-approval pitch,₹14.7 L,hot,Sat 11:00,,,2
+syn-d009,Gaurika Soni,XUV 3XO,45,62,Send festive bonus campaign,₹11.1 L,warm,,,,3
+syn-d009,Priya Narasimhan,XUV700,55,59,Schedule test drive this weekend,₹19.6 L,message_sent,Sat 17:00,2026-07-28T10:30:00+00:00,,4
+syn-d010,Ishwar Morar,XUV 3XO,96,84,Schedule test drive this weekend,₹14.4 L,hot,Sun 16:30,,,0
+syn-d010,Anthony Sampath,Scorpio-N,88,80,Share EMI calculator link,₹23.1 L,hot,Sat 11:00,,,1
+syn-d010,Gautami Chadha,XUV 3XO,87,80,Share EMI calculator link,₹11.0 L,hot,Sat 17:00,,,2
+syn-d010,Mugdha Mitra,Bolero,93,88,Schedule test drive this weekend,₹10.5 L,hot,Sat 17:00,,,3
+syn-d010,Jhalak Madan,Scorpio-N,84,80,Share EMI calculator link,₹17.5 L,hot,Sun 16:30,,,4
+syn-d010,Jalsa Nagarajan,Scorpio-N,74,78,Share EMI calculator link,₹17.2 L,converted,Sat 17:00,2026-07-28T10:30:00+00:00,2026-07-30T14:05:00+00:00,5
+syn-d011,Janya Kalita,Thar,38,56,Schedule test drive this weekend,₹12.0 L,cool,Sat 11:00,,,0
+syn-d011,Yatan Koshy,Thar,44,59,Call with finance pre-approval pitch,₹11.5 L,cool,,,,1
+syn-d011,Dev Chanda,XUV 3XO,19,42,Schedule test drive this weekend,₹13.0 L,warm,Sat 11:00,,,2
+syn-d011,Thomas Behl,XUV 3XO,38,57,WhatsApp follow-up with exchange offer,₹12.8 L,warm,Sat 17:00,,,3
+syn-d011,Hema Sunder,Scorpio-N,43,61,Schedule test drive this weekend,₹23.0 L,warm,,,,4
+syn-d011,Shaurya Salvi,XUV 3XO,46,57,WhatsApp follow-up with exchange offer,₹10.1 L,cool,,,,5
+syn-d011,Aarini Hegde,Bolero,39,55,Share EMI calculator link,₹9.7 L,warm,Sat 17:00,,,6
+syn-d011,Yuvraj Sant,Bolero,49,63,Schedule test drive this weekend,₹9.4 L,warm,Sat 11:00,,,7
+syn-d012,Gagan Mahajan,Scorpio-N,91,90,Call with finance pre-approval pitch,₹16.7 L,hot,Sun 16:30,,,0
+syn-d012,Dalbir Jhaveri,Scorpio-N,100,89,Share EMI calculator link,₹16.4 L,hot,Sat 17:00,,,1
+syn-d012,Nihal Sha,Bolero,90,86,Send festive bonus campaign,₹9.3 L,hot,Sat 11:00,,,2
+syn-d012,Azaan Sibal,XUV700,81,77,Share EMI calculator link,₹23.1 L,hot,Sat 11:00,,,3
+syn-d012,Guneet Gulati,XUV700,85,76,Share EMI calculator link,₹25.7 L,hot,,,,4
+syn-d012,Gaurang Sathe,XUV700,96,88,Escalate to sales manager (stale > 48h),₹24.1 L,hot,Sat 11:00,,,5
+syn-d013,Hredhaan Natarajan,XUV700,30,49,Share EMI calculator link,₹15.3 L,cool,Sat 11:00,,,0
+syn-d013,Umang Karpe,Bolero,23,44,Send festive bonus campaign,₹8.4 L,cool,,,,1
+syn-d013,Urvashi Shere,Scorpio-N,41,54,Schedule test drive this weekend,₹14.7 L,cool,,,,2
+syn-d013,Radha Mandal,XUV700,41,51,Call with finance pre-approval pitch,₹25.0 L,warm,Sat 17:00,,,3
+syn-d013,Watika Borah,Bolero,24,45,Send festive bonus campaign,₹9.9 L,warm,,,,4
+syn-d013,Adweta Narain,XUV700,27,42,WhatsApp follow-up with exchange offer,₹13.6 L,cool,Sun 16:30,,,5
+syn-d013,Ekavir Gour,Bolero,37,51,Schedule test drive this weekend,₹8.4 L,warm,Sat 11:00,,,6
+syn-d013,Devansh Ganguly,Scorpio-N,15,42,WhatsApp follow-up with exchange offer,₹18.6 L,cool,,,,7
+syn-d014,Ranbir Koshy,XUV700,49,57,Share EMI calculator link,₹14.8 L,warm,Sat 11:00,,,0
+syn-d014,Ekanta Salvi,XUV 3XO,26,50,Call with finance pre-approval pitch,₹9.7 L,cool,Sat 17:00,,,1
+syn-d014,Nachiket Prabhakar,XUV 3XO,44,56,Escalate to sales manager (stale > 48h),₹10.2 L,warm,Sat 11:00,,,2
+syn-d014,Gunbir Rajan,Thar,48,64,Call with finance pre-approval pitch,₹15.4 L,warm,Sat 17:00,,,3
+syn-d014,Tanay Kade,XUV 3XO,56,63,WhatsApp follow-up with exchange offer,₹9.1 L,converted,,2026-07-28T10:30:00+00:00,2026-07-30T14:05:00+00:00,4
+syn-d014,Kashvi Kumer,Thar,64,63,WhatsApp follow-up with exchange offer,₹11.2 L,message_sent,,2026-07-28T10:30:00+00:00,,5
+syn-d015,Lucky Goswami,Scorpio-N,41,50,WhatsApp follow-up with exchange offer,₹24.1 L,warm,Sun 16:30,,,0
+syn-d015,Suhani Iyer,XUV 3XO,47,61,Escalate to sales manager (stale > 48h),₹12.6 L,warm,Sat 11:00,,,1
+syn-d015,Maanav Sarma,Thar,72,78,WhatsApp follow-up with exchange offer,₹11.8 L,converted,Sat 17:00,2026-07-28T10:30:00+00:00,2026-07-30T14:05:00+00:00,2
+syn-d015,Jason Manne,Thar,36,53,Send festive bonus campaign,₹13.7 L,cool,,,,3
+syn-d015,Saumya Andra,Bolero,68,74,Escalate to sales manager (stale > 48h),₹9.1 L,message_sent,Sat 17:00,2026-07-28T10:30:00+00:00,,4
+syn-d015,Avni Barad,Thar,52,63,Schedule test drive this weekend,₹16.6 L,warm,Sat 11:00,,,5
+syn-d015,Ekantika Sidhu,Bolero,54,64,Call with finance pre-approval pitch,₹8.8 L,cool,,,,6
+syn-d015,Anita Behl,XUV700,73,70,WhatsApp follow-up with exchange offer,₹16.2 L,warm,Sat 11:00,,,7
+syn-d016,Kashish Kalla,Thar,79,72,Share EMI calculator link,₹13.7 L,hot,Sat 11:00,,,0
+syn-d016,Mekhala Johal,Scorpio-N,56,69,Escalate to sales manager (stale > 48h),₹18.7 L,converted,Sat 17:00,2026-07-28T10:30:00+00:00,2026-07-30T14:05:00+00:00,1
+syn-d016,Prisha Dhawan,XUV 3XO,69,74,Escalate to sales manager (stale > 48h),₹8.1 L,warm,Sat 17:00,,,2
+syn-d016,Ekalinga Karan,Thar,62,69,Send festive bonus campaign,₹11.2 L,converted,Sat 11:00,2026-07-28T10:30:00+00:00,2026-07-30T14:05:00+00:00,3
+syn-d017,Dayita Chaudry,Bolero,73,73,Escalate to sales manager (stale > 48h),₹7.9 L,converted,Sun 16:30,2026-07-28T10:30:00+00:00,2026-07-30T14:05:00+00:00,0
+syn-d017,Ayush Aurora,Bolero,100,85,Share EMI calculator link,₹10.2 L,hot,,,,1
+syn-d017,Champak Butala,Thar,69,66,Send festive bonus campaign,₹12.1 L,converted,Sat 11:00,2026-07-28T10:30:00+00:00,2026-07-30T14:05:00+00:00,2
+syn-d017,Falan Pathak,XUV 3XO,77,81,Call with finance pre-approval pitch,₹14.4 L,hot,Sat 11:00,,,3
+syn-d017,Upasna Sharaf,Thar,72,77,WhatsApp follow-up with exchange offer,₹15.8 L,converted,Sun 16:30,2026-07-28T10:30:00+00:00,2026-07-30T14:05:00+00:00,4
+syn-d018,Isaac Karan,XUV 3XO,77,73,Schedule test drive this weekend,₹9.8 L,hot,Sat 11:00,,,0
+syn-d018,Jeevika Hegde,XUV700,48,56,Call with finance pre-approval pitch,₹25.4 L,cool,,,,1
+syn-d018,Zarna Walla,XUV 3XO,55,58,Schedule test drive this weekend,₹8.2 L,converted,Sat 17:00,2026-07-28T10:30:00+00:00,2026-07-30T14:05:00+00:00,2
+syn-d018,Ishaan Som,XUV 3XO,53,65,Schedule test drive this weekend,₹15.4 L,cool,,,,3
+syn-d018,Theodore Dar,Scorpio-N,73,73,Call with finance pre-approval pitch,₹24.3 L,message_sent,,2026-07-28T10:30:00+00:00,,4
+syn-d018,Aarnav Borra,XUV 3XO,88,83,Send festive bonus campaign,₹10.2 L,hot,Sat 11:00,,,5
+syn-d018,Samarth Rajagopal,XUV700,88,84,Schedule test drive this weekend,₹19.7 L,hot,Sat 11:00,,,6
+syn-d019,Saanvi Biswas,Scorpio-N,48,58,Schedule test drive this weekend,₹18.0 L,warm,Sat 17:00,,,0
+syn-d019,Varenya Desai,XUV700,16,45,WhatsApp follow-up with exchange offer,₹24.6 L,cool,Sat 11:00,,,1
+syn-d019,Wriddhish Kar,Thar,18,38,Send festive bonus campaign,₹14.6 L,cool,Sat 11:00,,,2
+syn-d019,Faraj Pandit,XUV 3XO,38,56,Call with finance pre-approval pitch,₹14.1 L,cool,Sat 11:00,,,3
+syn-d019,Netra Amble,Thar,11,32,Call with finance pre-approval pitch,₹13.6 L,cool,Sat 17:00,,,4
+syn-d020,Indrajit Shan,XUV 3XO,37,57,Share EMI calculator link,₹8.3 L,cool,,,,0
+syn-d020,Pallavi Chaudhary,Thar,29,43,Schedule test drive this weekend,₹13.1 L,cool,Sat 11:00,,,1
+syn-d020,Anika Date,XUV 3XO,20,46,Send festive bonus campaign,₹9.9 L,cool,Sat 17:00,,,2
+syn-d020,Harsh Dani,Thar,39,51,WhatsApp follow-up with exchange offer,₹12.1 L,cool,Sat 17:00,,,3
+syn-d020,Jack Dey,XUV 3XO,17,43,WhatsApp follow-up with exchange offer,₹13.3 L,warm,Sun 16:30,,,4
+syn-d020,Hardik Nadkarni,XUV700,39,49,Escalate to sales manager (stale > 48h),₹21.6 L,warm,Sat 17:00,,,5
+syn-d020,Amruta Agrawal,Bolero,26,46,WhatsApp follow-up with exchange offer,₹7.8 L,cool,,,,6
+syn-d021,Triya Goda,Bolero,70,67,Send festive bonus campaign,₹10.0 L,warm,Sat 11:00,,,0
+syn-d021,Chandran Ray,XUV700,69,66,Escalate to sales manager (stale > 48h),₹23.6 L,warm,Sat 17:00,,,1
+syn-d021,Upma Warrior,Scorpio-N,64,69,Call with finance pre-approval pitch,₹16.4 L,converted,,2026-07-28T10:30:00+00:00,2026-07-30T14:05:00+00:00,2
+syn-d021,Isaiah Golla,Thar,77,81,WhatsApp follow-up with exchange offer,₹14.9 L,hot,,,,3
+syn-d021,Kavya Warrior,Scorpio-N,92,81,Share EMI calculator link,₹15.6 L,hot,,,,4
+syn-d021,Riya Kale,Scorpio-N,66,75,WhatsApp follow-up with exchange offer,₹22.6 L,message_sent,,2026-07-28T10:30:00+00:00,,5
+syn-d022,Advaith Khalsa,Scorpio-N,94,91,Escalate to sales manager (stale > 48h),₹18.8 L,hot,Sat 11:00,,,0
+syn-d022,Advay Parsa,Bolero,91,89,Call with finance pre-approval pitch,₹8.9 L,hot,Sun 16:30,,,1
+syn-d022,Manya Loyal,Bolero,100,88,Schedule test drive this weekend,₹10.1 L,hot,Sat 11:00,,,2
+syn-d022,Chanakya Suresh,XUV 3XO,99,92,WhatsApp follow-up with exchange offer,₹11.9 L,hot,Sat 11:00,,,3
+syn-d022,Ekaja Choudhury,XUV 3XO,100,85,WhatsApp follow-up with exchange offer,₹9.3 L,hot,,,,4
+syn-d022,Tanveer Lala,Scorpio-N,100,85,Share EMI calculator link,₹14.7 L,hot,Sat 11:00,,,5
+syn-d022,Anmol Sampath,XUV700,100,95,Call with finance pre-approval pitch,₹17.4 L,hot,Sun 16:30,,,6
+syn-d023,Om Verma,Thar,100,89,Schedule test drive this weekend,₹15.4 L,hot,Sat 17:00,,,0
+syn-d023,Vihaan Bhasin,Scorpio-N,76,71,Call with finance pre-approval pitch,₹21.1 L,hot,Sat 17:00,,,1
+syn-d023,Balhaar Swamy,Thar,100,90,Share EMI calculator link,₹15.6 L,hot,Sun 16:30,,,2
+syn-d023,Leela Dua,Scorpio-N,69,75,Escalate to sales manager (stale > 48h),₹20.9 L,warm,Sat 17:00,,,3
+syn-d023,Tarak Jaggi,XUV 3XO,68,68,Escalate to sales manager (stale > 48h),₹13.3 L,warm,Sat 11:00,,,4
+syn-d023,Harrison Handa,Thar,91,81,Escalate to sales manager (stale > 48h),₹14.2 L,hot,,,,5
+syn-d024,Rudra Tata,Thar,53,63,WhatsApp follow-up with exchange offer,₹15.2 L,warm,Sun 16:30,,,0
+syn-d024,Lavanya Sankaran,Bolero,82,79,Escalate to sales manager (stale > 48h),₹10.0 L,hot,Sat 17:00,,,1
+syn-d024,Vyanjana Patel,Thar,52,62,Send festive bonus campaign,₹17.3 L,warm,Sun 16:30,,,2
+syn-d024,Daksha Manne,XUV 3XO,92,85,Share EMI calculator link,₹13.9 L,hot,,,,3
+syn-d024,Naveen Cherian,Bolero,76,77,Share EMI calculator link,₹10.5 L,hot,Sat 11:00,,,4
+syn-d024,Yadavi Andra,Bolero,75,80,Send festive bonus campaign,₹10.3 L,hot,Sun 16:30,,,5

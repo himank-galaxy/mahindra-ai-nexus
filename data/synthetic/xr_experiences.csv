@@ -1,0 +1,7 @@
+code,title,use_case,feature,impact,sort_order
+showroom,AI Virtual Showroom,Immersive vehicle exploration,Generative sales assistant + config,+18% online-to-visit conversion,0
+config,3D Vehicle Configurator,Personalized configurations,Real-time AI recommendations,+12% variant upsell,1
+repair,AR Technician Repair Guide,Step-by-step service,Component-aware AR overlays,-24% repair time,2
+training,VR Dealer Sales Training,Immersive skill building,AI feedback on pitch & objections,+22% training ROI,3
+inspect,AR Pre-Delivery Inspection,Guided quality checks,Defect auto-capture,-31% inspection time,4
+support,VR Customer Handover,Feature walkthrough,Personalized onboarding,+15% NPS,5
