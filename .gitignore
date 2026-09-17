@@ -41,11 +41,6 @@ backend/database/backups/
 # --- Generated synthetic data lake (reproducible from data/generators) ---
 data/synthetic/
 
-# --- Unrelated sibling projects living alongside this repo ---
-/Causal_Discovery_Service/
-/Live_Data_Formation/
-/Predictive_Early_Warning_Service/
-
 # --- Logs & OS / editor noise ---
 logs/
 *.log
