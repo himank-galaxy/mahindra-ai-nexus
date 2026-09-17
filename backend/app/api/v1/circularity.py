@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_db
 from app.schemas.circularity import CreditOut, DmrvAskIn, DmrvAskOut, ElvEstimateIn, ElvEstimateOut, RvsfMetricOut
-from app.services import CircularityService
+from app.services.operational_circularity import OperationalCircularityService as CircularityService
 
 router = APIRouter()
 
@@ -38,8 +38,8 @@ async def dmrv_ask(
 
 
 @router.post("/elv/estimate", response_model=ElvEstimateOut, summary="Estimate an ELV valuation")
-async def estimate_elv(payload: ElvEstimateIn) -> ElvEstimateOut:
-    return CircularityService.estimate_elv(payload)
+async def estimate_elv(payload: ElvEstimateIn, db: Annotated[AsyncSession, Depends(get_db)]) -> ElvEstimateOut:
+    return await CircularityService(db).estimate_elv(payload)
 
 
 @router.post("/credits/{credit_code}/reprice", response_model=CreditOut, summary="Reprice a credit")

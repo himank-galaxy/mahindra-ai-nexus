@@ -1,0 +1,182 @@
+# Application-only Compose stack. PostgreSQL remains an external service.
+# The backend and frontend join the existing network containing
+# mahindra-postgres; no database container, volume or port is declared here.
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: mahindra-nexus-backend
+    environment:
+      DATABASE_URL: postgresql+asyncpg://mahindra:mahindra@postgres:5432/mahindra_ai
+      ENVIRONMENT: development
+      DEBUG: "false"
+      LOG_LEVEL: INFO
+      AI_PROVIDER: ${AI_PROVIDER:-openai}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-}
+      CORS_ORIGINS: http://10.10.90.98:5174,http://localhost:5174,http://localhost:5173,http://localhost:3000
+      # Auto Mobility Causal Twin — PCMCI over live mobility_timeseries, no
+      # replay clock/scheduler container (unlike manufacturing/telematics
+      # below); see docs/Implementation_plan_mobility_causal.md.
+      MOBILITY_CAUSAL_WINDOW_DAYS: ${MOBILITY_CAUSAL_WINDOW_DAYS:-90}
+      MOBILITY_CAUSAL_SAMPLE_STRIDE_HOURS: ${MOBILITY_CAUSAL_SAMPLE_STRIDE_HOURS:-12}
+      MOBILITY_CAUSAL_MIN_OBSERVATIONS: ${MOBILITY_CAUSAL_MIN_OBSERVATIONS:-50}
+      MOBILITY_CAUSAL_TAU_MAX: ${MOBILITY_CAUSAL_TAU_MAX:-2}
+      MOBILITY_CAUSAL_PC_ALPHA: ${MOBILITY_CAUSAL_PC_ALPHA:-0.30}
+      MOBILITY_CAUSAL_REFRESH_MINUTES: ${MOBILITY_CAUSAL_REFRESH_MINUTES:-60}
+      # Each domain replays its OWN source, and the two sources have different
+      # horizons: manufacturing minute data covers the production week, vehicle
+      # telematics covers seven post-delivery days per vehicle. At 60x the
+      # production source is fully replayed in about an hour. 10 simulated
+      # minutes per real minute keeps both streams live for a working day.
+      SIMULATION_MINUTES_PER_REAL_MINUTE: ${SIMULATION_MINUTES_PER_REAL_MINUTE:-10}
+      SIMULATION_TICK_INTERVAL_SECONDS: ${SIMULATION_TICK_INTERVAL_SECONDS:-60}
+      CAUSAL_SCHEDULER_ENABLED: ${CAUSAL_SCHEDULER_ENABLED:-true}
+      CAUSAL_SCHEDULER_POLL_SECONDS: ${CAUSAL_SCHEDULER_POLL_SECONDS:-10}
+      CAUSAL_INGESTION_ENABLED: ${CAUSAL_INGESTION_ENABLED:-true}
+      CAUSAL_INGESTION_POLL_SECONDS: ${CAUSAL_INGESTION_POLL_SECONDS:-10}
+      CAUSAL_WARNING_EVALUATOR_ENABLED: ${CAUSAL_WARNING_EVALUATOR_ENABLED:-true}
+      MANUFACTURING_CAUSAL_REFRESH_MINUTES: ${MANUFACTURING_CAUSAL_REFRESH_MINUTES:-60}
+      TELEMATICS_CAUSAL_REFRESH_MINUTES: ${TELEMATICS_CAUSAL_REFRESH_MINUTES:-30}
+    command: sh -c "alembic upgrade head && alembic -c alembic_ai_state.ini upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    ports:
+      - "8002:8000"
+    networks:
+      - mahindra_database
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  causal-scheduler:
+    build:
+      context: ./backend
+    container_name: mahindra-nexus-causal-scheduler
+    environment:
+      DATABASE_URL: postgresql+asyncpg://mahindra:mahindra@postgres:5432/mahindra_ai
+      ENVIRONMENT: development
+      DEBUG: "false"
+      LOG_LEVEL: INFO
+      AI_PROVIDER: rule
+      # Each domain replays its OWN source, and the two sources have different
+      # horizons: manufacturing minute data covers the production week, vehicle
+      # telematics covers seven post-delivery days per vehicle. At 60x the
+      # production source is fully replayed in about an hour. 10 simulated
+      # minutes per real minute keeps both streams live for a working day.
+      SIMULATION_MINUTES_PER_REAL_MINUTE: ${SIMULATION_MINUTES_PER_REAL_MINUTE:-10}
+      SIMULATION_TICK_INTERVAL_SECONDS: ${SIMULATION_TICK_INTERVAL_SECONDS:-60}
+      CAUSAL_SCHEDULER_ENABLED: ${CAUSAL_SCHEDULER_ENABLED:-true}
+      CAUSAL_SCHEDULER_POLL_SECONDS: ${CAUSAL_SCHEDULER_POLL_SECONDS:-60}
+      CAUSAL_SCHEDULER_DOMAIN: manufacturing
+      MANUFACTURING_CAUSAL_REFRESH_MINUTES: ${MANUFACTURING_CAUSAL_REFRESH_MINUTES:-60}
+      TELEMATICS_CAUSAL_REFRESH_MINUTES: ${TELEMATICS_CAUSAL_REFRESH_MINUTES:-30}
+    command: sh -c "alembic upgrade head && alembic -c alembic_ai_state.ini upgrade head && python -m app.scheduler.causal_scheduler --domain manufacturing"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - mahindra_database
+    restart: unless-stopped
+    healthcheck:
+      disable: true
+
+  causal-scheduler-telematics:
+    build:
+      context: ./backend
+    container_name: mahindra-nexus-causal-scheduler-telematics
+    environment:
+      DATABASE_URL: postgresql+asyncpg://mahindra:mahindra@postgres:5432/mahindra_ai
+      ENVIRONMENT: development
+      DEBUG: "false"
+      LOG_LEVEL: INFO
+      AI_PROVIDER: rule
+      CAUSAL_SCHEDULER_ENABLED: ${CAUSAL_SCHEDULER_ENABLED:-true}
+      CAUSAL_SCHEDULER_POLL_SECONDS: ${CAUSAL_SCHEDULER_POLL_SECONDS:-60}
+      CAUSAL_SCHEDULER_DOMAIN: telematics
+      MANUFACTURING_CAUSAL_REFRESH_MINUTES: ${MANUFACTURING_CAUSAL_REFRESH_MINUTES:-60}
+      TELEMATICS_CAUSAL_REFRESH_MINUTES: ${TELEMATICS_CAUSAL_REFRESH_MINUTES:-30}
+    command: sh -c "alembic upgrade head && alembic -c alembic_ai_state.ini upgrade head && python -m app.scheduler.causal_scheduler --domain telematics"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - mahindra_database
+    restart: unless-stopped
+    healthcheck:
+      disable: true
+
+  replay-ingestor:
+    build:
+      context: ./backend
+    container_name: mahindra-nexus-replay-ingestor
+    environment:
+      DATABASE_URL: postgresql+asyncpg://mahindra:mahindra@postgres:5432/mahindra_ai
+      ENVIRONMENT: development
+      DEBUG: "false"
+      LOG_LEVEL: INFO
+      # Each domain replays its OWN source, and the two sources have different
+      # horizons: manufacturing minute data covers the production week, vehicle
+      # telematics covers seven post-delivery days per vehicle. At 60x the
+      # production source is fully replayed in about an hour. 10 simulated
+      # minutes per real minute keeps both streams live for a working day.
+      SIMULATION_MINUTES_PER_REAL_MINUTE: ${SIMULATION_MINUTES_PER_REAL_MINUTE:-10}
+      SIMULATION_TICK_INTERVAL_SECONDS: ${SIMULATION_TICK_INTERVAL_SECONDS:-60}
+      CAUSAL_INGESTION_ENABLED: ${CAUSAL_INGESTION_ENABLED:-true}
+      CAUSAL_INGESTION_POLL_SECONDS: ${CAUSAL_INGESTION_POLL_SECONDS:-10}
+    command: sh -c "alembic upgrade head && alembic -c alembic_ai_state.ini upgrade head && python -m app.scheduler.replay_ingestor"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - mahindra_database
+    restart: unless-stopped
+    healthcheck:
+      disable: true
+
+  warning-evaluator:
+    build:
+      context: ./backend
+    container_name: mahindra-nexus-warning-evaluator
+    environment:
+      DATABASE_URL: postgresql+asyncpg://mahindra:mahindra@postgres:5432/mahindra_ai
+      ENVIRONMENT: development
+      DEBUG: "false"
+      LOG_LEVEL: INFO
+      CAUSAL_WARNING_EVALUATOR_ENABLED: ${CAUSAL_WARNING_EVALUATOR_ENABLED:-true}
+      CAUSAL_WARNING_EVALUATOR_POLL_SECONDS: ${CAUSAL_WARNING_EVALUATOR_POLL_SECONDS:-60}
+    command: sh -c "alembic upgrade head && alembic -c alembic_ai_state.ini upgrade head && python -m app.scheduler.warning_evaluator"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - mahindra_database
+    restart: unless-stopped
+    healthcheck:
+      disable: true
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: mahindra-nexus-frontend
+    environment:
+      FRONTEND_HOST: 127.0.0.1
+      FRONTEND_PORT: "5175"
+      API_HOST: backend
+      API_PORT: "8000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "5174:5174"
+    networks:
+      - mahindra_database
+    restart: unless-stopped
+
+networks:
+  mahindra_database:
+    name: ${MAHINDRA_DB_NETWORK:-backend_default}
+    external: true

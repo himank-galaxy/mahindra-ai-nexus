@@ -12,6 +12,7 @@ from app.models.enums import RecommendationStatus
 from app.repositories import OverviewRepository
 from app.schemas.overview import KpiOut, RecommendationOut
 from app.services.base import BaseService
+from app.services.merger import merge_kpis, merge_recommendations
 from app.utils.display import RECOMMENDATION_RISK_DISPLAY, RECOMMENDATION_STATUS_DISPLAY
 
 _STATUS_BY_LABEL = {label: member for member, label in RECOMMENDATION_STATUS_DISPLAY.items()}
@@ -24,22 +25,12 @@ class OverviewService(BaseService):
 
     async def list_kpis(self) -> list[KpiOut]:
         kpis = await self._repo.list_kpis_with_drivers()
-        return [
-            KpiOut(
-                id=kpi.code,
-                label=kpi.label,
-                value=kpi.value,
-                trend=kpi.trend,
-                up=kpi.trend_up,
-                confidence=kpi.confidence,
-                drivers=[driver.driver_text for driver in kpi.drivers],
-            )
-            for kpi in kpis
-        ]
+        return merge_kpis(kpis)
 
     async def list_recommendations(self) -> list[RecommendationOut]:
         recs = await self._repo.list_recommendations()
-        return [self._to_out(rec) for rec in recs]
+        return merge_recommendations(recs)
+
 
     async def update_recommendation_status(self, code: str, status_label: str) -> RecommendationOut:
         """Approve or route a recommendation to human review (Trust-logged)."""

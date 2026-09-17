@@ -1,0 +1,763 @@
+# ============================================================
+# Mahindra AI Nexus
+# Synthetic Distribution Configuration
+#
+# IMPORTANT:
+# These are engineering assumptions for synthetic generation.
+# They are NOT real Mahindra operational statistics.
+# ============================================================
+
+distribution_version: "1.0.0"
+
+# ============================================================
+# GEOGRAPHY
+# ============================================================
+
+geography:
+
+  region_weights:
+    West: 0.30
+    North: 0.25
+    South: 0.25
+    East: 0.20
+
+  cities_by_region:
+
+    West:
+      Pune: 0.27
+      Mumbai: 0.23
+      Nashik: 0.16
+      Ahmedabad: 0.13
+      Surat: 0.11
+      Igatpuri: 0.10
+
+    North:
+      Delhi: 0.27
+      Jaipur: 0.20
+      Lucknow: 0.18
+      Chandigarh: 0.12
+      Gurugram: 0.13
+      Haridwar: 0.10
+
+    South:
+      Chennai: 0.24
+      Bengaluru: 0.27
+      Hyderabad: 0.20
+      Kochi: 0.08
+      Coimbatore: 0.08
+      Zaheerabad: 0.13
+
+    East:
+      Kolkata: 0.35
+      Guwahati: 0.20
+      Bhubaneswar: 0.20
+      Patna: 0.15
+      Ranchi: 0.10
+
+# ============================================================
+# VEHICLE MODELS
+# ============================================================
+
+vehicle_models:
+
+  interest_weights:
+    XUV700: 0.25
+    Scorpio-N: 0.22
+    Thar: 0.20
+    Bolero: 0.15
+    "XUV 3XO": 0.18
+
+# ============================================================
+# AUTO CUSTOMER
+# ============================================================
+
+auto_customer:
+
+  budget_band_weights:
+    LOW: 0.15
+    MEDIUM: 0.45
+    HIGH: 0.30
+    PREMIUM: 0.10
+
+  purchase_horizon_days:
+    distribution: "normal"
+    mean: 30
+    std: 18
+    min: 1
+    max: 120
+
+  finance_required_probability: 0.65
+
+  exchange_vehicle_probability: 0.32
+
+# ============================================================
+# LEADS
+# ============================================================
+
+leads:
+
+  source_channel_weights:
+    WEBSITE: 0.25
+    DEALER_WALKIN: 0.20
+    CAMPAIGN: 0.18
+    REFERRAL: 0.10
+    WHATSAPP: 0.10
+    CALL_CENTER: 0.08
+    AGGREGATOR: 0.06
+    EVENT: 0.03
+
+  budget_fit:
+    distribution: "beta"
+    alpha: 4.0
+    beta: 2.0
+
+  engagement_score:
+    distribution: "beta"
+    alpha: 3.0
+    beta: 2.0
+
+  urgency_score:
+    distribution: "beta"
+    alpha: 2.5
+    beta: 2.5
+
+  model_interest_score:
+    distribution: "beta"
+    alpha: 4.0
+    beta: 2.0
+
+  source_quality:
+    WEBSITE: 0.70
+    DEALER_WALKIN: 0.85
+    CAMPAIGN: 0.62
+    REFERRAL: 0.82
+    WHATSAPP: 0.68
+    CALL_CENTER: 0.60
+    AGGREGATOR: 0.55
+    EVENT: 0.65
+
+  latent_purchase_intent:
+    budget_fit_weight: 0.30
+    model_interest_weight: 0.20
+    engagement_weight: 0.20
+    source_quality_weight: 0.15
+    urgency_weight: 0.15
+    noise_std: 0.08
+
+# ============================================================
+# FOLLOW UPS
+# ============================================================
+
+followups:
+
+  channel_weights:
+    CALL: 0.40
+    WHATSAPP: 0.30
+    SMS: 0.10
+    EMAIL: 0.10
+    IN_PERSON: 0.10
+
+  completion_probability: 0.82
+
+  customer_response_probability: 0.67
+
+  response_time_minutes:
+    distribution: "lognormal"
+    mean: 4.4
+    sigma: 0.65
+    min: 5
+    max: 1440
+
+# ============================================================
+# TEST DRIVES
+# ============================================================
+
+test_drives:
+
+  request_probability_base: 0.50
+
+  completion_probability_base: 0.72
+
+  reminder_completion_boost: 0.08
+
+  high_intent_completion_boost: 0.10
+
+  long_wait_penalty: -0.12
+
+  status_weights:
+    COMPLETED: 0.72
+    NO_SHOW: 0.10
+    CANCELLED: 0.07
+    RESCHEDULED: 0.07
+    SCHEDULED: 0.04
+
+  feedback_score:
+    distribution: "normal"
+    mean: 4.1
+    std: 0.6
+    min: 1.0
+    max: 5.0
+
+# ============================================================
+# BOOKINGS
+# ============================================================
+
+bookings:
+
+  booking_probability_base: 0.12
+
+  effects:
+    latent_intent: 0.35
+    completed_test_drive: 0.22
+    good_followup: 0.15
+    finance_preapproval: 0.10
+    exchange_offer: 0.08
+    long_wait_penalty: -0.15
+
+  booking_amount:
+    distribution: "normal"
+    mean: 50000
+    std: 15000
+    min: 20000
+    max: 100000
+
+# ============================================================
+# FINANCE APPLICATION
+# ============================================================
+
+finance_applications:
+
+  document_completeness:
+    distribution: "beta"
+    alpha: 7.0
+    beta: 2.0
+
+  bureau_like_score:
+    distribution: "normal"
+    mean: 700
+    std: 65
+    min: 450
+    max: 850
+
+  approval_tat_hours:
+    distribution: "lognormal"
+    mean: 2.4
+    sigma: 0.5
+    min: 1
+    max: 72
+
+  status_weights:
+    APPROVED: 0.76
+    MANUAL_REVIEW: 0.10
+    REJECTED: 0.09
+    PENDING: 0.05
+
+# ============================================================
+# CANCELLATIONS
+# ============================================================
+
+cancellations:
+
+  base_probability: 0.07
+
+  reason_weights:
+    FINANCE_REJECTED: 0.18
+    FINANCE_TAT: 0.14
+    DELIVERY_WAIT: 0.22
+    COMPETITOR_OFFER: 0.12
+    PRICE: 0.10
+    MODEL_CHANGE: 0.07
+    DEALER_FOLLOWUP: 0.08
+    CUSTOMER_CHANGE: 0.06
+    OTHER: 0.03
+
+# ============================================================
+# DEALER OPERATIONS
+# ============================================================
+
+dealer:
+
+  capacity_per_day:
+    distribution: "normal"
+    mean: 25
+    std: 8
+    min: 8
+    max: 60
+
+  sales_consultants:
+    distribution: "normal"
+    mean: 14
+    std: 4
+    min: 5
+    max: 30
+
+  test_drive_bays:
+    distribution: "discrete_uniform"
+    min: 2
+    max: 8
+
+  service_bays:
+    distribution: "discrete_uniform"
+    min: 4
+    max: 15
+
+  followup_sla_minutes:
+    values:
+      - 60
+      - 120
+      - 180
+      - 240
+
+    weights:
+      - 0.20
+      - 0.45
+      - 0.25
+      - 0.10
+
+# ============================================================
+# MANUFACTURING SENSOR RANGES
+# ============================================================
+
+manufacturing:
+
+  sensors:
+
+    ambient_temperature:
+      distribution: "normal"
+      mean: 30.0
+      std: 4.0
+      min: 15.0
+      max: 45.0
+
+    ambient_humidity:
+      distribution: "normal"
+      mean: 60.0
+      std: 12.0
+      min: 25.0
+      max: 95.0
+
+    machine_temperature:
+      distribution: "normal"
+      mean: 64.0
+      std: 5.0
+      min: 45.0
+      max: 90.0
+
+    machine_vibration:
+      distribution: "normal"
+      mean: 2.3
+      std: 0.45
+      min: 0.5
+      max: 8.0
+
+    machine_load:
+      distribution: "beta_scaled"
+      alpha: 5.0
+      beta: 2.0
+      min: 0.20
+      max: 1.00
+
+    power_consumption:
+      distribution: "normal"
+      mean: 120.0
+      std: 15.0
+      min: 70.0
+      max: 200.0
+
+    line_speed:
+      distribution: "normal"
+      mean: 42.0
+      std: 4.0
+      min: 25.0
+      max: 60.0
+
+    cycle_time:
+      distribution: "normal"
+      mean: 85.0
+      std: 10.0
+      min: 50.0
+      max: 140.0
+
+    paint_booth_temperature:
+      distribution: "normal"
+      mean: 26.0
+      std: 2.0
+      min: 18.0
+      max: 35.0
+
+    paint_booth_humidity:
+      distribution: "normal"
+      mean: 58.0
+      std: 8.0
+      min: 30.0
+      max: 90.0
+
+    supplier_lot_quality:
+      distribution: "beta_scaled"
+      alpha: 8.0
+      beta: 2.0
+      min: 0.50
+      max: 1.00
+
+    torque_deviation:
+      distribution: "normal"
+      mean: 0.0
+      std: 0.8
+      min: -5.0
+      max: 5.0
+
+# ============================================================
+# MANUFACTURING CAUSAL GENERATION
+#
+# IMPORTANT:
+# THIS SECTION IS FOR SYNTHETIC GENERATION ONLY.
+#
+# Runtime PCMCI must NEVER read these relationships.
+# ============================================================
+
+  causal_generation:
+
+    machine_temperature:
+      autoregressive:
+        lag: 1
+        coefficient: 0.65
+
+      parents:
+        machine_load:
+          lag: 1
+          coefficient: 0.20
+
+    machine_vibration:
+      autoregressive:
+        lag: 1
+        coefficient: 0.65
+
+      parents:
+        machine_temperature:
+          lag: 1
+          coefficient: 0.25
+
+        machine_load:
+          lag: 1
+          coefficient: 0.15
+
+      noise_std: 0.18
+
+    power_consumption:
+      autoregressive:
+        lag: 1
+        coefficient: 0.40
+
+      parents:
+        machine_load:
+          lag: 0
+          coefficient: 0.45
+
+        line_speed:
+          lag: 0
+          coefficient: 0.20
+
+      noise_std: 0.15
+
+    paint_booth_humidity:
+      autoregressive:
+        lag: 1
+        coefficient: 0.55
+
+      parents:
+        ambient_humidity:
+          lag: 1
+          coefficient: 0.35
+
+      noise_std: 0.15
+
+    paint_defect_rate:
+      autoregressive:
+        lag: 1
+        coefficient: 0.35
+
+      parents:
+        paint_booth_humidity:
+          lag: 1
+          coefficient: 0.35
+
+        line_speed:
+          lag: 1
+          coefficient: 0.20
+
+        supplier_lot_quality:
+          lag: 1
+          coefficient: -0.20
+
+      noise_std: 0.18
+
+    defect_rate:
+      autoregressive:
+        lag: 1
+        coefficient: 0.40
+
+      parents:
+        supplier_lot_quality:
+          lag: 1
+          coefficient: -0.30
+
+        torque_deviation:
+          lag: 1
+          coefficient: 0.18
+
+        line_speed:
+          lag: 1
+          coefficient: 0.15
+
+      noise_std: 0.20
+
+    rework_rate:
+      autoregressive:
+        lag: 1
+        coefficient: 0.45
+
+      parents:
+        defect_rate:
+          lag: 1
+          coefficient: 0.40
+
+        paint_defect_rate:
+          lag: 1
+          coefficient: 0.25
+
+      noise_std: 0.18
+
+    equipment_downtime:
+      parents:
+        machine_vibration:
+          lag: 2
+          coefficient: 0.30
+
+        machine_temperature:
+          lag: 1
+          coefficient: 0.20
+
+        maintenance_event:
+          lag: 1
+          coefficient: -0.25
+
+      noise_std: 0.20
+
+    quality_score:
+      autoregressive:
+        lag: 1
+        coefficient: 0.50
+
+      parents:
+        defect_rate:
+          lag: 1
+          coefficient: -0.35
+
+        rework_rate:
+          lag: 1
+          coefficient: -0.20
+
+        torque_deviation:
+          lag: 1
+          coefficient: -0.10
+
+      noise_std: 0.15
+
+# ============================================================
+# MANUFACTURING EVENTS
+# ============================================================
+
+  events:
+
+    maintenance_event_probability_per_hour: 0.003
+
+    baseline_downtime_probability_per_hour: 0.008
+
+# ============================================================
+# FINANCE
+# ============================================================
+
+finance:
+
+  income_stability_weights:
+    LOW: 0.12
+    MEDIUM: 0.35
+    MEDIUM_HIGH: 0.33
+    HIGH: 0.20
+
+  monthly_income:
+    distribution: "lognormal"
+    mean: 11.2
+    sigma: 0.55
+    min: 15000
+    max: 500000
+
+  loan_principal:
+    distribution: "lognormal"
+    mean: 12.2
+    sigma: 0.75
+    min: 50000
+    max: 5000000
+
+  tenure_months:
+    values:
+      - 12
+      - 24
+      - 36
+      - 48
+      - 60
+      - 72
+
+    weights:
+      - 0.05
+      - 0.15
+      - 0.25
+      - 0.20
+      - 0.25
+      - 0.10
+
+  payment_on_time_probability: 0.82
+
+  late_payment_probability: 0.13
+
+  missed_payment_probability: 0.05
+
+# ============================================================
+# COLLECTIONS
+# ============================================================
+
+collections:
+
+  channel_response_probability:
+
+    CALL: 0.55
+    WHATSAPP: 0.68
+    SMS: 0.40
+    EMAIL: 0.32
+    FIELD_VISIT: 0.72
+
+  promise_to_pay_probability: 0.48
+
+  payment_after_promise_probability: 0.62
+
+# ============================================================
+# LOGISTICS
+# ============================================================
+
+logistics:
+
+  weather_disruption_probability: 0.06
+
+  vehicle_breakdown_probability: 0.025
+
+  port_delay_probability: 0.04
+
+  customs_delay_probability: 0.025
+
+  warehouse_delay_probability: 0.08
+
+  dock_occupancy:
+    distribution: "beta_scaled"
+    alpha: 4.0
+    beta: 2.5
+    min: 0.20
+    max: 1.00
+
+  vehicle_availability:
+    distribution: "beta_scaled"
+    alpha: 7.0
+    beta: 2.0
+    min: 0.30
+    max: 1.00
+
+  load_utilization:
+    distribution: "beta_scaled"
+    alpha: 5.0
+    beta: 2.0
+    min: 0.30
+    max: 1.00
+
+# ============================================================
+# CIRCULARITY
+# ============================================================
+
+circularity:
+
+  vehicle_age_years:
+    distribution: "normal"
+    mean: 11
+    std: 4
+    min: 3
+    max: 25
+
+  condition_score:
+    distribution: "normal"
+    mean: 62
+    std: 18
+    min: 5
+    max: 100
+
+  document_completeness:
+    distribution: "beta_scaled"
+    alpha: 6.0
+    beta: 2.0
+    min: 0.20
+    max: 1.00
+
+  traceability_score:
+    distribution: "beta_scaled"
+    alpha: 7.0
+    beta: 2.0
+    min: 0.20
+    max: 1.00
+
+  buyer_demand_index:
+    distribution: "beta_scaled"
+    alpha: 4.0
+    beta: 3.0
+    min: 0.10
+    max: 1.00
+
+# ============================================================
+# XR
+# ============================================================
+
+xr:
+
+  persona_weights:
+    CUSTOMER: 0.45
+    DEALER: 0.25
+    TECHNICIAN: 0.20
+    TRAINEE: 0.10
+
+  completion_probability: 0.76
+
+  engagement_seconds:
+    distribution: "lognormal"
+    mean: 6.3
+    sigma: 0.55
+    min: 30
+    max: 3600
+
+# ============================================================
+# GOVERNANCE
+# ============================================================
+
+governance:
+
+  recommendation_risk_weights:
+    LOW: 0.55
+    MEDIUM: 0.30
+    HIGH: 0.15
+
+  approval_probability_by_risk:
+
+    LOW: 0.90
+    MEDIUM: 0.70
+    HIGH: 0.35
+
+  human_review_probability_by_risk:
+
+    LOW: 0.05
+    MEDIUM: 0.25
+    HIGH: 0.60

@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_db
 from app.schemas.overview import KpiOut, RecommendationOut, RecommendationStatusUpdateIn
-from app.services import OverviewService
+from app.services.operational_overview import OperationalOverviewService as OverviewService
 
 router = APIRouter()
 

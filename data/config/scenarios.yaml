@@ -1,0 +1,502 @@
+# ============================================================
+# Mahindra AI Nexus
+# Synthetic Scenario Engine Configuration
+# ============================================================
+
+scenario_version: "1.0.0"
+
+enabled: true
+
+# ------------------------------------------------------------
+# GLOBAL SCENARIO MIX
+# ------------------------------------------------------------
+
+scenario_distribution:
+
+  baseline:
+    weight: 0.40
+
+  moderate_variation:
+    weight: 0.20
+
+  performance_deterioration:
+    weight: 0.15
+
+  anomaly:
+    weight: 0.10
+
+  severe_event:
+    weight: 0.05
+
+  compliance_review:
+    weight: 0.05
+
+  recovery_improvement:
+    weight: 0.05
+
+# ============================================================
+# AUTO / DEALER SCENARIOS
+# ============================================================
+
+auto:
+
+  dealer_followup_degradation:
+    enabled: true
+    weight: 1.0
+
+    duration_days:
+      min: 5
+      max: 20
+
+    parameters:
+      followup_completion_multiplier:
+        min: 0.55
+        max: 0.80
+
+      stale_lead_multiplier:
+        min: 1.20
+        max: 1.80
+
+      test_drive_completion_lag_days: 2
+
+      booking_conversion_lag_days: 4
+
+  test_drive_no_show_spike:
+    enabled: true
+    weight: 0.8
+
+    duration_days:
+      min: 3
+      max: 10
+
+    parameters:
+      no_show_multiplier:
+        min: 1.30
+        max: 2.00
+
+  finance_approval_slowdown:
+    enabled: true
+    weight: 1.0
+
+    duration_days:
+      min: 7
+      max: 30
+
+    parameters:
+      approval_tat_multiplier:
+        min: 1.40
+        max: 2.50
+
+      approval_rate_delta:
+        min: -0.15
+        max: -0.05
+
+      cancellation_lag_days:
+        min: 2
+        max: 7
+
+  allocation_shortage:
+    enabled: true
+    weight: 0.8
+
+    duration_days:
+      min: 5
+      max: 25
+
+    parameters:
+      allocation_fill_multiplier:
+        min: 0.55
+        max: 0.80
+
+      waiting_list_multiplier:
+        min: 1.20
+        max: 1.80
+
+  competitor_promo_shock:
+    enabled: true
+    weight: 0.6
+
+    duration_days:
+      min: 7
+      max: 21
+
+    parameters:
+      booking_conversion_delta:
+        min: -0.08
+        max: -0.02
+
+      cancellation_delta:
+        min: 0.01
+        max: 0.05
+
+# ============================================================
+# MANUFACTURING / QUALITY SCENARIOS
+# ============================================================
+
+manufacturing:
+
+  paint_humidity_spike:
+    enabled: true
+    weight: 1.0
+
+    duration_hours:
+      min: 12
+      max: 72
+
+    parameters:
+      ambient_humidity_delta:
+        min: 8.0
+        max: 20.0
+
+      paint_booth_humidity_delta:
+        min: 10.0
+        max: 25.0
+
+      defect_effect_lag_hours: 1
+
+      recovery_hours:
+        min: 6
+        max: 24
+
+  machine_temperature_drift:
+    enabled: true
+    weight: 1.0
+
+    duration_hours:
+      min: 12
+      max: 96
+
+    parameters:
+      temperature_delta_c:
+        min: 5.0
+        max: 15.0
+
+      vibration_effect_lag_hours: 1
+
+  machine_vibration_anomaly:
+    enabled: true
+    weight: 1.0
+
+    duration_hours:
+      min: 6
+      max: 48
+
+    parameters:
+      vibration_multiplier:
+        min: 1.40
+        max: 2.50
+
+      downtime_effect_lag_hours:
+        min: 1
+        max: 3
+
+  supplier_quality_drop:
+    enabled: true
+    weight: 0.9
+
+    duration_hours:
+      min: 24
+      max: 120
+
+    parameters:
+      supplier_quality_delta:
+        min: -0.25
+        max: -0.08
+
+      defect_effect_lag_hours:
+        min: 1
+        max: 4
+
+  line_speed_pressure:
+    enabled: true
+    weight: 0.8
+
+    duration_hours:
+      min: 12
+      max: 72
+
+    parameters:
+      line_speed_multiplier:
+        min: 1.10
+        max: 1.30
+
+      rework_effect_lag_hours:
+        min: 1
+        max: 3
+
+  torque_deviation:
+    enabled: true
+    weight: 0.7
+
+    duration_hours:
+      min: 6
+      max: 48
+
+    parameters:
+      torque_deviation_multiplier:
+        min: 1.50
+        max: 3.00
+
+      quality_effect_lag_hours:
+        min: 1
+        max: 2
+
+  maintenance_overdue:
+    enabled: true
+    weight: 0.8
+
+    duration_hours:
+      min: 24
+      max: 168
+
+    parameters:
+      vibration_multiplier:
+        min: 1.10
+        max: 1.50
+
+      downtime_probability_multiplier:
+        min: 1.25
+        max: 2.00
+
+  maintenance_recovery:
+    enabled: true
+    weight: 0.6
+
+    parameters:
+      vibration_reduction_multiplier:
+        min: 0.55
+        max: 0.80
+
+      downtime_reduction_multiplier:
+        min: 0.50
+        max: 0.80
+
+# ============================================================
+# FINANCE SCENARIOS
+# ============================================================
+
+finance:
+
+  income_stress:
+    enabled: true
+    weight: 1.0
+
+    parameters:
+      income_multiplier:
+        min: 0.65
+        max: 0.90
+
+      missed_payment_probability_delta:
+        min: 0.08
+        max: 0.25
+
+  seasonal_rural_income:
+    enabled: true
+    weight: 0.7
+
+    parameters:
+      income_variability_multiplier:
+        min: 1.20
+        max: 1.80
+
+  early_delinquency:
+    enabled: true
+    weight: 0.9
+
+    parameters:
+      days_late:
+        min: 5
+        max: 30
+
+# ============================================================
+# COLLECTIONS SCENARIOS
+# ============================================================
+
+collections:
+
+  digital_recovery_success:
+    enabled: true
+    weight: 0.8
+
+    parameters:
+      digital_response_probability:
+        min: 0.60
+        max: 0.85
+
+      payment_after_contact_probability:
+        min: 0.45
+        max: 0.75
+
+  field_visit_required:
+    enabled: true
+    weight: 0.6
+
+    parameters:
+      digital_response_probability:
+        min: 0.05
+        max: 0.25
+
+      field_visit_success_probability:
+        min: 0.45
+        max: 0.70
+
+  restructuring_candidate:
+    enabled: true
+    weight: 0.6
+
+    parameters:
+      restructuring_acceptance_probability:
+        min: 0.45
+        max: 0.75
+
+# ============================================================
+# LOGISTICS SCENARIOS
+# ============================================================
+
+logistics:
+
+  weather_disruption:
+    enabled: true
+    weight: 1.0
+
+    duration_hours:
+      min: 4
+      max: 36
+
+    parameters:
+      transit_time_multiplier:
+        min: 1.15
+        max: 1.60
+
+  port_congestion:
+    enabled: true
+    weight: 0.8
+
+    duration_hours:
+      min: 12
+      max: 72
+
+    parameters:
+      dwell_time_hours:
+        min: 3
+        max: 24
+
+  warehouse_bottleneck:
+    enabled: true
+    weight: 1.0
+
+    duration_hours:
+      min: 6
+      max: 48
+
+    parameters:
+      dock_occupancy_delta:
+        min: 0.15
+        max: 0.40
+
+      picking_backlog_multiplier:
+        min: 1.30
+        max: 2.50
+
+  vehicle_shortage:
+    enabled: true
+    weight: 0.7
+
+    duration_hours:
+      min: 6
+      max: 48
+
+    parameters:
+      vehicle_availability_multiplier:
+        min: 0.50
+        max: 0.80
+
+  route_closure:
+    enabled: true
+    weight: 0.3
+
+    duration_hours:
+      min: 2
+      max: 18
+
+    parameters:
+      reroute_required: true
+
+# ============================================================
+# CIRCULARITY SCENARIOS
+# ============================================================
+
+circularity:
+
+  incomplete_elv_documents:
+    enabled: true
+    weight: 0.8
+
+    parameters:
+      document_completeness:
+        min: 0.35
+        max: 0.75
+
+  rvsf_bottleneck:
+    enabled: true
+    weight: 1.0
+
+    parameters:
+      queue_wait_multiplier:
+        min: 1.50
+        max: 3.00
+
+      dismantling_time_multiplier:
+        min: 1.20
+        max: 1.80
+
+  dmrv_incomplete:
+    enabled: true
+    weight: 1.0
+
+    parameters:
+      document_completeness:
+        min: 0.40
+        max: 0.75
+
+      verification_ready: false
+
+  credit_demand_spike:
+    enabled: true
+    weight: 0.7
+
+    parameters:
+      buyer_demand_multiplier:
+        min: 1.25
+        max: 2.00
+
+  low_traceability:
+    enabled: true
+    weight: 0.5
+
+    parameters:
+      traceability_score:
+        min: 0.30
+        max: 0.60
+
+# ============================================================
+# COMPLIANCE SCENARIOS
+# ============================================================
+
+compliance:
+
+  human_review_required:
+    enabled: true
+    weight: 1.0
+
+  policy_conflict:
+    enabled: true
+    weight: 0.5
+
+  missing_audit_evidence:
+    enabled: true
+    weight: 0.4
+
+  rejected_recommendation:
+    enabled: true
+    weight: 0.4

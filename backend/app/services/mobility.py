@@ -2,20 +2,21 @@
 
 from __future__ import annotations
 
+import re
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ai.causal.qa import MOBILITY_FALLBACK, match_answer
-from app.core.cache import cached_read
 from app.models.enums import QaCategory
 from app.repositories import MobilityRepository
 from app.schemas.mobility import (
-    CausalNodeOut,
     MobilityAskIn,
     MobilityAskOut,
     MobilityGraphOut,
     MobilityKpiOut,
 )
 from app.services.base import BaseService
+from app.services.merger import merge_causal_nodes, merge_mobility_kpis
 
 
 class MobilityService(BaseService):
@@ -24,34 +25,35 @@ class MobilityService(BaseService):
         self._repo = MobilityRepository(session)
 
     async def get_graph(self) -> MobilityGraphOut:
-        return await cached_read("mobility:graph", self._load_graph)
-
-    async def _load_graph(self) -> MobilityGraphOut:
         nodes = await self._repo.list_all()
         edges = await self._repo.list_edges()
         label_by_id = {node.id: node.label for node in nodes}
+
+        merged_nodes = merge_causal_nodes(nodes)
+
+        # Build normalized edge pairs
+        edge_set: set[tuple[str, str]] = set()
+        edge_pairs: list[tuple[str, str]] = []
+        for edge in edges:
+            src = label_by_id.get(edge.source_node_id, "")
+            tgt = label_by_id.get(edge.target_node_id, "")
+            if src and tgt:
+                clean_src = re.sub(r"\s*\(Synthetic\)", "", src, flags=re.IGNORECASE)
+                clean_tgt = re.sub(r"\s*\(Synthetic\)", "", tgt, flags=re.IGNORECASE)
+                pair = (clean_src, clean_tgt)
+                if pair not in edge_set:
+                    edge_set.add(pair)
+                    edge_pairs.append(pair)
+
         return MobilityGraphOut(
-            nodes=[
-                CausalNodeOut(
-                    label=node.label,
-                    x=node.x,
-                    y=node.y,
-                    metric=node.metric,
-                    trend=node.trend,
-                    drivers=list(node.drivers),
-                    action=node.action,
-                )
-                for node in nodes
-            ],
-            edges=[(label_by_id[edge.source_node_id], label_by_id[edge.target_node_id]) for edge in edges],
+            nodes=merged_nodes,
+            edges=edge_pairs,
         )
 
     async def list_kpis(self) -> list[MobilityKpiOut]:
-        return await cached_read("mobility:kpis", self._load_kpis)
-
-    async def _load_kpis(self) -> list[MobilityKpiOut]:
         kpis = await self._repo.list_kpis()
-        return [MobilityKpiOut(label=kpi.label, value=kpi.value, trend=kpi.trend) for kpi in kpis]
+        return merge_mobility_kpis(kpis)
+
 
     async def ask(self, payload: MobilityAskIn) -> MobilityAskOut:
         qa = await self._repo.list_qa(category=QaCategory.MOBILITY)

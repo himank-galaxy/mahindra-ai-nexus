@@ -4,8 +4,7 @@
 // stay client-side only (never during SSR) so the Nitro server needs no
 // backend access.
 
-export const apiBaseUrl: string =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api/v1";
+export const apiBaseUrl: string = import.meta.env.VITE_API_BASE_URL || "/api/v1";
 
 /** True during server rendering (TanStack Start SSR) — never fetch there. */
 export const isSsr: boolean = typeof window === "undefined";

@@ -1,9 +1,0 @@
-name,status,sort_order
-Prioritization Agent,active,0
-Channel Selection Agent,active,1
-Negotiation Agent,active,2
-Compliance Guard Agent,active,3
-Field Visit Optimizer,active,4
-Promise-to-Pay Tracker,active,5
-Restructuring Advisor,active,6
-Escalation Router,reviewing,7

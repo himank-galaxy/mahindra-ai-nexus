@@ -9,73 +9,25 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as XrRouteImport } from './routes/xr'
-import { Route as TrustRouteImport } from './routes/trust'
-import { Route as SimulationRouteImport } from './routes/simulation'
-import { Route as MobilityTwinRouteImport } from './routes/mobility-twin'
-import { Route as LogisticsRouteImport } from './routes/logistics'
-import { Route as FinanceRouteImport } from './routes/finance'
-import { Route as DealerRouteImport } from './routes/dealer'
-import { Route as CopilotRouteImport } from './routes/copilot'
-import { Route as CollectionsRouteImport } from './routes/collections'
-import { Route as CircularityRouteImport } from './routes/circularity'
-import { Route as CatalogueRouteImport } from './routes/catalogue'
-import { Route as AgentsRouteImport } from './routes/agents'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AgentsRouteImport } from './routes/agents'
+import { Route as CatalogueRouteImport } from './routes/catalogue'
+import { Route as CircularityRouteImport } from './routes/circularity'
+import { Route as CollectionsRouteImport } from './routes/collections'
+import { Route as CopilotRouteImport } from './routes/copilot'
+import { Route as DataRouteImport } from './routes/data'
+import { Route as DealerRouteImport } from './routes/dealer'
+import { Route as FinanceRouteImport } from './routes/finance'
+import { Route as LogisticsRouteImport } from './routes/logistics'
+import { Route as MobilityTwinRouteImport } from './routes/mobility-twin'
+import { Route as SimulationRouteImport } from './routes/simulation'
+import { Route as TrustRouteImport } from './routes/trust'
+import { Route as WarrantyQualityRouteImport } from './routes/warranty-quality'
+import { Route as XrRouteImport } from './routes/xr'
 
-const XrRoute = XrRouteImport.update({
-  id: '/xr',
-  path: '/xr',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TrustRoute = TrustRouteImport.update({
-  id: '/trust',
-  path: '/trust',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SimulationRoute = SimulationRouteImport.update({
-  id: '/simulation',
-  path: '/simulation',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MobilityTwinRoute = MobilityTwinRouteImport.update({
-  id: '/mobility-twin',
-  path: '/mobility-twin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LogisticsRoute = LogisticsRouteImport.update({
-  id: '/logistics',
-  path: '/logistics',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const FinanceRoute = FinanceRouteImport.update({
-  id: '/finance',
-  path: '/finance',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DealerRoute = DealerRouteImport.update({
-  id: '/dealer',
-  path: '/dealer',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CopilotRoute = CopilotRouteImport.update({
-  id: '/copilot',
-  path: '/copilot',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CollectionsRoute = CollectionsRouteImport.update({
-  id: '/collections',
-  path: '/collections',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CircularityRoute = CircularityRouteImport.update({
-  id: '/circularity',
-  path: '/circularity',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CatalogueRoute = CatalogueRouteImport.update({
-  id: '/catalogue',
-  path: '/catalogue',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AgentsRoute = AgentsRouteImport.update({
@@ -83,9 +35,69 @@ const AgentsRoute = AgentsRouteImport.update({
   path: '/agents',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const CatalogueRoute = CatalogueRouteImport.update({
+  id: '/catalogue',
+  path: '/catalogue',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CircularityRoute = CircularityRouteImport.update({
+  id: '/circularity',
+  path: '/circularity',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollectionsRoute = CollectionsRouteImport.update({
+  id: '/collections',
+  path: '/collections',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CopilotRoute = CopilotRouteImport.update({
+  id: '/copilot',
+  path: '/copilot',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DataRoute = DataRouteImport.update({
+  id: '/data',
+  path: '/data',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DealerRoute = DealerRouteImport.update({
+  id: '/dealer',
+  path: '/dealer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FinanceRoute = FinanceRouteImport.update({
+  id: '/finance',
+  path: '/finance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LogisticsRoute = LogisticsRouteImport.update({
+  id: '/logistics',
+  path: '/logistics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MobilityTwinRoute = MobilityTwinRouteImport.update({
+  id: '/mobility-twin',
+  path: '/mobility-twin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SimulationRoute = SimulationRouteImport.update({
+  id: '/simulation',
+  path: '/simulation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrustRoute = TrustRouteImport.update({
+  id: '/trust',
+  path: '/trust',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WarrantyQualityRoute = WarrantyQualityRouteImport.update({
+  id: '/warranty-quality',
+  path: '/warranty-quality',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const XrRoute = XrRouteImport.update({
+  id: '/xr',
+  path: '/xr',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -96,12 +108,14 @@ export interface FileRoutesByFullPath {
   '/circularity': typeof CircularityRoute
   '/collections': typeof CollectionsRoute
   '/copilot': typeof CopilotRoute
+  '/data': typeof DataRoute
   '/dealer': typeof DealerRoute
   '/finance': typeof FinanceRoute
   '/logistics': typeof LogisticsRoute
   '/mobility-twin': typeof MobilityTwinRoute
   '/simulation': typeof SimulationRoute
   '/trust': typeof TrustRoute
+  '/warranty-quality': typeof WarrantyQualityRoute
   '/xr': typeof XrRoute
 }
 export interface FileRoutesByTo {
@@ -111,12 +125,14 @@ export interface FileRoutesByTo {
   '/circularity': typeof CircularityRoute
   '/collections': typeof CollectionsRoute
   '/copilot': typeof CopilotRoute
+  '/data': typeof DataRoute
   '/dealer': typeof DealerRoute
   '/finance': typeof FinanceRoute
   '/logistics': typeof LogisticsRoute
   '/mobility-twin': typeof MobilityTwinRoute
   '/simulation': typeof SimulationRoute
   '/trust': typeof TrustRoute
+  '/warranty-quality': typeof WarrantyQualityRoute
   '/xr': typeof XrRoute
 }
 export interface FileRoutesById {
@@ -127,12 +143,14 @@ export interface FileRoutesById {
   '/circularity': typeof CircularityRoute
   '/collections': typeof CollectionsRoute
   '/copilot': typeof CopilotRoute
+  '/data': typeof DataRoute
   '/dealer': typeof DealerRoute
   '/finance': typeof FinanceRoute
   '/logistics': typeof LogisticsRoute
   '/mobility-twin': typeof MobilityTwinRoute
   '/simulation': typeof SimulationRoute
   '/trust': typeof TrustRoute
+  '/warranty-quality': typeof WarrantyQualityRoute
   '/xr': typeof XrRoute
 }
 export interface FileRouteTypes {
@@ -144,12 +162,14 @@ export interface FileRouteTypes {
     | '/circularity'
     | '/collections'
     | '/copilot'
+    | '/data'
     | '/dealer'
     | '/finance'
     | '/logistics'
     | '/mobility-twin'
     | '/simulation'
     | '/trust'
+    | '/warranty-quality'
     | '/xr'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -159,12 +179,14 @@ export interface FileRouteTypes {
     | '/circularity'
     | '/collections'
     | '/copilot'
+    | '/data'
     | '/dealer'
     | '/finance'
     | '/logistics'
     | '/mobility-twin'
     | '/simulation'
     | '/trust'
+    | '/warranty-quality'
     | '/xr'
   id:
     | '__root__'
@@ -174,12 +196,14 @@ export interface FileRouteTypes {
     | '/circularity'
     | '/collections'
     | '/copilot'
+    | '/data'
     | '/dealer'
     | '/finance'
     | '/logistics'
     | '/mobility-twin'
     | '/simulation'
     | '/trust'
+    | '/warranty-quality'
     | '/xr'
   fileRoutesById: FileRoutesById
 }
@@ -190,92 +214,24 @@ export interface RootRouteChildren {
   CircularityRoute: typeof CircularityRoute
   CollectionsRoute: typeof CollectionsRoute
   CopilotRoute: typeof CopilotRoute
+  DataRoute: typeof DataRoute
   DealerRoute: typeof DealerRoute
   FinanceRoute: typeof FinanceRoute
   LogisticsRoute: typeof LogisticsRoute
   MobilityTwinRoute: typeof MobilityTwinRoute
   SimulationRoute: typeof SimulationRoute
   TrustRoute: typeof TrustRoute
+  WarrantyQualityRoute: typeof WarrantyQualityRoute
   XrRoute: typeof XrRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/xr': {
-      id: '/xr'
-      path: '/xr'
-      fullPath: '/xr'
-      preLoaderRoute: typeof XrRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/trust': {
-      id: '/trust'
-      path: '/trust'
-      fullPath: '/trust'
-      preLoaderRoute: typeof TrustRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/simulation': {
-      id: '/simulation'
-      path: '/simulation'
-      fullPath: '/simulation'
-      preLoaderRoute: typeof SimulationRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/mobility-twin': {
-      id: '/mobility-twin'
-      path: '/mobility-twin'
-      fullPath: '/mobility-twin'
-      preLoaderRoute: typeof MobilityTwinRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/logistics': {
-      id: '/logistics'
-      path: '/logistics'
-      fullPath: '/logistics'
-      preLoaderRoute: typeof LogisticsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/finance': {
-      id: '/finance'
-      path: '/finance'
-      fullPath: '/finance'
-      preLoaderRoute: typeof FinanceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/dealer': {
-      id: '/dealer'
-      path: '/dealer'
-      fullPath: '/dealer'
-      preLoaderRoute: typeof DealerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/copilot': {
-      id: '/copilot'
-      path: '/copilot'
-      fullPath: '/copilot'
-      preLoaderRoute: typeof CopilotRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/collections': {
-      id: '/collections'
-      path: '/collections'
-      fullPath: '/collections'
-      preLoaderRoute: typeof CollectionsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/circularity': {
-      id: '/circularity'
-      path: '/circularity'
-      fullPath: '/circularity'
-      preLoaderRoute: typeof CircularityRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/catalogue': {
-      id: '/catalogue'
-      path: '/catalogue'
-      fullPath: '/catalogue'
-      preLoaderRoute: typeof CatalogueRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/agents': {
@@ -285,11 +241,95 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AgentsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/catalogue': {
+      id: '/catalogue'
+      path: '/catalogue'
+      fullPath: '/catalogue'
+      preLoaderRoute: typeof CatalogueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/circularity': {
+      id: '/circularity'
+      path: '/circularity'
+      fullPath: '/circularity'
+      preLoaderRoute: typeof CircularityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/collections': {
+      id: '/collections'
+      path: '/collections'
+      fullPath: '/collections'
+      preLoaderRoute: typeof CollectionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/copilot': {
+      id: '/copilot'
+      path: '/copilot'
+      fullPath: '/copilot'
+      preLoaderRoute: typeof CopilotRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/data': {
+      id: '/data'
+      path: '/data'
+      fullPath: '/data'
+      preLoaderRoute: typeof DataRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dealer': {
+      id: '/dealer'
+      path: '/dealer'
+      fullPath: '/dealer'
+      preLoaderRoute: typeof DealerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/finance': {
+      id: '/finance'
+      path: '/finance'
+      fullPath: '/finance'
+      preLoaderRoute: typeof FinanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/logistics': {
+      id: '/logistics'
+      path: '/logistics'
+      fullPath: '/logistics'
+      preLoaderRoute: typeof LogisticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mobility-twin': {
+      id: '/mobility-twin'
+      path: '/mobility-twin'
+      fullPath: '/mobility-twin'
+      preLoaderRoute: typeof MobilityTwinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/simulation': {
+      id: '/simulation'
+      path: '/simulation'
+      fullPath: '/simulation'
+      preLoaderRoute: typeof SimulationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trust': {
+      id: '/trust'
+      path: '/trust'
+      fullPath: '/trust'
+      preLoaderRoute: typeof TrustRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/warranty-quality': {
+      id: '/warranty-quality'
+      path: '/warranty-quality'
+      fullPath: '/warranty-quality'
+      preLoaderRoute: typeof WarrantyQualityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/xr': {
+      id: '/xr'
+      path: '/xr'
+      fullPath: '/xr'
+      preLoaderRoute: typeof XrRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -302,12 +342,14 @@ const rootRouteChildren: RootRouteChildren = {
   CircularityRoute: CircularityRoute,
   CollectionsRoute: CollectionsRoute,
   CopilotRoute: CopilotRoute,
+  DataRoute: DataRoute,
   DealerRoute: DealerRoute,
   FinanceRoute: FinanceRoute,
   LogisticsRoute: LogisticsRoute,
   MobilityTwinRoute: MobilityTwinRoute,
   SimulationRoute: SimulationRoute,
   TrustRoute: TrustRoute,
+  WarrantyQualityRoute: WarrantyQualityRoute,
   XrRoute: XrRoute,
 }
 export const routeTree = rootRouteImport

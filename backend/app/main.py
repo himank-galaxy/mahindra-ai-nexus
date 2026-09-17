@@ -8,6 +8,8 @@ handlers and routers. Run locally with:
 
 from __future__ import annotations
 
+import asyncio
+import contextlib
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -24,20 +26,33 @@ from app.middleware.audit_log import AuditLogMiddleware
 from app.middleware.rate_limit import RateLimitMiddleware
 from app.middleware.request_context import RequestContextMiddleware
 from app.middleware.security_headers import SecurityHeadersMiddleware
+from app.services.mobility_causal_cache import refresh_loop as mobility_causal_refresh_loop
 
 logger = get_logger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
-    """Application lifecycle: log startup and release pooled connections on shutdown."""
+    """Application lifecycle: log startup, run the Auto Mobility Causal
+    Twin's in-process refresh loop, and release pooled connections on
+    shutdown.
+
+    The mobility causal graph has no replay/scheduler container (unlike
+    manufacturing/telematics) — it's recomputed by this one background
+    task running inside the API process itself. See
+    docs/Implementation_plan_mobility_causal.md §4.
+    """
     settings = get_settings()
     logger.info(
         "application_startup",
         environment=settings.environment,
         version=settings.app_version,
     )
+    mobility_task = asyncio.create_task(mobility_causal_refresh_loop())
     yield
+    mobility_task.cancel()
+    with contextlib.suppress(asyncio.CancelledError):
+        await mobility_task
     await dispose_engine()
     logger.info("application_shutdown")
 

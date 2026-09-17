@@ -1,19 +1,25 @@
-"""Copilot reads: suggested prompt chips (sessions/messages are Phase 3)."""
+"""Copilot prompt reads from the canonical runtime schema."""
 
 from __future__ import annotations
 
 from collections.abc import Sequence
 
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import SuggestedPrompt
-from app.repositories.base import BaseRepository
+from app.database.runtime_schema import runtime_tables
+
+SUGGESTED_PROMPTS = runtime_tables["suggested_prompts"]
 
 
-class CopilotRepository(BaseRepository[SuggestedPrompt]):
-    model_type = SuggestedPrompt
+class CopilotRepository:
+    def __init__(self, session: AsyncSession) -> None:
+        self._session = session
 
     async def list_prompt_texts(self) -> Sequence[str]:
-        stmt = select(SuggestedPrompt.text).order_by(SuggestedPrompt.sort_order)
-        result = await self._session.execute(stmt)
+        result = await self._session.execute(
+            select(SUGGESTED_PROMPTS.c.prompt_text)
+            .where(SUGGESTED_PROMPTS.c.enabled.is_(True))
+            .order_by(SUGGESTED_PROMPTS.c.display_order)
+        )
         return result.scalars().all()

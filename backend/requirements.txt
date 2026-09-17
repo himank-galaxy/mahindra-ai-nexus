@@ -26,3 +26,16 @@ aiosqlite>=0.20
 # Code quality
 ruff>=0.5
 mypy>=1.10
+
+# Causal discovery
+tigramite>=5.2,<6.0
+joblib>=1.3
+pandas>=2.2,<3.0
+pyarrow>=17.0
+statsmodels>=0.14,<0.15
+
+# Optimization (Dealer Allocation linear program)
+scipy>=1.13,<2.0
+
+# LLM provider (Auto Mobility / Warranty-Quality copilots, ai_provider=openai)
+openai>=1.30

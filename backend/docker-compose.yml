@@ -29,8 +29,9 @@ services:
       ENVIRONMENT: development
       DEBUG: "true"
       LOG_LEVEL: INFO
-      CORS_ORIGINS: http://localhost:5173,http://localhost:3000
+      CORS_ORIGINS: http://10.10.90.98:5174,http://localhost:5174,http://localhost:5173,http://localhost:3000
       AI_PROVIDER: rule
+    command: sh -c "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
     ports:
       - "8000:8000"
 

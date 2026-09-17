@@ -1,9 +1,11 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import {
+  Database,
   LayoutDashboard,
   BookOpen,
   FlaskConical,
   Car,
+  ShieldAlert,
   Store,
   Landmark,
   Users,
@@ -14,26 +16,91 @@ import {
   Bot,
   MessageSquareCode,
 } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
 const NAV = [
-  { to: "/", label: "Executive Overview", icon: LayoutDashboard },
-  { to: "/catalogue", label: "AI Solution Catalogue", icon: BookOpen },
-  { to: "/simulation", label: "Simulation Center", icon: FlaskConical },
-  { to: "/mobility-twin", label: "Auto Mobility Twin", icon: Car },
-  { to: "/dealer", label: "Dealer Revenue Optimizer", icon: Store },
-  { to: "/finance", label: "Financial Services", icon: Landmark },
-  { to: "/collections", label: "Collections AI Swarm", icon: Users },
-  { to: "/logistics", label: "Logistics Control Tower", icon: Truck },
-  { to: "/circularity", label: "Circular Economy", icon: Recycle },
-  { to: "/xr", label: "AR/VR Experience", icon: Sparkles },
-  { to: "/trust", label: "Compliance Trust Ledger", icon: ShieldCheck },
-  { to: "/agents", label: "AI Factory Agents", icon: Bot },
-  { to: "/copilot", label: "Analytics Copilot", icon: MessageSquareCode },
+  {
+    to: "/",
+    label: "Executive Overview",
+    icon: LayoutDashboard,
+  },
+  {
+    to: "/data",
+    label: "Data",
+    icon: Database,
+  },
+  {
+    to: "/mobility-twin",
+    label: "Auto Mobility Twin",
+    icon: Car,
+  },
+  {
+    to: "/warranty-quality",
+    label: "Warranty & Quality",
+    icon: ShieldAlert,
+  },
+  {
+    to: "/catalogue",
+    label: "AI Solution Catalogue",
+    icon: BookOpen,
+  },
+  {
+    to: "/simulation",
+    label: "Simulation Center",
+    icon: FlaskConical,
+  },
+  {
+    to: "/dealer",
+    label: "Dealer Revenue Optimizer",
+    icon: Store,
+  },
+  {
+    to: "/finance",
+    label: "Financial Services",
+    icon: Landmark,
+  },
+  {
+    to: "/collections",
+    label: "Collections AI Swarm",
+    icon: Users,
+  },
+  {
+    to: "/logistics",
+    label: "Logistics Control Tower",
+    icon: Truck,
+  },
+  {
+    to: "/circularity",
+    label: "Circular Economy",
+    icon: Recycle,
+  },
+  {
+    to: "/xr",
+    label: "AR/VR Experience",
+    icon: Sparkles,
+  },
+  {
+    to: "/trust",
+    label: "Compliance Trust Ledger",
+    icon: ShieldCheck,
+  },
+  {
+    to: "/agents",
+    label: "AI Factory Agents",
+    icon: Bot,
+  },
+  {
+    to: "/copilot",
+    label: "Analytics Copilot",
+    icon: MessageSquareCode,
+  },
 ];
 
 export function Sidebar() {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  });
 
   return (
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col border-r border-white/5 bg-sidebar/95 backdrop-blur-xl lg:flex">
@@ -41,6 +108,7 @@ export function Sidebar() {
         <div className="grid h-9 w-9 place-items-center rounded-lg mahindra-gradient shadow-lg shadow-red-900/30">
           <span className="text-sm font-bold tracking-tight text-white">M</span>
         </div>
+
         <div className="leading-tight">
           <div className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Mahindra</div>
           <div className="text-sm font-semibold">AI Command Center</div>
@@ -51,6 +119,7 @@ export function Sidebar() {
         {NAV.map((item) => {
           const active = pathname === item.to;
           const Icon = item.icon;
+
           return (
             <Link
               key={item.to}
@@ -68,7 +137,9 @@ export function Sidebar() {
                   active ? "text-primary" : "text-muted-foreground group-hover:text-foreground",
                 )}
               />
+
               <span className="truncate">{item.label}</span>
+
               {active && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary pulse-red" />}
             </Link>
           );

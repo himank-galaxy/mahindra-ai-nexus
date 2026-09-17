@@ -31,6 +31,14 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S105", "S106", "PLR2004"]
 
+# Replay ingestion and the cutover script must name tables dynamically: they
+# iterate the fixed INGESTION_SOURCES registry so one code path serves every
+# domain. Table and column names come only from that registry and from
+# SQLAlchemy's own runtime metadata — never from a request or a user value —
+# and every comparison value is passed as a bound parameter.
+"app/services/live_ingestion.py" = ["S608"]
+"app/scripts/replay_cutover.py" = ["S608"]
+
 [tool.mypy]
 python_version = "3.12"
 strict = false

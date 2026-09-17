@@ -1,0 +1,4187 @@
+"""
+Mahindra AI Nexus
+Synthetic Data Factory - Full Cross-Dataset Validator
+
+============================================================
+PURPOSE
+============================================================
+
+Validate the complete dataset registry produced by:
+
+    data/scripts/generate_all.py
+
+The validator:
+
+    - invokes frozen dataset validators
+    - validates registry structure
+    - validates v1 deterministic row-count regression contract
+    - validates cross-dataset foreign keys
+    - validates Auto lifecycle integrity
+    - validates manufacturing and mobility causal observations
+    - validates controlled scenario application
+    - validates causal ground-truth separation
+    - validates Finance / Collections / Logistics / Circularity
+    - validates XR
+    - validates Governance -> Trust -> Audit
+    - validates Agent workflow -> action consistency
+    - validates Copilot runtime / evaluator-truth separation
+    - validates provenance
+    - validates absence of local fixture leakage
+    - validates absence of fabricated downstream business outcomes
+
+This module DOES NOT:
+
+    - write CSV files
+    - import PostgreSQL
+    - modify generated DataFrames
+    - modify frozen generators
+    - expose evaluator ground truth to runtime datasets
+
+
+============================================================
+CURRENT GOLDEN CONTRACT
+============================================================
+
+config_version      = 1.0.0
+generator_version   = 1.0.0
+seed                = 4172
+
+Expected:
+
+    57 DataFrames
+    346,295 registered rows
+"""
+
+from __future__ import annotations
+
+from collections.abc import Mapping, Sequence
+from typing import Any
+
+import pandas as pd
+
+
+# ============================================================
+# ORCHESTRATOR
+# ============================================================
+
+from data.scripts.generate_all import (
+    generate_all,
+)
+
+
+# ============================================================
+# CONFIG
+# ============================================================
+
+from data.generators.common.helpers import (
+    load_distribution_config,
+    load_generation_config,
+    load_scenario_config,
+)
+
+
+# ============================================================
+# MASTER VALIDATORS
+# ============================================================
+
+from data.generators.master.geography import (
+    validate_cities,
+    validate_regions,
+)
+
+from data.generators.master.vehicle_models import (
+    validate_vehicle_models,
+)
+
+from data.generators.master.dealers import (
+    validate_dealers,
+)
+
+from data.generators.master.plants import (
+    validate_plants,
+    validate_production_lines,
+)
+
+from data.generators.master.machines import (
+    validate_machines,
+)
+
+from data.generators.master.warehouses import (
+    validate_warehouses,
+)
+
+from data.generators.master.routes import (
+    validate_routes,
+)
+
+from data.generators.master.finance_products import (
+    validate_finance_products,
+)
+
+
+# ============================================================
+# AUTO VALIDATORS
+# ============================================================
+
+from data.generators.auto.customers import (
+    validate_customers,
+)
+
+from data.generators.auto.leads import (
+    validate_leads,
+)
+
+from data.generators.auto.followups import (
+    validate_followups,
+)
+
+from data.generators.auto.test_drives import (
+    validate_test_drives,
+)
+
+from data.generators.auto.bookings import (
+    validate_bookings,
+)
+
+from data.generators.auto.finance_applications import (
+    validate_finance_applications,
+)
+
+from data.generators.auto.cancellations import (
+    validate_cancellations,
+)
+
+from data.generators.auto.suppliers import (
+    validate_supplier_lots,
+    validate_suppliers,
+)
+
+from data.generators.auto.production import (
+    validate_production_batches,
+)
+
+from data.generators.auto.allocations import (
+    validate_allocations,
+)
+
+from data.generators.auto.deliveries import (
+    validate_deliveries,
+)
+
+from data.generators.auto.service import (
+    validate_service_events,
+)
+
+from data.generators.auto.warranty import (
+    validate_warranty_claims,
+)
+
+
+# ============================================================
+# CAUSAL GENERATORS + VALIDATORS
+# ============================================================
+
+from data.generators.causal.manufacturing_timeseries import (
+    generate_manufacturing_timeseries,
+    validate_manufacturing_timeseries,
+)
+
+from data.generators.causal.mobility_timeseries import (
+    generate_mobility_timeseries,
+    validate_mobility_timeseries,
+)
+
+from data.generators.causal.vehicle_telematics_timeseries import (
+    generate_vehicle_telematics_timeseries,
+)
+
+from data.generators.causal.scenarios import (
+    generate_and_apply_manufacturing_scenarios,
+    generate_and_apply_mobility_scenarios,
+    validate_manufacturing_scenario_effects,
+    validate_mobility_scenario_effects,
+)
+
+from data.generators.causal.ground_truth import (
+    validate_manufacturing_ground_truth,
+    validate_mobility_ground_truth,
+)
+
+
+# ============================================================
+# FINANCE VALIDATORS
+# ============================================================
+
+from data.generators.finance.customers import (
+    validate_finance_customers,
+)
+
+from data.generators.finance.loans import (
+    validate_loan_accounts,
+)
+
+from data.generators.finance.payments import (
+    validate_payment_history,
+)
+
+from data.generators.finance.cross_sell import (
+    validate_cross_sell_events,
+)
+
+
+# ============================================================
+# COLLECTIONS VALIDATORS
+# ============================================================
+
+from data.generators.collections.cases import (
+    validate_collection_cases,
+)
+
+from data.generators.collections.interactions import (
+    validate_collection_interactions,
+)
+
+
+# ============================================================
+# LOGISTICS VALIDATORS
+# ============================================================
+
+from data.generators.logistics.shipments import (
+    validate_shipments,
+)
+
+from data.generators.logistics.warehouse_events import (
+    validate_warehouse_events,
+)
+
+
+# ============================================================
+# CIRCULARITY VALIDATORS
+# ============================================================
+
+from data.generators.circularity.elv import (
+    validate_elv_assessments,
+)
+
+from data.generators.circularity.rvsf import (
+    validate_rvsf_job_cards,
+)
+
+from data.generators.circularity.dmrv import (
+    validate_dmrv_records,
+)
+
+from data.generators.circularity.credits import (
+    validate_carbon_credit_listings,
+)
+
+
+# ============================================================
+# XR VALIDATORS
+# ============================================================
+
+from data.generators.xr.sessions import (
+    validate_xr_experiences,
+    validate_xr_sessions,
+)
+
+
+# ============================================================
+# GOVERNANCE VALIDATORS
+# ============================================================
+
+from data.generators.governance.recommendations import (
+    validate_recommendations,
+)
+
+from data.generators.governance.trust import (
+    validate_trust,
+)
+
+from data.generators.governance.audit import (
+    validate_audit_events,
+)
+
+
+# ============================================================
+# AGENT VALIDATOR
+# ============================================================
+
+from data.generators.agents.workflow import (
+    validate_workflow,
+)
+
+
+# ============================================================
+# COPILOT VALIDATOR
+# ============================================================
+
+from data.generators.copilot.evaluation_cases import (
+    validate_evaluation_cases,
+)
+
+
+# ============================================================
+# VERSION CONTRACT
+# ============================================================
+
+EXPECTED_CONFIG_VERSION = "1.0.0"
+EXPECTED_GENERATOR_VERSION = "1.0.0"
+EXPECTED_SEED = 4172
+
+EXPECTED_DATASET_COUNT = 58
+EXPECTED_REGISTERED_ROWS = 1817365
+
+
+# ============================================================
+# CURRENT V1 GOLDEN ROW CONTRACT
+# ============================================================
+
+EXPECTED_DATASET_ROWS = {
+
+    # --------------------------------------------------------
+    # MASTER
+    # --------------------------------------------------------
+
+    "synthetic/master/regions":
+        4,
+
+    "synthetic/master/cities":
+        23,
+
+    "synthetic/master/vehicle_models":
+        5,
+
+    "synthetic/master/dealers":
+        30,
+
+    "synthetic/master/plants":
+        7,
+
+    "synthetic/master/production_lines":
+        20,
+
+    "synthetic/master/machines":
+        120,
+
+    "synthetic/master/warehouses":
+        8,
+
+    "synthetic/master/routes":
+        15,
+
+    "synthetic/master/finance_products":
+        6,
+
+    # --------------------------------------------------------
+    # AUTO
+    # --------------------------------------------------------
+
+    "synthetic/auto/customers":
+        5000,
+
+    "synthetic/auto/leads":
+        10000,
+
+    "synthetic/auto/followups":
+        16804,
+
+    "synthetic/auto/test_drives":
+        5325,
+
+    "synthetic/auto/bookings":
+        1611,
+
+    "synthetic/auto/finance_applications":
+        1085,
+
+    "synthetic/auto/cancellations":
+        263,
+
+    "synthetic/auto/suppliers":
+        20,
+
+    "synthetic/auto/supplier_lots":
+        320,
+
+    "synthetic/auto/production_batches":
+        1484,
+
+    "synthetic/auto/allocations":
+        1348,
+
+    "synthetic/auto/deliveries":
+        1348,
+
+    "synthetic/auto/service_events":
+        1113,
+
+    "synthetic/auto/warranty_claims":
+        53,
+
+    # --------------------------------------------------------
+    # CAUSAL
+    # --------------------------------------------------------
+
+    "synthetic/causal/manufacturing_timeseries":
+        1209600,
+
+    "synthetic/causal/mobility_timeseries":
+        172800,
+
+    "synthetic/causal/vehicle_telematics_timeseries":
+        241920,
+
+    # --------------------------------------------------------
+    # FINANCE
+    # --------------------------------------------------------
+
+    "synthetic/finance/finance_customers":
+        3000,
+
+    "synthetic/finance/loan_accounts":
+        5000,
+
+    "synthetic/finance/payment_history":
+        60191,
+
+    "synthetic/finance/cross_sell_events":
+        967,
+
+    # --------------------------------------------------------
+    # COLLECTIONS
+    # --------------------------------------------------------
+
+    "synthetic/collections/collection_cases":
+        1974,
+
+    "synthetic/collections/collection_interactions":
+        8793,
+
+    # --------------------------------------------------------
+    # LOGISTICS
+    # --------------------------------------------------------
+
+    "synthetic/logistics/shipments":
+        7500,
+
+    "synthetic/logistics/warehouse_events":
+        15000,
+
+    # --------------------------------------------------------
+    # CIRCULARITY
+    # --------------------------------------------------------
+
+    "synthetic/circularity/elv_assessments":
+        750,
+
+    "synthetic/circularity/rvsf_job_cards":
+        1500,
+
+    "synthetic/circularity/dmrv_records":
+        3000,
+
+    "synthetic/circularity/credit_listings":
+        750,
+
+    # --------------------------------------------------------
+    # XR
+    # --------------------------------------------------------
+
+    "synthetic/xr/xr_experiences":
+        4,
+
+    "synthetic/xr/xr_sessions":
+        2000,
+
+    # --------------------------------------------------------
+    # GOVERNANCE
+    # --------------------------------------------------------
+
+    "synthetic/governance/recommendations":
+        2000,
+
+    "synthetic/governance/compliance_checks":
+        10000,
+
+    "synthetic/governance/trust_decisions":
+        2000,
+
+    "synthetic/governance/human_reviews":
+        300,
+
+    "synthetic/governance/audit_events":
+        10000,
+
+    "synthetic/governance/action_outcomes":
+        864,
+
+    # --------------------------------------------------------
+    # AGENTS
+    # --------------------------------------------------------
+
+    "synthetic/agents/agent_workflow_runs":
+        1000,
+
+    "synthetic/agents/agent_events":
+        10000,
+
+    # --------------------------------------------------------
+    # COPILOT
+    # --------------------------------------------------------
+
+    "synthetic/copilot/suggested_prompts":
+        10,
+
+    "synthetic/copilot/copilot_eval_questions":
+        100,
+
+    # --------------------------------------------------------
+    # CAUSAL GROUND TRUTH
+    # --------------------------------------------------------
+
+    "ground_truth/causal/manufacturing_causal_edges":
+        41,
+
+    "ground_truth/causal/mobility_causal_edges":
+        12,
+
+    # --------------------------------------------------------
+    # SIMULATION GROUND TRUTH
+    # --------------------------------------------------------
+
+    "ground_truth/simulations/manufacturing_scenario_events":
+        24,
+
+    "ground_truth/simulations/manufacturing_scenario_expectations":
+        93,
+
+    "ground_truth/simulations/mobility_scenario_events":
+        12,
+
+    "ground_truth/simulations/mobility_scenario_expectations":
+        48,
+
+    # --------------------------------------------------------
+    # COPILOT GROUND TRUTH
+    # --------------------------------------------------------
+
+    "ground_truth/copilot/copilot_eval_ground_truth":
+        100,
+}
+
+
+# ============================================================
+# LEAKAGE RULES
+# ============================================================
+
+FORBIDDEN_RUNTIME_COLUMN_FRAGMENTS = (
+    "ground_truth",
+    "expected_answer",
+    "must_include",
+    "must_not_invent",
+    "true_outcome",
+    "true_best",
+    "oracle",
+)
+
+
+LOCAL_FIXTURE_MARKERS = (
+    "DEALER_FIX_",
+    "ALLOCATION_FIX_",
+    "WARRANTY_LOCAL_",
+    "BATCH_LOCAL_",
+    "LOT_LOCAL_",
+    "MACHINE_LOCAL_",
+)
+
+
+# ============================================================
+# CONFIG HELPERS
+# ============================================================
+
+_MISSING = object()
+
+
+def _get_path(
+    mapping: Mapping[str, Any],
+    path: Sequence[str],
+    default: Any = _MISSING,
+) -> Any:
+    """
+    Read a nested mapping path.
+
+    Example:
+
+        _get_path(
+            generation,
+            ("master", "dealers", "count")
+        )
+    """
+
+    current: Any = mapping
+
+    for component in path:
+
+        if not isinstance(
+            current,
+            Mapping,
+        ):
+
+            if default is not _MISSING:
+                return default
+
+            raise KeyError(
+                ".".join(
+                    path
+                )
+            )
+
+        if component not in current:
+
+            if default is not _MISSING:
+                return default
+
+            raise KeyError(
+                ".".join(
+                    path
+                )
+            )
+
+        current = current[
+            component
+        ]
+
+    return current
+
+
+def _first_path(
+    mapping: Mapping[str, Any],
+    candidates: Sequence[
+        Sequence[str]
+    ],
+    default: Any = _MISSING,
+) -> Any:
+    """
+    Return the first existing configuration path.
+
+    IMPORTANT:
+
+    Missing candidate paths are intentionally ignored so fallback
+    paths can be tried.
+
+    Example:
+
+        supplier_lots.quality_score
+            -> absent
+
+        manufacturing.sensors.supplier_lot_quality
+            -> present
+
+    The second candidate is therefore returned.
+    """
+
+    for path in candidates:
+
+        try:
+
+            return _get_path(
+                mapping,
+                path,
+            )
+
+        except KeyError:
+
+            continue
+
+    if default is not _MISSING:
+
+        return default
+
+    raise KeyError(
+        "None of the candidate configuration paths exist: "
+        +
+        ", ".join(
+            ".".join(
+                path
+            )
+            for path
+            in candidates
+        )
+    )
+
+
+def _generation_window(
+    generation: Mapping[str, Any],
+) -> tuple[
+    pd.Timestamp,
+    pd.Timestamp,
+    str,
+]:
+    """
+    Resolve configured generation start/end into timezone-aware
+    timestamps.
+    """
+
+    time_config = _get_path(
+        generation,
+        (
+            "time",
+        ),
+    )
+
+    if not isinstance(
+        time_config,
+        Mapping,
+    ):
+
+        raise TypeError(
+            "generation.time must be a mapping"
+        )
+
+    start_value = time_config.get(
+        "start_date"
+    )
+
+    iot_config = generation.get("iot", {})
+    end_value = iot_config.get(
+        "end_date",
+        time_config.get(
+            "end_date"
+        )
+    )
+
+    timezone = str(
+        time_config.get(
+            "timezone",
+            "Asia/Kolkata",
+        )
+    )
+
+    if start_value is None:
+
+        raise KeyError(
+            "generation.time.start_date"
+        )
+
+    if end_value is None:
+
+        raise KeyError(
+            "generation.time.end_date"
+        )
+
+    start = pd.Timestamp(
+        start_value
+    )
+
+    end = pd.Timestamp(
+        end_value
+    )
+
+    if start.tzinfo is None:
+
+        start = start.tz_localize(
+            timezone
+        )
+
+    else:
+
+        start = start.tz_convert(
+            timezone
+        )
+
+    if end.tzinfo is None:
+
+        end = end.tz_localize(
+            timezone
+        )
+
+    else:
+
+        end = end.tz_convert(
+            timezone
+        )
+
+    if end <= start:
+
+        raise ValueError(
+            "Generation end must be after generation start"
+        )
+
+    return (
+        start,
+        end,
+        timezone,
+    )
+
+
+# ============================================================
+# REGISTRY HELPERS
+# ============================================================
+
+
+def _flatten_registry(
+    node: Mapping[str, Any],
+    prefix: str = "",
+) -> dict[
+    str,
+    pd.DataFrame,
+]:
+    """
+    Flatten nested registry:
+
+        synthetic/master/regions -> DataFrame
+    """
+
+    result: dict[
+        str,
+        pd.DataFrame,
+    ] = {}
+
+    for name, value in (
+        node.items()
+    ):
+
+        path = (
+            f"{prefix}/{name}"
+            if prefix
+            else str(
+                name
+            )
+        )
+
+        if isinstance(
+            value,
+            pd.DataFrame,
+        ):
+
+            result[
+                path
+            ] = value
+
+            continue
+
+        if isinstance(
+            value,
+            Mapping,
+        ):
+
+            result.update(
+                _flatten_registry(
+                    value,
+                    path,
+                )
+            )
+
+            continue
+
+        raise TypeError(
+            f"Registry leaf {path} must be a DataFrame. "
+            f"Actual type={type(value).__name__}"
+        )
+
+    return result
+
+
+# ============================================================
+# ASSERTION HELPERS
+# ============================================================
+
+
+def _assert_equal(
+    actual: Any,
+    expected: Any,
+    description: str,
+) -> None:
+
+    if actual != expected:
+
+        raise AssertionError(
+            f"{description}: "
+            f"expected={expected!r}, "
+            f"actual={actual!r}"
+        )
+
+
+def _assert_fk(
+    child: pd.DataFrame,
+    child_column: str,
+    parent: pd.DataFrame,
+    parent_column: str,
+    relationship: str,
+    allow_null: bool = False,
+) -> None:
+    """
+    Validate foreign-key coverage.
+    """
+
+    if child_column not in (
+        child.columns
+    ):
+
+        raise KeyError(
+            f"{relationship}: "
+            f"missing child column {child_column}"
+        )
+
+    if parent_column not in (
+        parent.columns
+    ):
+
+        raise KeyError(
+            f"{relationship}: "
+            f"missing parent column {parent_column}"
+        )
+
+    values = child[
+        child_column
+    ]
+
+    if (
+        not allow_null
+        and
+        values.isna().any()
+    ):
+
+        raise ValueError(
+            f"{relationship}: "
+            "null foreign-key values found"
+        )
+
+    child_values = set(
+        values
+        .dropna()
+        .astype(
+            str
+        )
+    )
+
+    parent_values = set(
+        parent[
+            parent_column
+        ]
+        .dropna()
+        .astype(
+            str
+        )
+    )
+
+    invalid = sorted(
+        child_values
+        -
+        parent_values
+    )
+
+    if invalid:
+
+        raise ValueError(
+            f"{relationship}: invalid foreign keys. "
+            f"Sample={invalid[:10]}"
+        )
+
+
+# ============================================================
+# REGISTRY CONTRACT
+# ============================================================
+
+
+def _validate_registry_contract(
+    registry: Mapping[str, Any],
+    generation: Mapping[str, Any],
+) -> tuple[
+    dict[str, pd.DataFrame],
+    int,
+]:
+    """
+    Validate exact current registry topology and row counts.
+    """
+
+    flattened = _flatten_registry(
+        registry
+    )
+
+    expected_paths = set(
+        EXPECTED_DATASET_ROWS
+    )
+
+    actual_paths = set(
+        flattened
+    )
+
+    missing = sorted(
+        expected_paths
+        -
+        actual_paths
+    )
+
+    extra = sorted(
+        actual_paths
+        -
+        expected_paths
+    )
+
+    if missing:
+
+        raise AssertionError(
+            "Missing registered datasets: "
+            +
+            ", ".join(
+                missing
+            )
+        )
+
+    if extra:
+
+        raise AssertionError(
+            "Unexpected registered datasets: "
+            +
+            ", ".join(
+                extra
+            )
+        )
+
+    _assert_equal(
+        str(
+            generation.get(
+                "config_version"
+            )
+        ),
+        EXPECTED_CONFIG_VERSION,
+        "Config version",
+    )
+
+    _assert_equal(
+        str(
+            generation.get(
+                "generator_version"
+            )
+        ),
+        EXPECTED_GENERATOR_VERSION,
+        "Generator version",
+    )
+
+    _assert_equal(
+        int(
+            generation.get(
+                "seed"
+            )
+        ),
+        EXPECTED_SEED,
+        "Generation seed",
+    )
+
+    _assert_equal(
+        len(
+            flattened
+        ),
+        EXPECTED_DATASET_COUNT,
+        "Registered DataFrame count",
+    )
+
+    for path, expected_rows in (
+        EXPECTED_DATASET_ROWS.items()
+    ):
+
+        actual_rows = len(
+            flattened[
+                path
+            ]
+        )
+
+        if actual_rows != expected_rows:
+
+            raise AssertionError(
+                f"{path}: row-count regression. "
+                f"Expected={expected_rows}, "
+                f"actual={actual_rows}"
+            )
+
+    total_rows = sum(
+        len(
+            dataframe
+        )
+        for dataframe
+        in flattened.values()
+    )
+
+    _assert_equal(
+        total_rows,
+        EXPECTED_REGISTERED_ROWS,
+        "Registered row count",
+    )
+
+    return (
+        flattened,
+        total_rows,
+    )
+
+
+# ============================================================
+# PROVENANCE
+# ============================================================
+
+
+def _validate_provenance(
+    flattened: Mapping[
+        str,
+        pd.DataFrame,
+    ],
+    generation: Mapping[str, Any],
+) -> int:
+    """
+    Validate runtime synthetic provenance.
+
+    Ground-truth datasets remain evaluator-only and may have their
+    own semantic provenance, so this contract applies to synthetic/*
+    runtime datasets.
+    """
+
+    expected_origin = str(
+        _get_path(
+            generation,
+            (
+                "provenance",
+                "data_origin",
+            ),
+            default="SYNTHETIC",
+        )
+    )
+
+    expected_version = str(
+        generation.get(
+            "generator_version",
+            "1.0.0",
+        )
+    )
+
+    checked = 0
+
+    for path, dataframe in (
+        flattened.items()
+    ):
+
+        if not path.startswith(
+            "synthetic/"
+        ):
+
+            continue
+
+        if "data_origin" in (
+            dataframe.columns
+        ):
+
+            invalid = (
+                dataframe[
+                    "data_origin"
+                ]
+                .astype(
+                    str
+                )
+                !=
+                expected_origin
+            )
+
+            if invalid.any():
+
+                raise ValueError(
+                    f"{path}: data_origin mismatch"
+                )
+
+            checked += 1
+
+        if "generator_version" in (
+            dataframe.columns
+        ):
+
+            invalid = (
+                dataframe[
+                    "generator_version"
+                ]
+                .astype(
+                    str
+                )
+                !=
+                expected_version
+            )
+
+            if invalid.any():
+
+                raise ValueError(
+                    f"{path}: generator_version mismatch"
+                )
+
+    contains_real_pii = bool(
+        _get_path(
+            generation,
+            (
+                "provenance",
+                "contains_real_customer_pii",
+            ),
+            default=False,
+        )
+    )
+
+    if contains_real_pii:
+
+        raise ValueError(
+            "Synthetic data configuration declares "
+            "contains_real_customer_pii=True"
+        )
+
+    return checked
+
+
+# ============================================================
+# RUNTIME / TRUTH ISOLATION
+# ============================================================
+
+
+def _validate_runtime_ground_truth_separation(
+    registry: Mapping[str, Any],
+    flattened: Mapping[
+        str,
+        pd.DataFrame,
+    ],
+) -> None:
+    """
+    Ensure evaluator-only truth is not exposed in runtime.
+    """
+
+    synthetic = registry[
+        "synthetic"
+    ]
+
+    ground_truth = registry[
+        "ground_truth"
+    ]
+
+    _assert_equal(
+        set(
+            ground_truth[
+                "causal"
+            ]
+        ),
+        {
+            "manufacturing_causal_edges",
+            "mobility_causal_edges",
+        },
+        "Causal truth registry",
+    )
+
+    _assert_equal(
+        set(
+            ground_truth[
+                "simulations"
+            ]
+        ),
+        {
+            "manufacturing_scenario_events",
+            "manufacturing_scenario_expectations",
+            "mobility_scenario_events",
+            "mobility_scenario_expectations",
+        },
+        "Simulation truth registry",
+    )
+
+    _assert_equal(
+        set(
+            ground_truth[
+                "copilot"
+            ]
+        ),
+        {
+            "copilot_eval_ground_truth",
+        },
+        "Copilot truth registry",
+    )
+
+    _assert_equal(
+        set(
+            synthetic[
+                "causal"
+            ]
+        ),
+        {
+            "manufacturing_timeseries",
+            "mobility_timeseries",
+            "vehicle_telematics_timeseries",
+        },
+        "Runtime causal registry",
+    )
+
+    for path, dataframe in (
+        flattened.items()
+    ):
+
+        if not path.startswith(
+            "synthetic/"
+        ):
+
+            continue
+
+        leakage_columns = [
+            column
+            for column
+            in dataframe.columns
+            if any(
+                fragment
+                in column.lower()
+                for fragment
+                in FORBIDDEN_RUNTIME_COLUMN_FRAGMENTS
+            )
+        ]
+
+        if leakage_columns:
+
+            raise ValueError(
+                f"{path}: runtime ground-truth leakage: "
+                +
+                ", ".join(
+                    leakage_columns
+                )
+            )
+
+
+# ============================================================
+# COPILOT FIXTURE LEAKAGE
+# ============================================================
+
+
+def _validate_no_fixture_leakage(
+    questions: pd.DataFrame,
+    ground_truth: pd.DataFrame,
+) -> None:
+    """
+    Ensure local validation fixtures did not reach real output.
+    """
+
+    text = (
+        " ".join(
+            questions
+            .astype(
+                str
+            )
+            .fillna(
+                ""
+            )
+            .values
+            .ravel()
+            .tolist()
+        )
+        +
+        " "
+        +
+        " ".join(
+            ground_truth
+            .astype(
+                str
+            )
+            .fillna(
+                ""
+            )
+            .values
+            .ravel()
+            .tolist()
+        )
+    )
+
+    leaked = [
+        marker
+        for marker
+        in LOCAL_FIXTURE_MARKERS
+        if marker in text
+    ]
+
+    if leaked:
+
+        raise ValueError(
+            "Local fixture markers leaked into real Copilot data: "
+            +
+            ", ".join(
+                leaked
+            )
+        )
+
+
+# ============================================================
+# MAIN VALIDATOR
+# ============================================================
+
+
+def validate_all(
+    registry: Mapping[str, Any] | None = None,
+    generation: Mapping[str, Any] | None = None,
+    distributions: Mapping[str, Any] | None = None,
+    scenarios: Mapping[str, Any] | None = None,
+    verbose: bool = True,
+) -> dict[str, Any]:
+    """
+    Validate the complete Mahindra AI Nexus synthetic world.
+
+    If registry is not supplied, generate_all() is executed
+    in memory.
+
+    No CSV or PostgreSQL writes occur.
+    """
+
+    # ========================================================
+    # CONFIG
+    # ========================================================
+
+    if generation is None:
+
+        generation = (
+            load_generation_config()
+        )
+
+    if distributions is None:
+
+        distributions = (
+            load_distribution_config()
+        )
+
+    if scenarios is None:
+
+        scenarios = (
+            load_scenario_config()
+        )
+
+    if not isinstance(
+        generation,
+        Mapping,
+    ):
+
+        raise TypeError(
+            "generation must be a mapping"
+        )
+
+    if not isinstance(
+        distributions,
+        Mapping,
+    ):
+
+        raise TypeError(
+            "distributions must be a mapping"
+        )
+
+    if not isinstance(
+        scenarios,
+        Mapping,
+    ):
+
+        raise TypeError(
+            "scenarios must be a mapping"
+        )
+
+    (
+        generation_start,
+        generation_end,
+        _,
+    ) = _generation_window(
+        generation
+    )
+
+    # ========================================================
+    # GENERATE REGISTRY IF REQUIRED
+    # ========================================================
+
+    if registry is None:
+
+        if verbose:
+
+            print(
+                "\n"
+                "============================================================\n"
+                "GENERATING REGISTRY FOR VALIDATION\n"
+                "============================================================"
+            )
+
+        registry = generate_all(
+            generation=
+                generation,
+
+            distributions=
+                distributions,
+
+            scenarios=
+                scenarios,
+
+            verbose=False,
+        )
+
+    if verbose:
+
+        print(
+            "\n"
+            "============================================================\n"
+            "MAHINDRA AI NEXUS - FULL DATA VALIDATION\n"
+            "============================================================"
+        )
+
+    # ========================================================
+    # 1. REGISTRY
+    # ========================================================
+
+    if verbose:
+
+        print(
+            "\n[1/14] Registry contract..."
+        )
+
+    (
+        flattened,
+        total_registered_rows,
+    ) = _validate_registry_contract(
+        registry=
+            registry,
+
+        generation=
+            generation,
+    )
+
+    if verbose:
+
+        print(
+            "PASS -",
+            len(
+                flattened
+            ),
+            "DataFrames,",
+            total_registered_rows,
+            "rows",
+        )
+
+    # ========================================================
+    # REFERENCES
+    # ========================================================
+
+    synthetic = registry[
+        "synthetic"
+    ]
+
+    ground_truth = registry[
+        "ground_truth"
+    ]
+
+    master = synthetic[
+        "master"
+    ]
+
+    auto = synthetic[
+        "auto"
+    ]
+
+    causal = synthetic[
+        "causal"
+    ]
+
+    finance = synthetic[
+        "finance"
+    ]
+
+    collections = synthetic[
+        "collections"
+    ]
+
+    logistics = synthetic[
+        "logistics"
+    ]
+
+    circularity = synthetic[
+        "circularity"
+    ]
+
+    xr = synthetic[
+        "xr"
+    ]
+
+    governance = synthetic[
+        "governance"
+    ]
+
+    agents = synthetic[
+        "agents"
+    ]
+
+    copilot = synthetic[
+        "copilot"
+    ]
+
+    causal_truth = ground_truth[
+        "causal"
+    ]
+
+    simulation_truth = ground_truth[
+        "simulations"
+    ]
+
+    copilot_truth = ground_truth[
+        "copilot"
+    ]
+
+    # ========================================================
+    # 2. MASTER
+    # ========================================================
+
+    if verbose:
+
+        print(
+            "\n[2/14] Master data..."
+        )
+
+    validate_regions(
+        regions=
+            master[
+                "regions"
+            ],
+    )
+
+    validate_cities(
+        cities=
+            master[
+                "cities"
+            ],
+
+        regions=
+            master[
+                "regions"
+            ],
+
+        expected_count=
+            int(
+                _get_path(
+                    generation,
+                    (
+                        "master",
+                        "cities",
+                        "target_count",
+                    )
+                )
+            ),
+    )
+
+    validate_vehicle_models(
+        vehicle_models=
+            master[
+                "vehicle_models"
+            ],
+    )
+
+    validate_dealers(
+        dealers=
+            master[
+                "dealers"
+            ],
+
+        regions=
+            master[
+                "regions"
+            ],
+
+        cities=
+            master[
+                "cities"
+            ],
+
+        expected_count=
+            int(
+                _get_path(
+                    generation,
+                    (
+                        "master",
+                        "dealers",
+                        "count",
+                    )
+                )
+            ),
+    )
+
+    validate_plants(
+        plants=
+            master[
+                "plants"
+            ],
+
+        geography_cities=
+            master[
+                "cities"
+            ],
+    )
+
+    validate_production_lines(
+        production_lines=
+            master[
+                "production_lines"
+            ],
+
+        plants=
+            master[
+                "plants"
+            ],
+
+        min_lines=
+            int(
+                _get_path(
+                    generation,
+                    (
+                        "master",
+                        "production_lines_per_plant",
+                        "min",
+                    )
+                )
+            ),
+
+        max_lines=
+            int(
+                _get_path(
+                    generation,
+                    (
+                        "master",
+                        "production_lines_per_plant",
+                        "max",
+                    )
+                )
+            ),
+    )
+
+    validate_machines(
+        machines=
+            master[
+                "machines"
+            ],
+
+        production_lines=
+            master[
+                "production_lines"
+            ],
+
+        min_machines=
+            int(
+                _get_path(
+                    generation,
+                    (
+                        "master",
+                        "machines_per_line",
+                        "min",
+                    )
+                )
+            ),
+
+        max_machines=
+            int(
+                _get_path(
+                    generation,
+                    (
+                        "master",
+                        "machines_per_line",
+                        "max",
+                    )
+                )
+            ),
+    )
+
+    validate_warehouses(
+        warehouses=
+            master[
+                "warehouses"
+            ],
+
+        geography_cities=
+            master[
+                "cities"
+            ],
+
+        expected_count=
+            int(
+                _get_path(
+                    generation,
+                    (
+                        "master",
+                        "warehouses",
+                        "count",
+                    )
+                )
+            ),
+    )
+
+    validate_routes(
+        routes=
+            master[
+                "routes"
+            ],
+
+        warehouses=
+            master[
+                "warehouses"
+            ],
+
+        expected_count=
+            int(
+                _get_path(
+                    generation,
+                    (
+                        "master",
+                        "logistics_routes",
+                        "target_count",
+                    )
+                )
+            ),
+    )
+
+    validate_finance_products(
+        finance_products=
+            master[
+                "finance_products"
+            ],
+    )
+
+    if verbose:
+
+        print(
+            "PASS"
+        )
+
+    # ========================================================
+    # 3. AUTO
+    # ========================================================
+
+    if verbose:
+
+        print(
+            "\n[3/14] Auto lifecycle..."
+        )
+
+    purchase_horizon_spec = _get_path(
+        distributions,
+        (
+            "auto_customer",
+            "purchase_horizon_days",
+        ),
+    )
+
+    customer_count = int(
+        _first_path(
+            generation,
+            (
+                (
+                    "auto",
+                    "customers",
+                    "count",
+                ),
+            ),
+            default=5000,
+        )
+    )
+
+    max_followups = int(
+        _first_path(
+            generation,
+            (
+                (
+                    "auto",
+                    "followups",
+                    "max_per_lead",
+                ),
+                (
+                    "auto",
+                    "followups",
+                    "max_followups_per_lead",
+                ),
+                (
+                    "auto",
+                    "followups",
+                    "max_followups",
+                ),
+                (
+                    "auto",
+                    "max_followups_per_lead",
+                ),
+            ),
+            default=5,
+        )
+    )
+
+    validate_customers(
+        customers=
+            auto[
+                "customers"
+            ],
+
+        regions=
+            master[
+                "regions"
+            ],
+
+        cities=
+            master[
+                "cities"
+            ],
+
+        vehicle_models=
+            master[
+                "vehicle_models"
+            ],
+
+        expected_count=
+            customer_count,
+
+        horizon_min=
+            int(
+                purchase_horizon_spec[
+                    "min"
+                ]
+            ),
+
+        horizon_max=
+            int(
+                purchase_horizon_spec[
+                    "max"
+                ]
+            ),
+    )
+
+    validate_leads(
+        leads=
+            auto[
+                "leads"
+            ],
+
+        customers=
+            auto[
+                "customers"
+            ],
+
+        dealers=
+            master[
+                "dealers"
+            ],
+
+        vehicle_models=
+            master[
+                "vehicle_models"
+            ],
+
+        source_quality=
+            _get_path(
+                distributions,
+                (
+                    "leads",
+                    "source_quality",
+                )
+            ),
+
+        expected_count=
+            int(
+                _get_path(
+                    generation,
+                    (
+                        "auto",
+                        "leads",
+                        "count",
+                    )
+                )
+            ),
+    )
+
+    validate_followups(
+        followups=
+            auto[
+                "followups"
+            ],
+
+        leads=
+            auto[
+                "leads"
+            ],
+
+        dealers=
+            master[
+                "dealers"
+            ],
+
+        max_followups=
+            max_followups,
+    )
+
+    validate_test_drives(
+        test_drives=
+            auto[
+                "test_drives"
+            ],
+
+        leads=
+            auto[
+                "leads"
+            ],
+
+        generation_end=
+            generation_end,
+    )
+
+    validate_bookings(
+        bookings=
+            auto[
+                "bookings"
+            ],
+
+        leads=
+            auto[
+                "leads"
+            ],
+
+        customers=
+            auto[
+                "customers"
+            ],
+
+        test_drives=
+            auto[
+                "test_drives"
+            ],
+
+        vehicle_models=
+            master[
+                "vehicle_models"
+            ],
+
+        booking_amount_spec=
+            _get_path(
+                distributions,
+                (
+                    "bookings",
+                    "booking_amount",
+                )
+            ),
+
+        generation_end=
+            generation_end,
+    )
+
+    finance_application_spec = _get_path(
+        distributions,
+        (
+            "finance_applications",
+        ),
+    )
+
+    validate_finance_applications(
+        finance_applications=
+            auto[
+                "finance_applications"
+            ],
+
+        bookings=
+            auto[
+                "bookings"
+            ],
+
+        customers=
+            auto[
+                "customers"
+            ],
+
+        bureau_spec=
+            finance_application_spec[
+                "bureau_like_score"
+            ],
+
+        tat_spec=
+            finance_application_spec[
+                "approval_tat_hours"
+            ],
+
+        generation_end=
+            generation_end,
+    )
+
+    cancellation_spec = _get_path(
+        distributions,
+        (
+            "cancellations",
+        ),
+    )
+
+    validate_cancellations(
+        cancellations=
+            auto[
+                "cancellations"
+            ],
+
+        bookings=
+            auto[
+                "bookings"
+            ],
+
+        finance_applications=
+            auto[
+                "finance_applications"
+            ],
+
+        valid_reasons=
+            set(
+                cancellation_spec[
+                    "reason_weights"
+                ]
+            ),
+
+        generation_end=
+            generation_end,
+    )
+
+    validate_suppliers(
+        suppliers=
+            auto[
+                "suppliers"
+            ],
+
+        cities=
+            master[
+                "cities"
+            ],
+
+        expected_count=
+            int(
+                _get_path(
+                    generation,
+                    (
+                        "master",
+                        "suppliers",
+                        "count",
+                    )
+                )
+            ),
+    )
+
+    # ========================================================
+    # IMPORTANT FIX:
+    #
+    # Try supplier_lots.quality_score first if a future config
+    # adds it, otherwise fall back to the REAL current path:
+    #
+    # manufacturing.sensors.supplier_lot_quality
+    # ========================================================
+
+    supplier_quality_spec = _first_path(
+        distributions,
+        (
+            (
+                "supplier_lots",
+                "quality_score",
+            ),
+            (
+                "manufacturing",
+                "sensors",
+                "supplier_lot_quality",
+            ),
+        ),
+    )
+
+    validate_supplier_lots(
+        supplier_lots=
+            auto[
+                "supplier_lots"
+            ],
+
+        suppliers=
+            auto[
+                "suppliers"
+            ],
+
+        start=
+            generation_start,
+
+        end=
+            generation_end,
+
+        quality_spec=
+            supplier_quality_spec,
+    )
+
+    validate_production_batches(
+        production_batches=
+            auto[
+                "production_batches"
+            ],
+
+        plants=
+            master[
+                "plants"
+            ],
+
+        production_lines=
+            master[
+                "production_lines"
+            ],
+
+        machines=
+            master[
+                "machines"
+            ],
+
+        vehicle_models=
+            master[
+                "vehicle_models"
+            ],
+
+        suppliers=
+            auto[
+                "suppliers"
+            ],
+
+        supplier_lots=
+            auto[
+                "supplier_lots"
+            ],
+
+        generation_start=
+            generation_start,
+
+        generation_end=
+            generation_end,
+    )
+
+    cancelled_booking_ids = set(
+        auto[
+            "cancellations"
+        ][
+            "booking_id"
+        ]
+        .astype(
+            str
+        )
+    )
+
+    surviving_bookings = (
+        auto[
+            "bookings"
+        ]
+        .loc[
+            ~
+            auto[
+                "bookings"
+            ][
+                "booking_id"
+            ]
+            .astype(
+                str
+            )
+            .isin(
+                cancelled_booking_ids
+            )
+        ]
+        .copy()
+    )
+
+    _assert_equal(
+        len(
+            surviving_bookings
+        ),
+        len(
+            auto[
+                "allocations"
+            ]
+        ),
+        "Surviving booking / allocation count",
+    )
+
+    validate_allocations(
+        allocations=
+            auto[
+                "allocations"
+            ],
+
+        surviving_bookings=
+            surviving_bookings,
+
+        production_batches=
+            auto[
+                "production_batches"
+            ],
+
+        generation_end=
+            generation_end,
+    )
+
+    validate_deliveries(
+        deliveries=
+            auto[
+                "deliveries"
+            ],
+
+        allocations=
+            auto[
+                "allocations"
+            ],
+
+        bookings=
+            auto[
+                "bookings"
+            ],
+
+        generation_end=
+            generation_end,
+    )
+
+    validate_service_events(
+        service_events=
+            auto[
+                "service_events"
+            ],
+
+        deliveries=
+            auto[
+                "deliveries"
+            ],
+
+        generation_end=
+            generation_end,
+    )
+
+    validate_warranty_claims(
+        warranty_claims=
+            auto[
+                "warranty_claims"
+            ],
+
+        service_events=
+            auto[
+                "service_events"
+            ],
+
+        generation_end=
+            generation_end,
+    )
+
+    # --------------------------------------------------------
+    # CRITICAL WARRANTY / QUALITY LINEAGE
+    # --------------------------------------------------------
+
+    _assert_fk(
+        child=
+            auto[
+                "warranty_claims"
+            ],
+
+        child_column=
+            "service_event_id",
+
+        parent=
+            auto[
+                "service_events"
+            ],
+
+        parent_column=
+            "service_event_id",
+
+        relationship=
+            "Warranty -> Service Event",
+    )
+
+    _assert_fk(
+        child=
+            auto[
+                "warranty_claims"
+            ],
+
+        child_column=
+            "production_batch_id",
+
+        parent=
+            auto[
+                "production_batches"
+            ],
+
+        parent_column=
+            "production_batch_id",
+
+        relationship=
+            "Warranty -> Production Batch",
+    )
+
+    _assert_fk(
+        child=
+            auto[
+                "warranty_claims"
+            ],
+
+        child_column=
+            "primary_supplier_lot_id",
+
+        parent=
+            auto[
+                "supplier_lots"
+            ],
+
+        parent_column=
+            "supplier_lot_id",
+
+        relationship=
+            "Warranty -> Primary Supplier Lot",
+    )
+
+    if verbose:
+
+        print(
+            "PASS"
+        )
+
+    # ========================================================
+    # 4. CAUSAL
+    # ========================================================
+
+    if verbose:
+
+        print(
+            "\n[4/14] Causal observations, scenarios and truth..."
+        )
+
+    # --------------------------------------------------------
+    # Reconstruct clean baseline observations.
+    #
+    # generate_all() intentionally registers only the adjusted
+    # runtime versions.
+    # --------------------------------------------------------
+
+    manufacturing_baseline = (
+        generate_manufacturing_timeseries(
+            plants=
+                master[
+                    "plants"
+                ],
+
+            production_lines=
+                master[
+                    "production_lines"
+                ],
+
+            machines=
+                master[
+                    "machines"
+                ],
+
+            production_batches=
+                auto[
+                    "production_batches"
+                ],
+
+            generation=
+                generation,
+
+            distributions=
+                distributions,
+        )
+    )
+
+    mobility_baseline = (
+        generate_mobility_timeseries(
+            regions=
+                master[
+                    "regions"
+                ],
+
+            leads=
+                auto[
+                    "leads"
+                ],
+
+            followups=
+                auto[
+                    "followups"
+                ],
+
+            test_drives=
+                auto[
+                    "test_drives"
+                ],
+
+            bookings=
+                auto[
+                    "bookings"
+                ],
+
+            finance_applications=
+                auto[
+                    "finance_applications"
+                ],
+
+            cancellations=
+                auto[
+                    "cancellations"
+                ],
+
+            allocations=
+                auto[
+                    "allocations"
+                ],
+
+            deliveries=
+                auto[
+                    "deliveries"
+                ],
+
+            service_events=
+                auto[
+                    "service_events"
+                ],
+
+            warranty_claims=
+                auto[
+                    "warranty_claims"
+                ],
+
+            generation=
+                generation,
+        )
+    )
+
+    vehicle_telematics_repeat = (
+        generate_vehicle_telematics_timeseries(
+            deliveries=auto["deliveries"],
+            service_events=auto["service_events"],
+            warranty_claims=auto["warranty_claims"],
+            production_batches=auto["production_batches"],
+            supplier_lots=auto["supplier_lots"],
+            plants=master["plants"],
+            production_lines=master["production_lines"],
+            manufacturing_timeseries=manufacturing_baseline,
+            generation=generation,
+        )
+    )
+
+    manufacturing_validation_start = max(
+        generation_start,
+        generation_end - pd.Timedelta(
+            days=int(generation["manufacturing"]["history_days"])
+        ),
+    )
+    mobility_validation_start = max(
+        generation_start,
+        generation_end - pd.Timedelta(
+            days=int(generation["mobility"]["history_days"])
+        ),
+    )
+
+    validate_manufacturing_timeseries(
+        manufacturing_timeseries=
+            manufacturing_baseline,
+
+        plants=
+            master[
+                "plants"
+            ],
+
+        production_lines=
+            master[
+                "production_lines"
+            ],
+
+        machines=
+            master[
+                "machines"
+            ],
+
+        production_batches=
+            auto[
+                "production_batches"
+            ],
+
+        generation_start=
+            manufacturing_validation_start,
+
+        generation_end=
+            generation_end,
+    )
+
+    validate_mobility_timeseries(
+        mobility_timeseries=
+            mobility_baseline,
+
+        regions=
+            master[
+                "regions"
+            ],
+
+        generation_start=
+            mobility_validation_start,
+
+        generation_end=
+            generation_end,
+    )
+
+    pd.testing.assert_frame_equal(
+        vehicle_telematics_repeat.reset_index(drop=True),
+        causal["vehicle_telematics_timeseries"].reset_index(drop=True),
+        check_dtype=True,
+        check_exact=True,
+    )
+
+    # --------------------------------------------------------
+    # Reapply deterministic scenarios.
+    # --------------------------------------------------------
+
+    (
+        manufacturing_runtime_repeat,
+        manufacturing_events_repeat,
+    ) = generate_and_apply_manufacturing_scenarios(
+        manufacturing_timeseries=
+            manufacturing_baseline,
+
+        generation=
+            generation,
+    )
+
+    (
+        mobility_runtime_repeat,
+        mobility_events_repeat,
+    ) = generate_and_apply_mobility_scenarios(
+        mobility_timeseries=
+            mobility_baseline,
+
+        generation=
+            generation,
+    )
+
+    # --------------------------------------------------------
+    # Runtime registry must exactly match deterministic rerun.
+    # --------------------------------------------------------
+
+    pd.testing.assert_frame_equal(
+        manufacturing_runtime_repeat
+        .reset_index(
+            drop=True
+        ),
+        causal[
+            "manufacturing_timeseries"
+        ]
+        .reset_index(
+            drop=True
+        ),
+        check_dtype=True,
+        check_exact=True,
+    )
+
+    pd.testing.assert_frame_equal(
+        mobility_runtime_repeat
+        .reset_index(
+            drop=True
+        ),
+        causal[
+            "mobility_timeseries"
+        ]
+        .reset_index(
+            drop=True
+        ),
+        check_dtype=True,
+        check_exact=True,
+    )
+
+    pd.testing.assert_frame_equal(
+        manufacturing_events_repeat
+        .reset_index(
+            drop=True
+        ),
+        simulation_truth[
+            "manufacturing_scenario_events"
+        ]
+        .reset_index(
+            drop=True
+        ),
+        check_dtype=True,
+        check_exact=True,
+    )
+
+    pd.testing.assert_frame_equal(
+        mobility_events_repeat
+        .reset_index(
+            drop=True
+        ),
+        simulation_truth[
+            "mobility_scenario_events"
+        ]
+        .reset_index(
+            drop=True
+        ),
+        check_dtype=True,
+        check_exact=True,
+    )
+
+    # --------------------------------------------------------
+    # Validate scenario effects.
+    # --------------------------------------------------------
+
+    validate_manufacturing_scenario_effects(
+        baseline=
+            manufacturing_baseline,
+
+        adjusted=
+            causal[
+                "manufacturing_timeseries"
+            ],
+
+        scenario_events=
+            simulation_truth[
+                "manufacturing_scenario_events"
+            ],
+    )
+
+    validate_mobility_scenario_effects(
+        baseline=
+            mobility_baseline,
+
+        adjusted=
+            causal[
+                "mobility_timeseries"
+            ],
+
+        scenario_events=
+            simulation_truth[
+                "mobility_scenario_events"
+            ],
+    )
+
+    # --------------------------------------------------------
+    # Validate evaluator-only truth.
+    # --------------------------------------------------------
+
+    validate_manufacturing_ground_truth(
+        manufacturing_runtime=
+            causal[
+                "manufacturing_timeseries"
+            ],
+
+        scenario_events=
+            simulation_truth[
+                "manufacturing_scenario_events"
+            ],
+
+        causal_edges=
+            causal_truth[
+                "manufacturing_causal_edges"
+            ],
+
+        scenario_expectations=
+            simulation_truth[
+                "manufacturing_scenario_expectations"
+            ],
+    )
+
+    validate_mobility_ground_truth(
+        mobility_runtime=
+            causal[
+                "mobility_timeseries"
+            ],
+
+        scenario_events=
+            simulation_truth[
+                "mobility_scenario_events"
+            ],
+
+        causal_edges=
+            causal_truth[
+                "mobility_causal_edges"
+            ],
+
+        scenario_expectations=
+            simulation_truth[
+                "mobility_scenario_expectations"
+            ],
+    )
+
+    # --------------------------------------------------------
+    # Manufacturing runtime grain.
+    # --------------------------------------------------------
+
+    duplicate_manufacturing_grain = (
+        causal[
+            "manufacturing_timeseries"
+        ]
+        .duplicated(
+            subset=[
+                "timestamp",
+                "machine_id",
+            ]
+        )
+    )
+
+    if duplicate_manufacturing_grain.any():
+
+        raise ValueError(
+            "Manufacturing runtime contains duplicate "
+            "timestamp + machine_id rows"
+        )
+
+    duplicate_telematics_grain = (
+        causal["vehicle_telematics_timeseries"]
+        .duplicated(subset=["timestamp", "vehicle_id"])
+    )
+    if duplicate_telematics_grain.any():
+        raise ValueError(
+            "Vehicle telematics contains duplicate timestamp + vehicle_id rows"
+        )
+
+    # --------------------------------------------------------
+    # Scenario config version agreement.
+    # --------------------------------------------------------
+
+    generation_scenario_version = str(
+        _get_path(
+            generation,
+            (
+                "provenance",
+                "scenario_version",
+            )
+        )
+    )
+
+    scenario_config_version = str(
+        scenarios[
+            "scenario_version"
+        ]
+    )
+
+    _assert_equal(
+        scenario_config_version,
+        generation_scenario_version,
+        "Scenario version",
+    )
+
+    if verbose:
+
+        print(
+            "PASS"
+        )
+
+    # ========================================================
+    # 5. FINANCE
+    # ========================================================
+
+    if verbose:
+
+        print(
+            "\n[5/14] Finance..."
+        )
+
+    validate_finance_customers(
+        finance_customers=
+            finance[
+                "finance_customers"
+            ],
+
+        regions=
+            master[
+                "regions"
+            ],
+
+        cities=
+            master[
+                "cities"
+            ],
+
+        expected_count=
+            int(
+                _get_path(
+                    generation,
+                    (
+                        "finance",
+                        "customers",
+                        "count",
+                    )
+                )
+            ),
+
+        generation=
+            generation,
+
+        distributions=
+            distributions,
+    )
+
+    validate_loan_accounts(
+        loan_accounts=
+            finance[
+                "loan_accounts"
+            ],
+
+        finance_customers=
+            finance[
+                "finance_customers"
+            ],
+
+        finance_products=
+            master[
+                "finance_products"
+            ],
+
+        expected_count=
+            int(
+                _get_path(
+                    generation,
+                    (
+                        "finance",
+                        "loan_accounts",
+                        "count",
+                    )
+                )
+            ),
+
+        generation=
+            generation,
+    )
+
+    minimum_history_months = int(
+        _get_path(
+            generation,
+            (
+                "finance",
+                "payment_history_months",
+                "min",
+            )
+        )
+    )
+
+    maximum_history_months = int(
+        _get_path(
+            generation,
+            (
+                "finance",
+                "payment_history_months",
+                "max",
+            )
+        )
+    )
+
+    validate_payment_history(
+        payments=
+            finance[
+                "payment_history"
+            ],
+
+        finance_customers=
+            finance[
+                "finance_customers"
+            ],
+
+        loan_accounts=
+            finance[
+                "loan_accounts"
+            ],
+
+        generation=
+            generation,
+
+        minimum_history_months=
+            minimum_history_months,
+
+        maximum_history_months=
+            maximum_history_months,
+    )
+
+    validate_cross_sell_events(
+        cross_sell_events=
+            finance[
+                "cross_sell_events"
+            ],
+
+        finance_customers=
+            finance[
+                "finance_customers"
+            ],
+
+        loan_accounts=
+            finance[
+                "loan_accounts"
+            ],
+
+        payment_history=
+            finance[
+                "payment_history"
+            ],
+
+        finance_products=
+            master[
+                "finance_products"
+            ],
+
+        generation=
+            generation,
+    )
+
+    if verbose:
+
+        print(
+            "PASS"
+        )
+
+    # ========================================================
+    # 6. COLLECTIONS
+    # ========================================================
+
+    if verbose:
+
+        print(
+            "\n[6/14] Collections..."
+        )
+
+    validate_collection_cases(
+        collection_cases=
+            collections[
+                "collection_cases"
+            ],
+
+        finance_customers=
+            finance[
+                "finance_customers"
+            ],
+
+        loan_accounts=
+            finance[
+                "loan_accounts"
+            ],
+
+        payment_history=
+            finance[
+                "payment_history"
+            ],
+
+        generation=
+            generation,
+    )
+
+    validate_collection_interactions(
+        collection_interactions=
+            collections[
+                "collection_interactions"
+            ],
+
+        collection_cases=
+            collections[
+                "collection_cases"
+            ],
+
+        finance_customers=
+            finance[
+                "finance_customers"
+            ],
+
+        loan_accounts=
+            finance[
+                "loan_accounts"
+            ],
+
+        payment_history=
+            finance[
+                "payment_history"
+            ],
+
+        generation=
+            generation,
+
+        distributions=
+            distributions,
+    )
+
+    if verbose:
+
+        print(
+            "PASS"
+        )
+
+    # ========================================================
+    # 7. LOGISTICS
+    # ========================================================
+
+    if verbose:
+
+        print(
+            "\n[7/14] Logistics..."
+        )
+
+    logistics_config = _get_path(
+        generation,
+        (
+            "logistics",
+        ),
+    )
+
+    validate_shipments(
+        shipments=
+            logistics[
+                "shipments"
+            ],
+
+        routes=
+            master[
+                "routes"
+            ],
+
+        warehouses=
+            master[
+                "warehouses"
+            ],
+
+        generation_start=
+            generation_start,
+
+        generation_end=
+            generation_end,
+
+        expected_shipment_count=
+            int(
+                logistics_config[
+                    "shipments"
+                ][
+                    "count"
+                ]
+            ),
+
+        fleet_size=
+            int(
+                logistics_config[
+                    "vehicle_fleet_size"
+                ]
+            ),
+
+        configured_priorities=
+            set(
+                logistics_config[
+                    "priorities"
+                ]
+            ),
+    )
+
+    validate_warehouse_events(
+        events=
+            logistics[
+                "warehouse_events"
+            ],
+
+        shipments=
+            logistics[
+                "shipments"
+            ],
+
+        warehouses=
+            master[
+                "warehouses"
+            ],
+
+        generation_start=
+            generation_start,
+
+        generation_end=
+            generation_end,
+
+        expected_event_count=
+            int(
+                logistics_config[
+                    "warehouse_events"
+                ][
+                    "target_count"
+                ]
+            ),
+    )
+
+    if verbose:
+
+        print(
+            "PASS"
+        )
+
+    # ========================================================
+    # 8. CIRCULARITY
+    # ========================================================
+
+    if verbose:
+
+        print(
+            "\n[8/14] Circularity..."
+        )
+
+    circularity_config = _get_path(
+        generation,
+        (
+            "circularity",
+        ),
+    )
+
+    circularity_distributions = (
+        _get_path(
+            distributions,
+            (
+                "circularity",
+            ),
+        )
+    )
+
+    validate_elv_assessments(
+        elv=
+            circularity[
+                "elv_assessments"
+            ],
+
+        vehicle_models=
+            master[
+                "vehicle_models"
+            ],
+
+        cities=
+            master[
+                "cities"
+            ],
+
+        regions=
+            master[
+                "regions"
+            ],
+
+        generation_start=
+            generation_start,
+
+        generation_end=
+            generation_end,
+
+        expected_count=
+            int(
+                circularity_config[
+                    "elv_assessments"
+                ][
+                    "count"
+                ]
+            ),
+
+        circularity_distributions=
+            circularity_distributions,
+    )
+
+    validate_rvsf_job_cards(
+        rvsf=
+            circularity[
+                "rvsf_job_cards"
+            ],
+
+        elv_assessments=
+            circularity[
+                "elv_assessments"
+            ],
+
+        generation_start=
+            generation_start,
+
+        generation_end=
+            generation_end,
+
+        expected_count=
+            int(
+                circularity_config[
+                    "rvsf_job_cards"
+                ][
+                    "count"
+                ]
+            ),
+    )
+
+    validate_dmrv_records(
+        dmrv=
+            circularity[
+                "dmrv_records"
+            ],
+
+        rvsf_job_cards=
+            circularity[
+                "rvsf_job_cards"
+            ],
+
+        generation_start=
+            generation_start,
+
+        generation_end=
+            generation_end,
+
+        expected_count=
+            int(
+                circularity_config[
+                    "dmrv_records"
+                ][
+                    "count"
+                ]
+            ),
+    )
+
+    validate_carbon_credit_listings(
+        listings=
+            circularity[
+                "credit_listings"
+            ],
+
+        elv_assessments=
+            circularity[
+                "elv_assessments"
+            ],
+
+        rvsf_job_cards=
+            circularity[
+                "rvsf_job_cards"
+            ],
+
+        dmrv_records=
+            circularity[
+                "dmrv_records"
+            ],
+
+        generation_start=
+            generation_start,
+
+        generation_end=
+            generation_end,
+
+        expected_count=
+            int(
+                circularity_config[
+                    "carbon_credit_listings"
+                ][
+                    "count"
+                ]
+            ),
+    )
+
+    if verbose:
+
+        print(
+            "PASS"
+        )
+
+    # ========================================================
+    # 9. XR
+    # ========================================================
+
+    if verbose:
+
+        print(
+            "\n[9/14] XR..."
+        )
+
+    validate_xr_experiences(
+        experiences=
+            xr[
+                "xr_experiences"
+            ],
+
+        generation=
+            generation,
+    )
+
+    validate_xr_sessions(
+        sessions=
+            xr[
+                "xr_sessions"
+            ],
+
+        experiences=
+            xr[
+                "xr_experiences"
+            ],
+
+        vehicle_models=
+            master[
+                "vehicle_models"
+            ],
+
+        generation=
+            generation,
+    )
+
+    if verbose:
+
+        print(
+            "PASS"
+        )
+
+    # ========================================================
+    # 10. GOVERNANCE
+    # ========================================================
+
+    if verbose:
+
+        print(
+            "\n[10/14] Governance / Trust / Audit..."
+        )
+
+    expected_data_origin = str(
+        _get_path(
+            generation,
+            (
+                "provenance",
+                "data_origin",
+            )
+        )
+    )
+
+    expected_generator_version = str(
+        generation[
+            "generator_version"
+        ]
+    )
+
+    validate_recommendations(
+        recommendations=
+            governance[
+                "recommendations"
+            ],
+
+        allocations=
+            auto[
+                "allocations"
+            ],
+
+        cross_sell_events=
+            finance[
+                "cross_sell_events"
+            ],
+
+        collection_cases=
+            collections[
+                "collection_cases"
+            ],
+
+        shipments=
+            logistics[
+                "shipments"
+            ],
+
+        credit_listings=
+            circularity[
+                "credit_listings"
+            ],
+
+        generation_start=
+            generation_start,
+
+        generation_end=
+            generation_end,
+
+        expected_count=
+            int(
+                _get_path(
+                    generation,
+                    (
+                        "governance",
+                        "recommendation_target_count",
+                    )
+                )
+            ),
+
+        expected_data_origin=
+            expected_data_origin,
+
+        expected_generator_version=
+            expected_generator_version,
+    )
+
+    validate_trust(
+        recommendations=
+            governance[
+                "recommendations"
+            ],
+
+        compliance_checks=
+            governance[
+                "compliance_checks"
+            ],
+
+        trust_decisions=
+            governance[
+                "trust_decisions"
+            ],
+
+        human_reviews=
+            governance[
+                "human_reviews"
+            ],
+
+        generation=
+            generation,
+    )
+
+    validate_audit_events(
+        audit_events=
+            governance[
+                "audit_events"
+            ],
+
+        recommendations=
+            governance[
+                "recommendations"
+            ],
+
+        compliance_checks=
+            governance[
+                "compliance_checks"
+            ],
+
+        trust_decisions=
+            governance[
+                "trust_decisions"
+            ],
+
+        human_reviews=
+            governance[
+                "human_reviews"
+            ],
+
+        generation=
+            generation,
+    )
+
+    # --------------------------------------------------------
+    # Every recommendation must have one trust-decision lineage.
+    # --------------------------------------------------------
+
+    recommendation_ids = set(
+        governance[
+            "recommendations"
+        ][
+            "recommendation_id"
+        ]
+        .astype(
+            str
+        )
+    )
+
+    decision_recommendation_ids = set(
+        governance[
+            "trust_decisions"
+        ][
+            "recommendation_id"
+        ]
+        .astype(
+            str
+        )
+    )
+
+    missing_decisions = (
+        recommendation_ids
+        -
+        decision_recommendation_ids
+    )
+
+    if missing_decisions:
+
+        raise ValueError(
+            "Recommendations missing trust decisions. "
+            f"Sample={sorted(missing_decisions)[:10]}"
+        )
+
+    if verbose:
+
+        print(
+            "PASS"
+        )
+
+    # ========================================================
+    # 11. AGENTS
+    # ========================================================
+
+    if verbose:
+
+        print(
+            "\n[11/14] Agent workflows..."
+        )
+
+    validate_workflow(
+        recommendations=
+            governance[
+                "recommendations"
+            ],
+
+        compliance_checks=
+            governance[
+                "compliance_checks"
+            ],
+
+        trust_decisions=
+            governance[
+                "trust_decisions"
+            ],
+
+        human_reviews=
+            governance[
+                "human_reviews"
+            ],
+
+        audit_events=
+            governance[
+                "audit_events"
+            ],
+
+        workflow_runs=
+            agents[
+                "agent_workflow_runs"
+            ],
+
+        agent_events=
+            agents[
+                "agent_events"
+            ],
+
+        action_outcomes=
+            governance[
+                "action_outcomes"
+            ],
+
+        generation=
+            generation,
+    )
+
+    workflow_runs = (
+        agents[
+            "agent_workflow_runs"
+        ]
+    )
+
+    action_outcomes = (
+        governance[
+            "action_outcomes"
+        ]
+    )
+
+    executable_workflows = int(
+        workflow_runs[
+            "trust_decision"
+        ]
+        .astype(
+            str
+        )
+        .isin(
+            [
+                "APPROVED",
+                "MODIFIED",
+            ]
+        )
+        .sum()
+    )
+
+    _assert_equal(
+        len(
+            action_outcomes
+        ),
+        executable_workflows,
+        "Action outcomes / executable workflows",
+    )
+
+    fabricated_business_outcomes = int(
+        action_outcomes[
+            "business_outcome_observed"
+        ]
+        .astype(
+            bool
+        )
+        .sum()
+    )
+
+    _assert_equal(
+        fabricated_business_outcomes,
+        0,
+        "Fabricated downstream business outcomes",
+    )
+
+    if verbose:
+
+        print(
+            "PASS - executable workflows:",
+            executable_workflows,
+        )
+
+    # ========================================================
+    # 12. COPILOT
+    # ========================================================
+
+    if verbose:
+
+        print(
+            "\n[12/14] Copilot evaluation separation..."
+        )
+
+    validate_evaluation_cases(
+        suggested_prompts=
+            copilot[
+                "suggested_prompts"
+            ],
+
+        questions=
+            copilot[
+                "copilot_eval_questions"
+            ],
+
+        ground_truth=
+            copilot_truth[
+                "copilot_eval_ground_truth"
+            ],
+
+        generation=
+            generation,
+    )
+
+    _validate_no_fixture_leakage(
+        questions=
+            copilot[
+                "copilot_eval_questions"
+            ],
+
+        ground_truth=
+            copilot_truth[
+                "copilot_eval_ground_truth"
+            ],
+    )
+
+    question_ids = set(
+        copilot[
+            "copilot_eval_questions"
+        ][
+            "evaluation_case_id"
+        ]
+        .astype(
+            str
+        )
+    )
+
+    truth_ids = set(
+        copilot_truth[
+            "copilot_eval_ground_truth"
+        ][
+            "evaluation_case_id"
+        ]
+        .astype(
+            str
+        )
+    )
+
+    _assert_equal(
+        question_ids,
+        truth_ids,
+        "Copilot question / truth coverage",
+    )
+
+    if verbose:
+
+        print(
+            "PASS"
+        )
+
+    # ========================================================
+    # 13. PROVENANCE
+    # ========================================================
+
+    if verbose:
+
+        print(
+            "\n[13/14] Provenance..."
+        )
+
+    provenance_checked = (
+        _validate_provenance(
+            flattened=
+                flattened,
+
+            generation=
+                generation,
+        )
+    )
+
+    if verbose:
+
+        print(
+            "PASS - provenance datasets checked:",
+            provenance_checked,
+        )
+
+    # ========================================================
+    # 14. GROUND-TRUTH ISOLATION
+    # ========================================================
+
+    if verbose:
+
+        print(
+            "\n[14/14] Runtime / ground-truth isolation..."
+        )
+
+    _validate_runtime_ground_truth_separation(
+        registry=
+            registry,
+
+        flattened=
+            flattened,
+    )
+
+    if verbose:
+
+        print(
+            "PASS"
+        )
+
+    # ========================================================
+    # FINAL REPORT
+    # ========================================================
+
+    return {
+
+        "config_version":
+            str(
+                generation[
+                    "config_version"
+                ]
+            ),
+
+        "generator_version":
+            str(
+                generation[
+                    "generator_version"
+                ]
+            ),
+
+        "seed":
+            int(
+                generation[
+                    "seed"
+                ]
+            ),
+
+        "registered_dataframes":
+            len(
+                flattened
+            ),
+
+        "registered_rows":
+            total_registered_rows,
+
+        "manufacturing_rows":
+            len(
+                causal[
+                    "manufacturing_timeseries"
+                ]
+            ),
+
+        "manufacturing_scenario_events":
+            len(
+                simulation_truth[
+                    "manufacturing_scenario_events"
+                ]
+            ),
+
+        "manufacturing_causal_edges":
+            len(
+                causal_truth[
+                    "manufacturing_causal_edges"
+                ]
+            ),
+
+        "mobility_rows":
+            len(
+                causal[
+                    "mobility_timeseries"
+                ]
+            ),
+
+        "vehicle_telematics_rows":
+            len(causal["vehicle_telematics_timeseries"]),
+
+        "mobility_scenario_events":
+            len(
+                simulation_truth[
+                    "mobility_scenario_events"
+                ]
+            ),
+
+        "mobility_causal_edges":
+            len(
+                causal_truth[
+                    "mobility_causal_edges"
+                ]
+            ),
+
+        "warranty_claims":
+            len(
+                auto[
+                    "warranty_claims"
+                ]
+            ),
+
+        "recommendations":
+            len(
+                governance[
+                    "recommendations"
+                ]
+            ),
+
+        "trust_decisions":
+            len(
+                governance[
+                    "trust_decisions"
+                ]
+            ),
+
+        "workflow_runs":
+            len(
+                agents[
+                    "agent_workflow_runs"
+                ]
+            ),
+
+        "agent_events":
+            len(
+                agents[
+                    "agent_events"
+                ]
+            ),
+
+        "action_outcomes":
+            len(
+                governance[
+                    "action_outcomes"
+                ]
+            ),
+
+        "copilot_questions":
+            len(
+                copilot[
+                    "copilot_eval_questions"
+                ]
+            ),
+
+        "copilot_truth_rows":
+            len(
+                copilot_truth[
+                    "copilot_eval_ground_truth"
+                ]
+            ),
+
+        "runtime_ground_truth_leakage":
+            0,
+
+        "fixture_leakage":
+            0,
+
+        "fabricated_business_outcomes":
+            fabricated_business_outcomes,
+
+        "status":
+            "PASS",
+    }
+
+
+# ============================================================
+# REPORT
+# ============================================================
+
+
+def print_validation_report(
+    report: Mapping[str, Any],
+) -> None:
+
+    print(
+        "\n"
+        "============================================================\n"
+        "FULL SYNTHETIC DATA FACTORY VALIDATION\n"
+        "============================================================"
+    )
+
+    print(
+        "Config version:",
+        report[
+            "config_version"
+        ],
+    )
+
+    print(
+        "Generator version:",
+        report[
+            "generator_version"
+        ],
+    )
+
+    print(
+        "Seed:",
+        report[
+            "seed"
+        ],
+    )
+
+    print(
+        "Registered DataFrames:",
+        report[
+            "registered_dataframes"
+        ],
+    )
+
+    print(
+        "Registered rows:",
+        report[
+            "registered_rows"
+        ],
+    )
+
+    print(
+        "Manufacturing rows:",
+        report[
+            "manufacturing_rows"
+        ],
+    )
+
+    print(
+        "Manufacturing scenario events:",
+        report[
+            "manufacturing_scenario_events"
+        ],
+    )
+
+    print(
+        "Manufacturing causal truth edges:",
+        report[
+            "manufacturing_causal_edges"
+        ],
+    )
+
+    print(
+        "Mobility rows:",
+        report[
+            "mobility_rows"
+        ],
+    )
+
+    print(
+        "Vehicle telematics rows:",
+        report["vehicle_telematics_rows"],
+    )
+
+    print(
+        "Mobility scenario events:",
+        report[
+            "mobility_scenario_events"
+        ],
+    )
+
+    print(
+        "Mobility causal truth edges:",
+        report[
+            "mobility_causal_edges"
+        ],
+    )
+
+    print(
+        "Warranty claims:",
+        report[
+            "warranty_claims"
+        ],
+    )
+
+    print(
+        "Recommendations:",
+        report[
+            "recommendations"
+        ],
+    )
+
+    print(
+        "Trust decisions:",
+        report[
+            "trust_decisions"
+        ],
+    )
+
+    print(
+        "Workflow runs:",
+        report[
+            "workflow_runs"
+        ],
+    )
+
+    print(
+        "Agent events:",
+        report[
+            "agent_events"
+        ],
+    )
+
+    print(
+        "Action outcomes:",
+        report[
+            "action_outcomes"
+        ],
+    )
+
+    print(
+        "Copilot questions:",
+        report[
+            "copilot_questions"
+        ],
+    )
+
+    print(
+        "Copilot ground-truth rows:",
+        report[
+            "copilot_truth_rows"
+        ],
+    )
+
+    print(
+        "Runtime ground-truth leakage:",
+        report[
+            "runtime_ground_truth_leakage"
+        ],
+    )
+
+    print(
+        "Local fixture leakage:",
+        report[
+            "fixture_leakage"
+        ],
+    )
+
+    print(
+        "Fabricated business outcomes:",
+        report[
+            "fabricated_business_outcomes"
+        ],
+    )
+
+    print(
+        "\n"
+        "============================================================\n"
+        "VALIDATE ALL: PASS\n"
+        "============================================================"
+    )
+
+    print(
+        "All dataset-level and cross-domain validations passed."
+    )
+
+    print(
+        "No CSV files were written."
+    )
+
+    print(
+        "No PostgreSQL writes were performed."
+    )
+
+    print(
+        "\nNext stage: data/scripts/export_csv.py"
+    )
+
+
+# ============================================================
+# CLI
+# ============================================================
+
+
+def main() -> None:
+
+    report = validate_all(
+        verbose=True,
+    )
+
+    print_validation_report(
+        report
+    )
+
+
+if __name__ == "__main__":
+    main()

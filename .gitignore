@@ -14,6 +14,10 @@ __pycache__/
 *.egg-info/
 .venv/
 venv/
+.venv-linux/
+
+# --- Editor/patch backup files ---
+*.orig
 
 # --- Environment & secrets ---
 .env
@@ -31,6 +35,16 @@ htmlcov/
 # --- Local databases & containers ---
 pgdata/
 *.db
+database/backups/
+backend/database/backups/
+
+# --- Generated synthetic data lake (reproducible from data/generators) ---
+data/synthetic/
+
+# --- Unrelated sibling projects living alongside this repo ---
+/Causal_Discovery_Service/
+/Live_Data_Formation/
+/Predictive_Early_Warning_Service/
 
 # --- Logs & OS / editor noise ---
 logs/

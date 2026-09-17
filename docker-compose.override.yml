@@ -1,0 +1,30 @@
+# Development override: bind-mount the backend source so scheduler, ingestor,
+# evaluator and API pick up code changes on restart instead of on rebuild.
+# Delete this file (or run `docker compose -f docker-compose.yml ...`) to run
+# strictly from the built image.
+services:
+  backend:
+    volumes:
+      - ./backend/app:/app/app:ro
+      - ./backend/alembic_ai_state:/app/alembic_ai_state:ro
+      - ./backend/alembic:/app/alembic:ro
+  causal-scheduler:
+    volumes:
+      - ./backend/app:/app/app:ro
+      - ./backend/alembic_ai_state:/app/alembic_ai_state:ro
+      - ./backend/alembic:/app/alembic:ro
+  causal-scheduler-telematics:
+    volumes:
+      - ./backend/app:/app/app:ro
+      - ./backend/alembic_ai_state:/app/alembic_ai_state:ro
+      - ./backend/alembic:/app/alembic:ro
+  replay-ingestor:
+    volumes:
+      - ./backend/app:/app/app:ro
+      - ./backend/alembic_ai_state:/app/alembic_ai_state:ro
+      - ./backend/alembic:/app/alembic:ro
+  warning-evaluator:
+    volumes:
+      - ./backend/app:/app/app:ro
+      - ./backend/alembic_ai_state:/app/alembic_ai_state:ro
+      - ./backend/alembic:/app/alembic:ro

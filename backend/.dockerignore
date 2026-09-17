@@ -1,0 +1,7 @@
+.venv
+.venv-linux
+__pycache__
+.pytest_cache
+.mypy_cache
+tests
+database/backups

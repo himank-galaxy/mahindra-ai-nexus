@@ -20,8 +20,10 @@ COPY --from=builder /install /usr/local
 
 COPY app ./app
 COPY alembic ./alembic
+COPY alembic_ai_state ./alembic_ai_state
 COPY scripts ./scripts
 COPY alembic.ini .
+COPY alembic_ai_state.ini .
 
 USER appuser
 

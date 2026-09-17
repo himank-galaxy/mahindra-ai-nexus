@@ -1,0 +1,649 @@
+"""Add derived manufacturing causal-analysis state.
+
+Revision ID: ai_state_0001
+Revises: runtime_0001
+Create Date: 2026-08-18
+
+Purpose
+-------
+Create persistence for the Warranty, Quality & Service Early-Warning Graph
+without changing the validated 50-table Synthetic Data Factory runtime
+contract.
+
+Architectural separation
+------------------------
+public
+    Validated runtime/business data imported from synthetic CSV artifacts.
+
+ai_state
+    Derived AI/ML state produced from runtime observations.
+
+ground truth
+    Evaluator-only data and never imported into PostgreSQL runtime state.
+
+Important
+---------
+These tables store DISCOVERED causal evidence. They do not contain synthetic
+ground-truth edges and do not hardcode manufacturing relationships.
+"""
+
+from __future__ import annotations
+
+from collections.abc import Sequence
+
+import sqlalchemy as sa
+
+from alembic import op
+from sqlalchemy.dialects import postgresql
+
+
+# ---------------------------------------------------------------------------
+# Alembic identifiers
+# ---------------------------------------------------------------------------
+
+revision: str = "ai_state_0001"
+
+down_revision: str | None = None
+
+branch_labels: str | Sequence[str] | None = None
+
+depends_on: str | Sequence[str] | None = None
+
+
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+
+AI_STATE_SCHEMA = "ai_state"
+
+RUN_TABLE = "manufacturing_causal_runs"
+
+EDGE_TABLE = "manufacturing_causal_edges"
+
+
+# ---------------------------------------------------------------------------
+# Upgrade
+# ---------------------------------------------------------------------------
+
+
+def upgrade() -> None:
+    """Create derived manufacturing causal-state persistence."""
+
+    # -----------------------------------------------------------------------
+    # Dedicated schema.
+    #
+    # The Synthetic Data Factory importer validates exactly 50 PUBLIC tables.
+    # Keeping derived AI state in a separate schema preserves that contract.
+    # -----------------------------------------------------------------------
+
+    op.execute(
+        f"CREATE SCHEMA IF NOT EXISTS {AI_STATE_SCHEMA}"
+    )
+
+    # -----------------------------------------------------------------------
+    # CAUSAL DISCOVERY RUN
+    # -----------------------------------------------------------------------
+
+    op.create_table(
+        RUN_TABLE,
+
+        sa.Column(
+            "id",
+            postgresql.UUID(as_uuid=True),
+            nullable=False,
+        ),
+
+        # Deterministic signature over source observations + run parameters.
+        # A repeated request over identical evidence reuses the same run.
+        sa.Column(
+            "signature",
+            sa.String(length=64),
+            nullable=False,
+        ),
+
+        # Manufacturing observation window actually used by discovery.
+        sa.Column(
+            "source_from",
+            sa.DateTime(timezone=True),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "source_to",
+            sa.DateTime(timezone=True),
+            nullable=False,
+        ),
+
+        # Number of long/wide observation records consumed by orchestration.
+        sa.Column(
+            "source_rows",
+            sa.BigInteger(),
+            nullable=False,
+        ),
+
+        # Number of manufacturing machines requested/evaluated.
+        sa.Column(
+            "machines_requested",
+            sa.Integer(),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "machines_evaluated",
+            sa.Integer(),
+            nullable=False,
+        ),
+
+        # Number of source->target candidate pairs encountered during
+        # cross-machine stability aggregation.
+        sa.Column(
+            "candidate_pairs",
+            sa.Integer(),
+            nullable=False,
+        ),
+
+        # Number of stable graph edges surviving recurrence/sign criteria.
+        sa.Column(
+            "stable_edge_count",
+            sa.Integer(),
+            nullable=False,
+        ),
+
+        # Explicit algorithm provenance.
+        sa.Column(
+            "algorithm",
+            sa.String(length=64),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "algorithm_version",
+            sa.String(length=64),
+            nullable=True,
+        ),
+
+        # Exact runtime configuration used for PCMCI, FDR, effect-size,
+        # recurrence and sign-agreement thresholds.
+        sa.Column(
+            "parameters",
+            postgresql.JSONB(astext_type=sa.Text()),
+            nullable=False,
+        ),
+
+        # Machine IDs included in the discovery run.
+        sa.Column(
+            "machine_ids",
+            postgresql.JSONB(astext_type=sa.Text()),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "computed_at",
+            sa.DateTime(timezone=True),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "updated_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+
+        sa.PrimaryKeyConstraint(
+            "id",
+            name="pk_ai_state_manufacturing_causal_runs",
+        ),
+
+        sa.UniqueConstraint(
+            "signature",
+            name="uq_ai_state_manufacturing_causal_runs_signature",
+        ),
+
+        sa.CheckConstraint(
+            "source_rows >= 1",
+            name="ck_ai_state_manufacturing_causal_runs_source_rows_positive",
+        ),
+
+        sa.CheckConstraint(
+            "machines_requested >= 1",
+            name=(
+                "ck_ai_state_manufacturing_causal_runs_"
+                "machines_requested_positive"
+            ),
+        ),
+
+        sa.CheckConstraint(
+            "machines_evaluated >= 1",
+            name=(
+                "ck_ai_state_manufacturing_causal_runs_"
+                "machines_evaluated_positive"
+            ),
+        ),
+
+        sa.CheckConstraint(
+            "machines_evaluated <= machines_requested",
+            name=(
+                "ck_ai_state_manufacturing_causal_runs_"
+                "machines_evaluated_lte_requested"
+            ),
+        ),
+
+        sa.CheckConstraint(
+            "candidate_pairs >= 0",
+            name=(
+                "ck_ai_state_manufacturing_causal_runs_"
+                "candidate_pairs_nonnegative"
+            ),
+        ),
+
+        sa.CheckConstraint(
+            "stable_edge_count >= 0",
+            name=(
+                "ck_ai_state_manufacturing_causal_runs_"
+                "stable_edge_count_nonnegative"
+            ),
+        ),
+
+        schema=
+            AI_STATE_SCHEMA,
+    )
+
+    op.create_index(
+        "ix_ai_state_manufacturing_causal_runs_signature",
+        RUN_TABLE,
+        [
+            "signature",
+        ],
+        unique=True,
+        schema=
+            AI_STATE_SCHEMA,
+    )
+
+    op.create_index(
+        "ix_ai_state_manufacturing_causal_runs_computed_at",
+        RUN_TABLE,
+        [
+            "computed_at",
+        ],
+        unique=False,
+        schema=
+            AI_STATE_SCHEMA,
+    )
+
+    # -----------------------------------------------------------------------
+    # STABLE CAUSAL EDGE
+    #
+    # One row represents a source_metric -> target_metric relationship that
+    # survived:
+    #
+    #   PCMCI hypothesis testing
+    #       ->
+    #   multiple-testing correction
+    #       ->
+    #   effect-size filtering
+    #       ->
+    #   physical manufacturing scope validation
+    #       ->
+    #   cross-machine stability aggregation
+    #
+    # Detailed per-machine evidence is retained in JSONB for auditability.
+    # -----------------------------------------------------------------------
+
+    op.create_table(
+        EDGE_TABLE,
+
+        sa.Column(
+            "id",
+            postgresql.UUID(as_uuid=True),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "run_id",
+            postgresql.UUID(as_uuid=True),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "source_metric",
+            sa.String(length=64),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "target_metric",
+            sa.String(length=64),
+            nullable=False,
+        ),
+
+        # ALL or domain-specific physical scope such as PAINT.
+        sa.Column(
+            "scope",
+            sa.String(length=32),
+            nullable=False,
+        ),
+
+        # Consensus direction across recurring machine-level relationships.
+        sa.Column(
+            "consensus_sign",
+            sa.String(length=1),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "eligible_machines",
+            sa.Integer(),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "recurring_machines",
+            sa.Integer(),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "recurrence_fraction",
+            sa.Float(),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "sign_agreement",
+            sa.Float(),
+            nullable=False,
+        ),
+
+        # PCMCI/ParCorr effect-size evidence.
+        sa.Column(
+            "mean_abs_score",
+            sa.Float(),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "median_abs_score",
+            sa.Float(),
+            nullable=False,
+        ),
+
+        # Best corrected significance among recurring machine-level evidence.
+        sa.Column(
+            "best_q_value",
+            sa.Float(),
+            nullable=False,
+        ),
+
+        # All accepted temporal lags observed across recurring machines.
+        sa.Column(
+            "observed_lags",
+            postgresql.JSONB(astext_type=sa.Text()),
+            nullable=False,
+        ),
+
+        # Machines in which this relationship recurred.
+        sa.Column(
+            "machine_ids",
+            postgresql.JSONB(astext_type=sa.Text()),
+            nullable=False,
+        ),
+
+        # Audit-quality machine-level evidence.
+        #
+        # Expected service payload later:
+        #
+        # [
+        #   {
+        #     "machine_id": "...",
+        #     "plant_id": "...",
+        #     "production_line_id": "...",
+        #     "lag": 2,
+        #     "score": 0.31,
+        #     "p_value": 0.001,
+        #     "q_value": 0.008,
+        #     "sign": "+"
+        #   }
+        # ]
+        #
+        # This remains derived runtime evidence, never evaluator truth.
+        sa.Column(
+            "evidence",
+            postgresql.JSONB(astext_type=sa.Text()),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+
+        sa.Column(
+            "updated_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
+        ),
+
+        sa.ForeignKeyConstraint(
+            [
+                "run_id",
+            ],
+            [
+                (
+                    f"{AI_STATE_SCHEMA}."
+                    f"{RUN_TABLE}.id"
+                ),
+            ],
+            name="fk_ai_state_manufacturing_causal_edges_run",
+            ondelete="CASCADE",
+        ),
+
+        sa.PrimaryKeyConstraint(
+            "id",
+            name="pk_ai_state_manufacturing_causal_edges",
+        ),
+
+        sa.UniqueConstraint(
+            "run_id",
+            "source_metric",
+            "target_metric",
+            "scope",
+            name=(
+                "uq_ai_state_manufacturing_causal_edges_"
+                "run_pair_scope"
+            ),
+        ),
+
+        sa.CheckConstraint(
+            "source_metric <> target_metric",
+            name=(
+                "ck_ai_state_manufacturing_causal_edges_"
+                "non_self_edge"
+            ),
+        ),
+
+        sa.CheckConstraint(
+            "consensus_sign IN ('+', '-')",
+            name=(
+                "ck_ai_state_manufacturing_causal_edges_"
+                "consensus_sign"
+            ),
+        ),
+
+        sa.CheckConstraint(
+            "eligible_machines >= 1",
+            name=(
+                "ck_ai_state_manufacturing_causal_edges_"
+                "eligible_machines_positive"
+            ),
+        ),
+
+        sa.CheckConstraint(
+            "recurring_machines >= 1",
+            name=(
+                "ck_ai_state_manufacturing_causal_edges_"
+                "recurring_machines_positive"
+            ),
+        ),
+
+        sa.CheckConstraint(
+            "recurring_machines <= eligible_machines",
+            name=(
+                "ck_ai_state_manufacturing_causal_edges_"
+                "recurring_lte_eligible"
+            ),
+        ),
+
+        sa.CheckConstraint(
+            "recurrence_fraction >= 0 AND recurrence_fraction <= 1",
+            name=(
+                "ck_ai_state_manufacturing_causal_edges_"
+                "recurrence_fraction_range"
+            ),
+        ),
+
+        sa.CheckConstraint(
+            "sign_agreement >= 0 AND sign_agreement <= 1",
+            name=(
+                "ck_ai_state_manufacturing_causal_edges_"
+                "sign_agreement_range"
+            ),
+        ),
+
+        sa.CheckConstraint(
+            "mean_abs_score >= 0",
+            name=(
+                "ck_ai_state_manufacturing_causal_edges_"
+                "mean_abs_score_nonnegative"
+            ),
+        ),
+
+        sa.CheckConstraint(
+            "median_abs_score >= 0",
+            name=(
+                "ck_ai_state_manufacturing_causal_edges_"
+                "median_abs_score_nonnegative"
+            ),
+        ),
+
+        sa.CheckConstraint(
+            "best_q_value >= 0 AND best_q_value <= 1",
+            name=(
+                "ck_ai_state_manufacturing_causal_edges_"
+                "best_q_value_range"
+            ),
+        ),
+
+        schema=
+            AI_STATE_SCHEMA,
+    )
+
+    op.create_index(
+        "ix_ai_state_manufacturing_causal_edges_run_id",
+        EDGE_TABLE,
+        [
+            "run_id",
+        ],
+        unique=False,
+        schema=
+            AI_STATE_SCHEMA,
+    )
+
+    op.create_index(
+        "ix_ai_state_manufacturing_causal_edges_pair",
+        EDGE_TABLE,
+        [
+            "source_metric",
+            "target_metric",
+        ],
+        unique=False,
+        schema=
+            AI_STATE_SCHEMA,
+    )
+
+    op.create_index(
+        "ix_ai_state_manufacturing_causal_edges_stability",
+        EDGE_TABLE,
+        [
+            "recurrence_fraction",
+            "sign_agreement",
+        ],
+        unique=False,
+        schema=
+            AI_STATE_SCHEMA,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Downgrade
+# ---------------------------------------------------------------------------
+
+
+def downgrade() -> None:
+    """Remove derived manufacturing causal-state persistence."""
+
+    op.drop_index(
+        "ix_ai_state_manufacturing_causal_edges_stability",
+        table_name=
+            EDGE_TABLE,
+        schema=
+            AI_STATE_SCHEMA,
+    )
+
+    op.drop_index(
+        "ix_ai_state_manufacturing_causal_edges_pair",
+        table_name=
+            EDGE_TABLE,
+        schema=
+            AI_STATE_SCHEMA,
+    )
+
+    op.drop_index(
+        "ix_ai_state_manufacturing_causal_edges_run_id",
+        table_name=
+            EDGE_TABLE,
+        schema=
+            AI_STATE_SCHEMA,
+    )
+
+    op.drop_table(
+        EDGE_TABLE,
+        schema=
+            AI_STATE_SCHEMA,
+    )
+
+    op.drop_index(
+        "ix_ai_state_manufacturing_causal_runs_computed_at",
+        table_name=
+            RUN_TABLE,
+        schema=
+            AI_STATE_SCHEMA,
+    )
+
+    op.drop_index(
+        "ix_ai_state_manufacturing_causal_runs_signature",
+        table_name=
+            RUN_TABLE,
+        schema=
+            AI_STATE_SCHEMA,
+    )
+
+    op.drop_table(
+        RUN_TABLE,
+        schema=
+            AI_STATE_SCHEMA,
+    )
+
+    op.execute(
+        f"DROP SCHEMA IF EXISTS {AI_STATE_SCHEMA}"
+    )

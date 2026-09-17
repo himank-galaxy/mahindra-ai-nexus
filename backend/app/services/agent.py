@@ -1,20 +1,25 @@
-"""AI Factory reads: agent registry and XR experience cards."""
+"""AI Factory views over canonical agent and XR runtime events."""
 
 from __future__ import annotations
 
 import uuid
+from collections import defaultdict
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 
-from app.core.cache import cached_read
 from app.core.errors import NotFoundError
-from app.repositories import AiAgentRepository
-from app.schemas.agent import AiAgentOut, WorkflowRunOut, WorkflowStageOut, XrExperienceOut
+from app.database.runtime_schema import runtime_tables
+from app.schemas.agent import (
+    AiAgentOut,
+    WorkflowRunOut,
+    WorkflowStageOut,
+    XrExperienceOut,
+)
 from app.services.base import BaseService
-from app.utils.display import AGENT_STATUS_DISPLAY
 
-# Agent collaboration flow (agents.tsx FLOW + STAGE_MSG), replayed client-side
-# at one stage per 700 ms.
+AGENT_EVENTS = runtime_tables["agent_events"]
+XR_EXPERIENCES = runtime_tables["xr_experiences"]
+AGENT_NAMESPACE = uuid.UUID("fd15c1cf-7a55-47de-828a-0c195867f46b")
 WORKFLOW_STAGES: tuple[tuple[str, str], ...] = (
     ("Data Agent", "Fetching data"),
     ("Prediction Agent", "Forecasting outcome"),
@@ -28,54 +33,83 @@ WORKFLOW_STAGES: tuple[tuple[str, str], ...] = (
 WORKFLOW_INTERVAL_MS = 700
 
 
+def _agent_uuid(agent_id: str) -> uuid.UUID:
+    return uuid.uuid5(AGENT_NAMESPACE, agent_id)
+
+
 class AiAgentService(BaseService):
-    def __init__(self, session: AsyncSession) -> None:
-        super().__init__(session)
-        self._repo = AiAgentRepository(session)
-
     async def list_agents(self) -> list[AiAgentOut]:
-        return await cached_read("agents:list", self._load_agents)
+        rows = (
+            (await self._session.execute(select(AGENT_EVENTS).order_by(AGENT_EVENTS.c.completed_at))).mappings().all()
+        )
+        grouped: dict[str, list[dict[str, object]]] = defaultdict(list)
+        for row in rows:
+            grouped[str(row["agent_id"])].append(dict(row))
 
-    async def _load_agents(self) -> list[AiAgentOut]:
-        agents = await self._repo.list_all()
-        return [self._to_out(agent) for agent in agents]
+        result: list[AiAgentOut] = []
+        for agent_id, events in grouped.items():
+            latest = events[-1]
+            domains = sorted({str(event["domain"]) for event in events})
+            role = agent_id.removeprefix("AGENT_").replace("_", " ").title()
+            result.append(
+                AiAgentOut(
+                    id=_agent_uuid(agent_id),
+                    name=str(latest["agent_name"]),
+                    role=role,
+                    status=str(latest["status"]).replace("_", " ").title(),
+                    last=latest["completed_at"].isoformat(),
+                    uses=domains,
+                )
+            )
+        return sorted(result, key=lambda agent: agent.name)
 
     async def get_agent(self, agent_id: uuid.UUID) -> AiAgentOut:
-        agent = await self._repo.get_by_id(agent_id)
-        if agent is None:
-            raise NotFoundError(f"Agent '{agent_id}' not found.", code="agent_not_found")
-        return self._to_out(agent)
+        for agent in await self.list_agents():
+            if agent.id == agent_id:
+                return agent
+        raise NotFoundError(
+            f"Agent '{agent_id}' not found.",
+            code="agent_not_found",
+        )
 
     async def list_xr(self) -> list[XrExperienceOut]:
-        return await cached_read("xr:list", self._load_xr)
-
-    async def _load_xr(self) -> list[XrExperienceOut]:
-        experiences = await self._repo.list_xr()
-        return [
-            XrExperienceOut(
-                id=exp.code,
-                title=exp.title,
-                use=exp.use_case,
-                feat=exp.feature,
-                impact=exp.impact,
+        rows = (
+            (
+                await self._session.execute(
+                    select(XR_EXPERIENCES)
+                    .where(XR_EXPERIENCES.c.active.is_(True))
+                    .order_by(XR_EXPERIENCES.c.experience_id)
+                )
             )
-            for exp in experiences
-        ]
+            .mappings()
+            .all()
+        )
+        output: list[XrExperienceOut] = []
+        for row in rows:
+            features = [
+                label
+                for field, label in (
+                    ("supports_ai_assistant", "AI assistant"),
+                    ("supports_configuration", "Configuration"),
+                    ("supports_training_score", "Training score"),
+                    ("supports_repair_steps", "Repair steps"),
+                )
+                if row[field]
+            ]
+            output.append(
+                XrExperienceOut(
+                    id=str(row["experience_id"]),
+                    title=str(row["experience_type"]),
+                    use=str(row["experience_category"]).replace("_", " ").title(),
+                    feat=", ".join(features) if features else "No optional features",
+                    impact="No measured impact is available in runtime_0001",
+                )
+            )
+        return output
 
     @staticmethod
     def run_workflow() -> WorkflowRunOut:
         return WorkflowRunOut(
             stages=[WorkflowStageOut(stage=stage, message=message) for stage, message in WORKFLOW_STAGES],
             interval_ms=WORKFLOW_INTERVAL_MS,
-        )
-
-    @staticmethod
-    def _to_out(agent) -> AiAgentOut:
-        return AiAgentOut(
-            id=agent.id,
-            name=agent.name,
-            role=agent.role,
-            status=AGENT_STATUS_DISPLAY[agent.status],
-            last=agent.last_activity,
-            uses=list(agent.use_areas),
         )

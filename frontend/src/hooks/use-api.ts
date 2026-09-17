@@ -4,34 +4,29 @@
 // list hooks return an empty array so the layout never crashes. Mutations
 // are fire-and-forget with optional cache invalidation.
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiEnabled } from "@/lib/api/client";
 import * as api from "@/lib/api/endpoints";
 import type {
   AiAgent,
   AutoSalesSimIn,
-  AutoSalesSimOut,
   Bucket,
   CausalDrivers,
   CollectionsCase,
   CollectionsSimIn,
-  CollectionsSimOut,
   ComplianceRule,
   Credit,
   CreditPricingSimIn,
-  CreditPricingSimOut,
   CustomerTwin,
   Dealer,
   DealerAllocationSimIn,
-  DealerAllocationSimOut,
   DealerLead,
   ElvEstimate,
   ExecutiveSummary,
   FinanceProduct,
   Kpi,
   LogisticsDelaySimIn,
-  LogisticsDelaySimOut,
   LogisticsRoute,
   MetricTile,
   MobilityGraph,
@@ -391,13 +386,108 @@ export function useXrExperiences(): XrExperience[] | undefined {
 }
 
 // --- Mobility twin ----------------------------------------------------------------------
+//
+// The backend recomputes the causal graph on its own ~60-minute background
+// cycle (see docs/Implementation_plan_mobility_causal.md §4) — there's no
+// per-request computation and no signature/version to key off like
+// Warranty & Quality, so a plain polling interval is enough to pick up a
+// new result promptly without hammering the endpoint.
+const MOBILITY_REFETCH_INTERVAL_MS = 5 * 60 * 1000;
 
 export function useMobilityKpis(): MobilityKpi[] | undefined {
-  return useQuery(apiQueryOptions(["mobility", "kpis"], api.fetchMobilityKpis)).data;
+  return useQuery({
+    ...apiQueryOptions(["mobility", "kpis"], api.fetchMobilityKpis),
+    staleTime: 0,
+    refetchInterval: MOBILITY_REFETCH_INTERVAL_MS,
+  }).data;
 }
 
 export function useMobilityGraph(): MobilityGraph | undefined {
-  return useQuery(apiQueryOptions(["mobility", "graph"], api.fetchMobilityGraph)).data;
+  return useQuery({
+    ...apiQueryOptions(["mobility", "graph"], api.fetchMobilityGraph),
+    staleTime: 0,
+    refetchInterval: MOBILITY_REFETCH_INTERVAL_MS,
+  }).data;
+}
+
+/** Node detail for whichever node is currently selected; disabled (no
+ * fetch) while nothing is selected. */
+export function useMobilityNodeDetail(metricKey: string | null) {
+  return useQuery({
+    ...apiQueryOptions(
+      ["mobility", "node", metricKey ?? ""],
+      () => api.fetchMobilityNodeDetail(metricKey as string),
+      metricKey !== null,
+    ),
+  });
+}
+
+export function useMobilityCopilotHistory(sessionId: string) {
+  return useQuery(
+    apiQueryOptions(["mobility", "copilot", "history", sessionId], () =>
+      api.fetchMobilityCopilotHistory(sessionId),
+    ),
+  );
+}
+
+export function useMobilityCopilotAsk(sessionId: string) {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: (variables: { message: string; selectedMetric?: string }) =>
+      api.askMobilityCopilot(sessionId, variables.message, variables.selectedMetric),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["mobility", "copilot", "history", sessionId] });
+    },
+  });
+  return mutation;
+}
+
+export function useMobilityCopilotClear(sessionId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.clearMobilityCopilot(sessionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["mobility", "copilot", "history", sessionId] });
+    },
+  });
+}
+
+// --- Warranty, Quality & Service early warning ------------------------------------------
+
+/**
+ * Full query result is returned intentionally so the dedicated screen can
+ * render loading, error, empty, and successful API states independently.
+ */
+export function useWarrantyQualityCausalStatus() {
+  return useQuery({
+    ...apiQueryOptions(["warranty-quality", "causal-status"], api.fetchWarrantyQualityCausalStatus),
+    staleTime: 0,
+    refetchInterval: 10_000,
+  });
+}
+
+/**
+ * The early-warning payload carries the whole causal graph and every evidence
+ * block, so it is deliberately NOT polled on a timer. Instead, `snapshotVersion`
+ * (a composite of the warning evaluation run id/signature and the manufacturing
+ * and telematics causal run ids, computed by the caller from the lightweight
+ * causal-status query) IS the query key. A version the client has not seen
+ * before is a cache miss, so React Query fetches it automatically the moment
+ * the caller passes a new value in — no manual invalidation required. The
+ * request itself always asks the API for the latest snapshot; the version
+ * string only controls *when* that request re-runs.
+ *
+ * `placeholderData: keepPreviousData` keeps the previous snapshot on screen
+ * while the new version loads, so a version change refreshes the graph in
+ * place instead of flashing a loading state.
+ */
+export function useWarrantyQualityEarlyWarnings(snapshotVersion?: string) {
+  return useQuery({
+    ...apiQueryOptions(["warranty-quality", "early-warnings", snapshotVersion ?? "initial"], () =>
+      api.fetchWarrantyQualityEarlyWarnings(),
+    ),
+    placeholderData: keepPreviousData,
+  });
 }
 
 // --- Q&A (mobility + dMRV): ask with a local fallback answer -------------------------------
@@ -436,44 +526,77 @@ export function useCausalDrivers(domain: string, enabled: boolean): CausalDriver
   ).data;
 }
 
-export function useAutoSalesSim(inputs: AutoSalesSimIn): AutoSalesSimOut | undefined {
-  return useQuery({
-    ...apiQueryOptions(["simulations", "auto-sales", inputs], () => api.runAutoSalesSim(inputs)),
-  }).data;
+/**
+ * Auto Sales is a mutation, not a query: the backend is the source of
+ * truth and persists a run (with a `run_id`) on every click, so nothing
+ * should fire automatically while the user is still dragging sliders. See
+ * docs/simulation_centre_implementation.md §9.
+ */
+export function useRunAutoSalesSim() {
+  return useMutation({ mutationFn: (inputs: AutoSalesSimIn) => api.runAutoSalesSim(inputs) });
 }
 
-export function useDealerAllocationSim(
-  inputs: DealerAllocationSimIn,
-): DealerAllocationSimOut | undefined {
-  return useQuery({
-    ...apiQueryOptions(["simulations", "dealer-allocation", inputs], () =>
-      api.runDealerAllocationSim(inputs),
+export function useApproveSimulationRun() {
+  return useMutation({
+    mutationFn: (variables: { runId: string; reason?: string }) =>
+      api.approveSimulationRun(variables.runId, variables.reason),
+  });
+}
+
+export function useRejectSimulationRun() {
+  return useMutation({
+    mutationFn: (variables: { runId: string; reason?: string }) =>
+      api.rejectSimulationRun(variables.runId, variables.reason),
+  });
+}
+
+/** Explain Drivers for a specific persisted run — real feature importance
+ * plus causal evidence, kept separate (see docs/simulation_centre_implementation.md §11). */
+export function useSimulationRunDrivers(runId: string | undefined, enabled: boolean) {
+  return useQuery(
+    apiQueryOptions(
+      ["simulations", "drivers", runId ?? ""],
+      () => api.fetchSimulationRunDrivers(runId as string),
+      !!runId && enabled,
     ),
-  }).data;
+  );
 }
 
-export function useCollectionsSim(inputs: CollectionsSimIn): CollectionsSimOut | undefined {
-  return useQuery({
-    ...apiQueryOptions(["simulations", "collections", inputs], () => api.runCollectionsSim(inputs)),
-  }).data;
-}
-
-export function useLogisticsDelaySim(
-  inputs: LogisticsDelaySimIn,
-): LogisticsDelaySimOut | undefined {
-  return useQuery({
-    ...apiQueryOptions(["simulations", "logistics-delay", inputs], () =>
-      api.runLogisticsDelaySim(inputs),
+/** Executive summary grounded in one run's own persisted evidence. */
+export function useGenerateSimulationRunSummary(runId: string | undefined, enabled: boolean) {
+  return useQuery(
+    apiQueryOptions(
+      ["simulations", "summary", runId ?? ""],
+      () => api.generateSimulationRunSummary(runId as string),
+      !!runId && enabled,
     ),
-  }).data;
+  );
 }
 
-export function useCreditPricingSim(inputs: CreditPricingSimIn): CreditPricingSimOut | undefined {
-  return useQuery({
-    ...apiQueryOptions(["simulations", "credit-pricing", inputs], () =>
-      api.runCreditPricingSim(inputs),
-    ),
-  }).data;
+/** Mutation, not a query — same rationale as Auto Sales (§9): the backend
+ * persists a run with a `run_id` on every click, so nothing should fire
+ * automatically while the user is still dragging sliders. */
+export function useRunDealerAllocationSim() {
+  return useMutation({ mutationFn: (inputs: DealerAllocationSimIn) => api.runDealerAllocationSim(inputs) });
+}
+
+/** Mutation, not a query — same rationale as Auto Sales/Dealer Allocation
+ * (§9): the backend persists a run with a `run_id` on every click. */
+export function useRunCollectionsSim() {
+  return useMutation({ mutationFn: (inputs: CollectionsSimIn) => api.runCollectionsSim(inputs) });
+}
+
+/** Mutation, not a query — same rationale as Auto Sales/Dealer Allocation/
+ * Collections (§9): the backend persists a run with a `run_id` on every click. */
+export function useRunLogisticsDelaySim() {
+  return useMutation({ mutationFn: (inputs: LogisticsDelaySimIn) => api.runLogisticsDelaySim(inputs) });
+}
+
+/** Mutation, not a query — same rationale as Auto Sales/Dealer Allocation/
+ * Collections/Logistics Delay (§9): the backend persists a run with a
+ * `run_id` on every click. */
+export function useRunCreditPricingSim() {
+  return useMutation({ mutationFn: (inputs: CreditPricingSimIn) => api.runCreditPricingSim(inputs) });
 }
 
 // --- Copilot & executive summary ---------------------------------------------------------------

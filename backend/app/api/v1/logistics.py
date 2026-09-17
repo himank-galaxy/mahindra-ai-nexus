@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_db
 from app.schemas.logistics import AutoHealOut, RouteOut, SignalOut
-from app.services import LogisticsService
+from app.services.operational_logistics import OperationalLogisticsService as LogisticsService
 
 router = APIRouter()
 

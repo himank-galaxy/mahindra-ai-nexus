@@ -1,0 +1,428 @@
+# ============================================================
+# Mahindra AI Nexus
+# Synthetic Data Factory - Main Generation Configuration
+# ============================================================
+
+config_version: "1.0.0"
+generator_version: "1.0.0"
+
+# ------------------------------------------------------------
+# REPRODUCIBILITY
+# ------------------------------------------------------------
+
+seed: 4172
+
+provenance:
+  data_origin: "SYNTHETIC"
+  contains_real_customer_pii: false
+  scenario_version: "1.0.0"
+
+# ------------------------------------------------------------
+# GLOBAL SYNTHETIC CLOCK
+# ------------------------------------------------------------
+
+time:
+  start_date: "2026-01-01"
+  end_date: "2026-08-01"
+  timezone: "Asia/Kolkata"
+
+  auto_event_frequency: "daily"
+  finance_event_frequency: "daily"
+  logistics_event_frequency: "hourly"
+  manufacturing_frequency: "1min"
+
+# ------------------------------------------------------------
+# OUTPUT
+# ------------------------------------------------------------
+
+output:
+  synthetic_root: "data/synthetic"
+  ground_truth_root: "data/ground_truth"
+
+  csv_enabled: true
+  postgres_enabled: true
+
+  overwrite_existing_csv: true
+
+  write_manifest: true
+  manifest_filename: "dataset_manifest.json"
+
+# ------------------------------------------------------------
+# IMPORT / IDEMPOTENCY
+# ------------------------------------------------------------
+
+import:
+  idempotent: true
+
+  deterministic_ids: true
+
+  duplicate_policy: "upsert"
+
+  validate_before_import: true
+
+  fail_on_foreign_key_error: true
+  fail_on_duplicate_natural_key: true
+
+# ------------------------------------------------------------
+# MODULE ENABLE / DISABLE
+# ------------------------------------------------------------
+
+modules:
+  master: true
+  auto: true
+  manufacturing: true
+  finance: true
+  collections: true
+  logistics: true
+  circularity: true
+  xr: true
+  governance: true
+  agents: true
+  copilot: true
+
+# ============================================================
+# MASTER DATA
+# ============================================================
+
+master:
+
+  regions:
+    count: 4
+
+  cities:
+    target_count: 23
+
+  vehicle_models:
+    models:
+      - "XUV700"
+      - "Scorpio-N"
+      - "Thar"
+      - "Bolero"
+      - "XUV 3XO"
+
+  dealers:
+    count: 30
+
+  plants:
+    count: 7
+
+  production_lines_per_plant:
+    min: 2
+    max: 4
+
+  machines_per_line:
+    min: 4
+    max: 8
+
+  warehouses:
+    count: 8
+
+  suppliers:
+    count: 20
+
+  logistics_routes:
+    target_count: 15
+
+# ============================================================
+# AUTO / DEALER
+# ============================================================
+
+auto:
+
+  customers:
+    count: 5000
+
+  leads:
+    count: 10000
+
+  followups:
+    generate: true
+    max_per_lead: 5
+
+  test_drives:
+    expected_rate_from_leads: 0.50
+
+  bookings:
+    expected_rate_from_leads: 0.20
+
+  finance_applications:
+    expected_rate_from_bookings: 0.65
+
+  cancellations:
+    expected_rate_from_bookings: 0.07
+
+  deliveries:
+    expected_rate_from_active_bookings: 0.90
+
+  service_events:
+    expected_events_per_delivered_vehicle: 1.5
+
+  # Small deterministic positive cohort for the connected-vehicle
+  # warning -> service -> warranty lifecycle.
+  telemetry_evidence_repair_max: 3
+
+  warranty_claims:
+    expected_rate_from_delivered_vehicle: 0.08
+
+  production_batches:
+    count: 500
+
+  supplier_lots:
+    count: 1000
+
+# ============================================================
+# MANUFACTURING / CAUSAL
+# ============================================================
+
+manufacturing:
+
+  enabled: true
+
+  dataset_name: "manufacturing_causal_timeseries"
+
+  output_file:
+    "data/synthetic/causal/manufacturing_timeseries.csv"
+
+  frequency: "1min"
+
+  # Minute data is deliberately bounded for practical local runs.
+  history_days: 7
+
+  selected_plants: 2
+
+  lines_per_plant: 2
+
+  machines_per_line: 3
+
+  include_shift: true
+
+  shifts:
+    - "A"
+    - "B"
+    - "C"
+
+  pcmci:
+    minimum_observations: 500
+
+    tau_min: 1
+    tau_max: 8
+
+    pc_alpha: 0.05
+    significance_threshold: 0.05
+
+    minimum_absolute_score: 0.10
+
+    conditional_independence_test: "ParCorr"
+
+  analysis_variables:
+    - ambient_temperature
+    - ambient_humidity
+    - machine_temperature
+    - machine_vibration
+    - machine_load
+    - power_consumption
+    - line_speed
+    - cycle_time
+    - paint_booth_temperature
+    - paint_booth_humidity
+    - paint_defect_rate
+    - supplier_lot_quality
+    - torque_deviation
+    - defect_rate
+    - rework_rate
+    - equipment_downtime
+    - quality_score
+
+  context_columns:
+    - timestamp
+    - plant_id
+    - production_line_id
+    - machine_id
+    - shift
+
+# ============================================================
+# MOBILITY / CONNECTED VEHICLE TIME SERIES
+# ============================================================
+
+mobility:
+  frequency: "1min"
+  history_days: 30
+  rolling_business_window_hours: 12
+
+iot:
+  frequency: "1min"
+  history_days: 7
+  vehicle_count: 24
+  end_date: "2026-09-15"
+
+# ============================================================
+# FINANCE
+# ============================================================
+
+finance:
+
+  customers:
+    count: 3000
+
+  loan_accounts:
+    count: 5000
+
+  payment_history_months:
+    min: 6
+    max: 24
+
+  products:
+    - "Vehicle Loan"
+    - "Tractor Loan"
+    - "SME Loan"
+    - "Commercial Vehicle Loan"
+    - "Rural Housing Finance"
+    - "Leasing"
+
+# ============================================================
+# COLLECTIONS
+# ============================================================
+
+collections:
+
+  create_case_at_dpd: 15
+
+  maximum_cases: 2500
+
+  interactions_per_case:
+    min: 1
+    max: 8
+
+  channels:
+    - "CALL"
+    - "WHATSAPP"
+    - "SMS"
+    - "EMAIL"
+    - "FIELD_VISIT"
+
+# ============================================================
+# LOGISTICS
+# ============================================================
+
+logistics:
+
+  shipments:
+    count: 7500
+
+  warehouse_events:
+    target_count: 15000
+
+  vehicle_fleet_size: 300
+
+  priorities:
+    - "LOW"
+    - "NORMAL"
+    - "HIGH"
+    - "CRITICAL"
+
+# ============================================================
+# CIRCULAR ECONOMY
+# ============================================================
+
+circularity:
+
+  elv_assessments:
+    count: 750
+
+  rvsf_job_cards:
+    count: 1500
+
+  dmrv_records:
+    count: 3000
+
+  carbon_credit_listings:
+    count: 750
+
+# ============================================================
+# AR / VR / XR
+# ============================================================
+
+xr:
+
+  experiences:
+    - "AI Virtual Showroom"
+    - "3D Vehicle Configurator"
+    - "AR Technician Repair Guide"
+    - "VR Dealer Sales Training"
+
+  sessions:
+    count: 2000
+
+# ============================================================
+# GOVERNANCE / TRUST
+# ============================================================
+
+governance:
+
+  recommendation_target_count: 2000
+
+  compliance_checks_per_decision: 5
+
+  audit_events_target_count: 10000
+
+  human_review_rate: 0.15
+
+# ============================================================
+# AI AGENTS
+# ============================================================
+
+agents:
+
+  definitions:
+    - "Data Agent"
+    - "Prediction Agent"
+    - "Causal Graph Agent"
+    - "Simulation Agent"
+    - "Code Analytics Agent"
+    - "Compliance Agent"
+    - "Action Agent"
+    - "Human Review Agent"
+    - "Learning Agent"
+    - "Memory Agent"
+
+  workflow_runs:
+    count: 1000
+
+# ============================================================
+# COPILOT
+# ============================================================
+
+copilot:
+
+  evaluation_questions:
+    count: 100
+
+  supported_domains:
+    - auto
+    - dealer
+    - manufacturing
+    - warranty
+    - finance
+    - collections
+    - logistics
+    - circularity
+    - compliance
+    - simulation
+
+# ============================================================
+# TRAIN / VALIDATION / TEST
+# ============================================================
+
+splits:
+
+  entity_data:
+    train: 0.70
+    validation: 0.15
+    test: 0.15
+
+  time_series:
+    train: 0.70
+    validation: 0.15
+    test: 0.15
+
+  chronological_time_series_split: true
