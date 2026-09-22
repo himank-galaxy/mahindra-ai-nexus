@@ -1,0 +1,17 @@
+{
+  "warning_id": "9da47c7bf3544d0097ec111b632d547e",
+  "vehicle_id": "VEHUNIT_SYN_0001289",
+  "vehicle_model_id": null,
+  "warning_type": "UNDERBODY_IMPACT_RISK",
+  "target_metric": "road_roughness_index",
+  "prediction_probability": 0.6959,
+  "forecast_horizon_hours": 15,
+  "severity": "LOW",
+  "warning_timestamp": "2026-09-15T13:03:57.754240+00:00",
+  "status": "OPEN",
+  "causal_run_id": null,
+  "last_seen_at": "2026-09-22T04:19:43.824842+00:00",
+  "forecast_gap_hours": 3,
+  "is_warranty_eligible": true,
+  "eligibility_notes": "Eligible - within coverage window, no driving-behavior exclusion triggered."
+}

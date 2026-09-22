@@ -1,0 +1,17 @@
+{
+  "warning_id": "11d58c301b72418f85fc325bb0fc4d33",
+  "vehicle_id": "VEHUNIT_SYN_0000252",
+  "vehicle_model_id": null,
+  "warning_type": "STEERING_STRESS",
+  "target_metric": "steering_torque_nm",
+  "prediction_probability": 0.8673,
+  "forecast_horizon_hours": 15,
+  "severity": "MEDIUM",
+  "warning_timestamp": "2026-09-20T09:38:14.252457+00:00",
+  "status": "OPEN",
+  "causal_run_id": null,
+  "last_seen_at": "2026-09-22T04:24:39.295363+00:00",
+  "forecast_gap_hours": 3,
+  "is_warranty_eligible": true,
+  "eligibility_notes": "Eligible - within coverage window, no driving-behavior exclusion triggered."
+}

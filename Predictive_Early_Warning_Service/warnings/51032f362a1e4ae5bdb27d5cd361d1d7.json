@@ -1,0 +1,17 @@
+{
+  "warning_id": "51032f362a1e4ae5bdb27d5cd361d1d7",
+  "vehicle_id": "VEHUNIT_SYN_0000418",
+  "vehicle_model_id": null,
+  "warning_type": "DRIVETRAIN_SLIP",
+  "target_metric": "transmission_slip_ms",
+  "prediction_probability": 0.6344,
+  "forecast_horizon_hours": 15,
+  "severity": "MEDIUM",
+  "warning_timestamp": "2026-09-20T22:40:52.831423+00:00",
+  "status": "OPEN",
+  "causal_run_id": null,
+  "last_seen_at": "2026-09-22T03:25:57.695363+00:00",
+  "forecast_gap_hours": 3,
+  "is_warranty_eligible": true,
+  "eligibility_notes": "Eligible - within coverage window, no driving-behavior exclusion triggered."
+}

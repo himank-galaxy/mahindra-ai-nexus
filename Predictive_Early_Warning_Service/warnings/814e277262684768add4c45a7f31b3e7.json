@@ -1,0 +1,17 @@
+{
+  "warning_id": "814e277262684768add4c45a7f31b3e7",
+  "vehicle_id": "VEHUNIT_SYN_0001218",
+  "vehicle_model_id": null,
+  "warning_type": "TRANSMISSION_OVERHEATING",
+  "target_metric": "transmission_temperature_c",
+  "prediction_probability": 0.6615,
+  "forecast_horizon_hours": 15,
+  "severity": "HIGH",
+  "warning_timestamp": "2026-09-17T12:22:09.712334+00:00",
+  "status": "OPEN",
+  "causal_run_id": null,
+  "last_seen_at": "2026-09-17T15:45:43.586553+00:00",
+  "forecast_gap_hours": 3,
+  "is_warranty_eligible": true,
+  "eligibility_notes": "Eligible - within coverage window, no driving-behavior exclusion triggered."
+}

@@ -41,7 +41,7 @@ relationships unless the user explicitly asks about a different view.
 """
 
 MOBILITY_COPILOT_EXPLANATION_PROMPT = """\
-Create the default explanation shown when the graph opens. Use the exact headings below in this order:
+Explain the CURRENT DISPLAYED VIEW. Use the exact headings below in this order:
 
 ### 🔍 What's Happening
 ### 🔗 Cause-Effect Chain
@@ -51,8 +51,14 @@ Create the default explanation shown when the graph opens. Use the exact heading
 ### 🛠️ Recommended Actions
 ### 📊 How to Read This Graph
 
-Explain the selected visible target when one exists. Prioritize one important connected path and rank \
-direct incoming drivers by absolute strength. For each relationship you discuss, preserve its arrow \
+If no measure is selected, give a whole-graph overview: identify EVERY connected group, name every \
+visible measure with its current value, classify roots (no incoming arrows), intermediate nodes \
+(incoming and outgoing arrows), and terminal outcomes (no outgoing arrows) within each group, and \
+explain a strongest supported path in each group. State clearly that separate groups have no \
+discovered link in this view. Do not call any measure a selected target in overview mode. If a \
+measure is selected, focus on that measure and its connected group; name the other disconnected \
+groups only to explain that they have no discovered link to the selection. Rank direct incoming \
+drivers by absolute strength. For each relationship you discuss, preserve its arrow \
 direction, sign, strength and lag from the case file. Explain positive as same-direction movement and \
 negative as opposite-direction movement. Describe downstream possibilities conditionally; do not turn \
 them into forecasts. Recommendations must be investigations supported by displayed relationships or \

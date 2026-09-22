@@ -1,0 +1,17 @@
+{
+  "warning_id": "2ad7cfb3d079483dae3d5d0796f9459f",
+  "vehicle_id": "VEHUNIT_SYN_0000588",
+  "vehicle_model_id": null,
+  "warning_type": "UNDERBODY_IMPACT_RISK",
+  "target_metric": "road_roughness_index",
+  "prediction_probability": 0.9359,
+  "forecast_horizon_hours": 15,
+  "severity": "LOW",
+  "warning_timestamp": "2026-09-21T01:59:23.595192+00:00",
+  "status": "OPEN",
+  "causal_run_id": null,
+  "last_seen_at": "2026-09-22T04:06:09.198347+00:00",
+  "forecast_gap_hours": 3,
+  "is_warranty_eligible": false,
+  "eligibility_notes": "Not eligible - driving-behavior exclusion: impact_g_force exceeded the fleet's 95th-percentile reading (0.80) - see the Driving-Behavior Exclusion Clauses document's EXHAUST clause."
+}

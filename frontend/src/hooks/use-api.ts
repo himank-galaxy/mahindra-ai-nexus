@@ -14,8 +14,9 @@ import type {
   Bucket,
   CausalDrivers,
   CollectionsCase,
+  CollectionsChannel,
+  CollectionsOffer,
   CollectionsSimIn,
-  ComplianceRule,
   Credit,
   CreditPricingSimIn,
   CustomerTwin,
@@ -26,6 +27,7 @@ import type {
   ExecutiveSummary,
   FinanceProduct,
   Kpi,
+  LogisticsAction,
   LogisticsDelaySimIn,
   LogisticsRoute,
   MetricTile,
@@ -34,8 +36,10 @@ import type {
   PocItem,
   QaAnswer,
   Recommendation,
+  ReviewerRole,
   RmScript,
   RoadmapPlan,
+  Signal,
   SimulateOffer,
   SimulationMeta,
   TrustDecision,
@@ -67,7 +71,23 @@ export type DealerLeadView = Omit<DealerLead, "id"> & Partial<Pick<DealerLead, "
 
 export type CollectionsCaseView = Pick<
   CollectionsCase,
-  "customer" | "dpd" | "out" | "roll" | "channel" | "action" | "prob" | "flag"
+  | "customer"
+  | "dpd"
+  | "out"
+  | "roll"
+  | "channel"
+  | "action"
+  | "best_action"
+  | "prob"
+  | "flag"
+  | "case_id"
+  | "governance_track"
+  | "decision_code"
+  | "category"
+  | "priority"
+  | "priority_reason"
+  | "scored_at"
+  | "model_version"
 > &
   Partial<Pick<CollectionsCase, "id" | "status">>;
 
@@ -232,67 +252,198 @@ export function useSubmitTwinApproval() {
 
 // --- Collections -----------------------------------------------------------------
 
-export function useCollectionsMetrics(): MetricTile[] | undefined {
-  return useQuery(apiQueryOptions(["collections", "metrics"], api.fetchCollectionsMetrics)).data;
-}
-
-export function useCollectionsAgents(): { name: string; status: string }[] | undefined {
-  return useQuery(apiQueryOptions(["collections", "agents"], api.fetchCollectionsAgents)).data;
-}
-
-export function useCollectionsCases(): CollectionsCaseView[] {
-  return useQuery(apiQueryOptions(["collections", "cases"], api.fetchCollectionsCases)).data ?? [];
-}
-
-export function useApproveCase() {
-  return useFireMutation((caseId: string) => api.approveCase(caseId), ["collections", "cases"]);
-}
-
-export function useModifyCase() {
-  return useFireMutation(
-    (caseId: string, action: string) => api.modifyCase(caseId, action),
-    ["collections", "cases"],
+export function useCollectionsMetrics(): MetricTile[] {
+  return (
+    useQuery(apiQueryOptions(["collections", "metrics"], api.fetchCollectionsMetrics)).data ?? []
   );
 }
 
-export function useReviewCase() {
-  return useFireMutation((caseId: string) => api.reviewCase(caseId), ["collections", "cases"]);
+export function useCollectionsAgents(): { name: string; status: string }[] {
+  return (
+    useQuery(apiQueryOptions(["collections", "agents"], api.fetchCollectionsAgents)).data ?? []
+  );
 }
 
-export function useCaseLedger(caseId: string | undefined): string[] | undefined {
+/** Cross-cutting like the Trust Ledger's decisions list: a case's
+ * governance state can change from an action taken on this same screen,
+ * so refetch on every mount rather than trusting a previous visit's
+ * cache (see useTrustDecisions below for the identical rationale). */
+export function useCollectionsCases(): CollectionsCaseView[] {
+  return (
+    useQuery({
+      ...apiQueryOptions(["collections", "cases"], api.fetchCollectionsCases),
+      staleTime: 0,
+      refetchOnMount: "always",
+    }).data ?? []
+  );
+}
+
+export function useApproveCase() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (caseId: string) => api.approveCase(caseId),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["collections", "cases"] }),
+  });
+}
+
+export function useModifyCase() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (variables: {
+      caseId: string;
+      channel: CollectionsChannel;
+      offer: CollectionsOffer;
+      reason: string;
+    }) => api.modifyCase(variables.caseId, variables.channel, variables.offer, variables.reason),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["collections", "cases"] }),
+  });
+}
+
+export function useReviewCase() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (variables: { caseId: string; reviewerRole: ReviewerRole; reason: string }) =>
+      api.reviewCase(variables.caseId, variables.reviewerRole, variables.reason),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["collections", "cases"] }),
+  });
+}
+
+/** Real per-case compliance/approval/outcome state — only fetched once a
+ * row's Trust Ledger dialog is open. */
+export function useCaseTrustLedger(caseId: string | undefined) {
   return useQuery(
     apiQueryOptions(
       ["collections", "ledger", caseId ?? ""],
-      () => api.fetchCaseLedger(caseId as string),
+      () => api.fetchCaseTrustLedger(caseId as string),
       !!caseId,
     ),
-  ).data;
+  );
 }
 
 // --- Logistics ----------------------------------------------------------------------
 
-/** Route card view: `id`/`rerouted` are optional until the API responds. */
-export type RouteView = Pick<LogisticsRoute, "name" | "slaRisk" | "delayProb" | "cost" | "action"> &
-  Partial<Pick<LogisticsRoute, "id" | "rerouted">>;
-
-export function useLogisticsRoutes(): RouteView[] {
-  return useQuery(apiQueryOptions(["logistics", "routes"], api.fetchRoutes)).data ?? [];
+/** Cross-cutting like the Trust Ledger's decisions list: a route's own
+ * status/priority can change from an action taken on this same screen
+ * (Approve/Modify/Review/Auto-Heal on one of its shipments), so refetch
+ * on every mount rather than trusting a previous visit's cache (see
+ * useCollectionsCases above for the identical rationale). */
+export function useLogisticsRoutes(): LogisticsRoute[] {
+  return (
+    useQuery({
+      ...apiQueryOptions(["logistics", "routes"], api.fetchRoutes),
+      staleTime: 0,
+      refetchOnMount: "always",
+    }).data ?? []
+  );
 }
 
-export function useWarehouseSignals(): MetricTile[] | undefined {
-  return useQuery(apiQueryOptions(["logistics", "signals"], api.fetchWarehouseSignals)).data;
+export function useWarehouseSignals(): Signal[] {
+  return useQuery(apiQueryOptions(["logistics", "signals"], api.fetchWarehouseSignals)).data ?? [];
 }
 
 export function usePredictDelay() {
-  return useFireMutation((routeId: string) => api.predictDelay(routeId), ["logistics", "routes"]);
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (routeId: string) => api.predictDelay(routeId),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["logistics", "routes"] }),
+  });
 }
 
 export function useReroute() {
-  return useFireMutation((routeId: string) => api.rerouteRoute(routeId), ["logistics", "routes"]);
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (routeId: string) => api.rerouteRoute(routeId),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["logistics", "routes"] }),
+  });
 }
 
 export function useAutoHeal() {
-  return useFireMutation((routeId: string) => api.autoHealRoute(routeId), ["logistics", "routes"]);
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (routeId: string) => api.autoHealRoute(routeId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["logistics", "routes"] });
+      void queryClient.invalidateQueries({ queryKey: ["logistics", "shipments"] });
+    },
+  });
+}
+
+export function useRouteSlaReport(routeId: string | undefined, enabled: boolean) {
+  return useQuery(
+    apiQueryOptions(
+      ["logistics", "sla-report", routeId ?? ""],
+      () => api.fetchRouteSlaReport(routeId as string),
+      !!routeId && enabled,
+    ),
+  );
+}
+
+/** Real per-shipment governance state can change from actions taken on
+ * this same drill-down, so always refetch on mount rather than trusting
+ * a previous visit's cache. */
+export function useRouteShipments(routeId: string | undefined, enabled: boolean) {
+  return useQuery({
+    ...apiQueryOptions(
+      ["logistics", "shipments", routeId ?? ""],
+      () => api.fetchRouteShipments(routeId as string),
+      !!routeId && enabled,
+    ),
+    staleTime: 0,
+    refetchOnMount: "always",
+  });
+}
+
+function invalidateShipmentQueries(queryClient: ReturnType<typeof useQueryClient>) {
+  void queryClient.invalidateQueries({ queryKey: ["logistics", "shipments"] });
+  void queryClient.invalidateQueries({ queryKey: ["logistics", "routes"] });
+}
+
+export function useApproveShipment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (shipmentId: string) => api.approveShipment(shipmentId),
+    onSuccess: () => invalidateShipmentQueries(queryClient),
+  });
+}
+
+export function useModifyShipment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (variables: {
+      shipmentId: string;
+      action: LogisticsAction;
+      routeId: string | null;
+      reason: string;
+    }) =>
+      api.modifyShipment(
+        variables.shipmentId,
+        variables.action,
+        variables.routeId,
+        variables.reason,
+      ),
+    onSuccess: () => invalidateShipmentQueries(queryClient),
+  });
+}
+
+export function useReviewShipment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (variables: { shipmentId: string; reviewerRole: ReviewerRole; reason: string }) =>
+      api.reviewShipment(variables.shipmentId, variables.reviewerRole, variables.reason),
+    onSuccess: () => invalidateShipmentQueries(queryClient),
+  });
+}
+
+/** Real per-shipment compliance/approval/outcome state — only fetched
+ * once a row's Trust Ledger dialog is open. */
+export function useShipmentLedger(shipmentId: string | undefined) {
+  return useQuery(
+    apiQueryOptions(
+      ["logistics", "ledger", shipmentId ?? ""],
+      () => api.fetchShipmentLedger(shipmentId as string),
+      !!shipmentId,
+    ),
+  );
 }
 
 // --- Circularity ----------------------------------------------------------------------
@@ -339,27 +490,108 @@ export function useMatchCreditBuyer() {
 
 // --- Trust ledger ----------------------------------------------------------------------
 
+/** Unlike most screens, this list changes from actions taken on a
+ * completely different screen (approving/rejecting/escalating a run in
+ * Simulation Center) — the default app-wide `staleTime: Infinity` would
+ * keep showing stale data until a hard refresh, so this query always
+ * refetches on mount instead of trusting a previous visit's cache. */
 export function useTrustDecisions(): TrustDecision[] {
-  return useQuery(apiQueryOptions(["trust", "decisions"], api.fetchTrustDecisions)).data ?? [];
-}
-
-export function useComplianceRules(): ComplianceRule[] | undefined {
-  return useQuery(apiQueryOptions(["trust", "rules"], api.fetchComplianceRules)).data;
-}
-
-export function useApproveDecision() {
-  return useFireMutation((code: string) => api.approveDecision(code), ["trust", "decisions"]);
-}
-
-export function useRejectDecision() {
-  return useFireMutation(
-    (code: string, reason: string) => api.rejectDecision(code, reason),
-    ["trust", "decisions"],
+  return (
+    useQuery({
+      ...apiQueryOptions(["trust", "decisions"], api.fetchTrustDecisions),
+      staleTime: 0,
+      refetchOnMount: "always",
+    }).data ?? []
   );
 }
 
+/** Real per-decision lineage — only fetched once a row's lineage modal is open. */
+export function useTrustDecisionLineage(code: string | undefined, enabled: boolean) {
+  return useQuery(
+    apiQueryOptions(
+      ["trust", "lineage", code ?? ""],
+      () => api.fetchTrustDecisionLineage(code as string),
+      !!code && enabled,
+    ),
+  );
+}
+
+/** Real per-decision compliance checks — never a global aggregate across
+ * every decision. Only fetched once a row is selected. */
+export function useTrustDecisionCompliance(code: string | undefined, enabled: boolean) {
+  return useQuery(
+    apiQueryOptions(
+      ["trust", "compliance", code ?? ""],
+      () => api.fetchTrustDecisionCompliance(code as string),
+      !!code && enabled,
+    ),
+  );
+}
+
+/** Why this recommendation was made — grounded in the decision's own
+ * persisted drivers/evidence, only fetched once its modal is open. */
+export function useTrustDecisionExplanation(code: string | undefined, enabled: boolean) {
+  return useQuery(
+    apiQueryOptions(
+      ["trust", "explanation", code ?? ""],
+      () => api.fetchTrustDecisionExplanation(code as string),
+      !!code && enabled,
+    ),
+  );
+}
+
+/** Real, chronological, append-only decision history — only fetched
+ * once its modal is open. */
+export function useTrustDecisionEvents(code: string | undefined, enabled: boolean) {
+  return useQuery(
+    apiQueryOptions(
+      ["trust", "events", code ?? ""],
+      () => api.fetchTrustDecisionEvents(code as string),
+      !!code && enabled,
+    ),
+  );
+}
+
+/** Real observed/expected outcome, or an honest pending state — only
+ * fetched once its modal is open. */
+export function useTrustDecisionOutcome(code: string | undefined, enabled: boolean) {
+  return useQuery(
+    apiQueryOptions(
+      ["trust", "outcome", code ?? ""],
+      () => api.fetchTrustDecisionOutcome(code as string),
+      !!code && enabled,
+    ),
+  );
+}
+
+// Approve/Reject/Escalate are real mutations (not fire-and-forget): the
+// caller must know whether the backend actually accepted the decision —
+// e.g. an already-decided run correctly 409s — before updating any
+// on-screen approval state, never before.
+export function useApproveDecision() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (code: string) => api.approveDecision(code),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["trust", "decisions"] }),
+  });
+}
+
+export function useRejectDecision() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (variables: { code: string; reason: string }) =>
+      api.rejectDecision(variables.code, variables.reason),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["trust", "decisions"] }),
+  });
+}
+
 export function useEscalateDecision() {
-  return useFireMutation((code: string) => api.escalateDecision(code), ["trust", "decisions"]);
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (variables: { code: string; reviewerRole: ReviewerRole; reason: string }) =>
+      api.escalateDecision(variables.code, variables.reviewerRole, variables.reason),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["trust", "decisions"] }),
+  });
 }
 
 // --- Agents & XR ----------------------------------------------------------------------
@@ -577,7 +809,9 @@ export function useGenerateSimulationRunSummary(runId: string | undefined, enabl
  * persists a run with a `run_id` on every click, so nothing should fire
  * automatically while the user is still dragging sliders. */
 export function useRunDealerAllocationSim() {
-  return useMutation({ mutationFn: (inputs: DealerAllocationSimIn) => api.runDealerAllocationSim(inputs) });
+  return useMutation({
+    mutationFn: (inputs: DealerAllocationSimIn) => api.runDealerAllocationSim(inputs),
+  });
 }
 
 /** Mutation, not a query — same rationale as Auto Sales/Dealer Allocation
@@ -589,14 +823,18 @@ export function useRunCollectionsSim() {
 /** Mutation, not a query — same rationale as Auto Sales/Dealer Allocation/
  * Collections (§9): the backend persists a run with a `run_id` on every click. */
 export function useRunLogisticsDelaySim() {
-  return useMutation({ mutationFn: (inputs: LogisticsDelaySimIn) => api.runLogisticsDelaySim(inputs) });
+  return useMutation({
+    mutationFn: (inputs: LogisticsDelaySimIn) => api.runLogisticsDelaySim(inputs),
+  });
 }
 
 /** Mutation, not a query — same rationale as Auto Sales/Dealer Allocation/
  * Collections/Logistics Delay (§9): the backend persists a run with a
  * `run_id` on every click. */
 export function useRunCreditPricingSim() {
-  return useMutation({ mutationFn: (inputs: CreditPricingSimIn) => api.runCreditPricingSim(inputs) });
+  return useMutation({
+    mutationFn: (inputs: CreditPricingSimIn) => api.runCreditPricingSim(inputs),
+  });
 }
 
 // --- Copilot & executive summary ---------------------------------------------------------------

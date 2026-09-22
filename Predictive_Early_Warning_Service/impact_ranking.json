@@ -1,0 +1,71 @@
+{
+  "computed_at": "2026-09-22T04:25:26.199089+00:00",
+  "ranked_issues": [
+    {
+      "issue_category": "TRANSMISSION_OVERHEATING",
+      "component_category": "DRIVETRAIN_COMPONENTS",
+      "total_expected_liability_inr": 11589944.914554823,
+      "affected_vehicle_count": 597,
+      "fleet_size": 1364,
+      "typical_severity": "HIGH",
+      "low_confidence": false,
+      "rupee_rank": 2,
+      "escalated": true
+    },
+    {
+      "issue_category": "DRIVETRAIN_SLIP",
+      "component_category": "DRIVETRAIN_COMPONENTS",
+      "total_expected_liability_inr": 25869099.49337587,
+      "affected_vehicle_count": 1258,
+      "fleet_size": 1364,
+      "typical_severity": "MEDIUM",
+      "low_confidence": false,
+      "rupee_rank": 1,
+      "escalated": false
+    },
+    {
+      "issue_category": "STEERING_STRESS",
+      "component_category": "STEERING",
+      "total_expected_liability_inr": 11229702.806529336,
+      "affected_vehicle_count": 975,
+      "fleet_size": 1364,
+      "typical_severity": "MEDIUM",
+      "low_confidence": false,
+      "rupee_rank": 3,
+      "escalated": false
+    },
+    {
+      "issue_category": "HARSH_BRAKING_PATTERN",
+      "component_category": "BRAKING_SYSTEM",
+      "total_expected_liability_inr": 8088951.122867992,
+      "affected_vehicle_count": 497,
+      "fleet_size": 1364,
+      "typical_severity": "MEDIUM",
+      "low_confidence": false,
+      "rupee_rank": 4,
+      "escalated": false
+    },
+    {
+      "issue_category": "SUSPENSION_STRAIN",
+      "component_category": "SUSPENSION",
+      "total_expected_liability_inr": 3135838.059198,
+      "affected_vehicle_count": 263,
+      "fleet_size": 1364,
+      "typical_severity": "MEDIUM",
+      "low_confidence": false,
+      "rupee_rank": 6,
+      "escalated": true
+    },
+    {
+      "issue_category": "UNDERBODY_IMPACT_RISK",
+      "component_category": "EXHAUST",
+      "total_expected_liability_inr": 6975803.855111671,
+      "affected_vehicle_count": 388,
+      "fleet_size": 1364,
+      "typical_severity": "LOW",
+      "low_confidence": false,
+      "rupee_rank": 5,
+      "escalated": false
+    }
+  ]
+}

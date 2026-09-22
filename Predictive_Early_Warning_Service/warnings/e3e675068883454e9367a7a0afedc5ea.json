@@ -1,0 +1,17 @@
+{
+  "warning_id": "e3e675068883454e9367a7a0afedc5ea",
+  "vehicle_id": "VEHUNIT_SYN_0000993",
+  "vehicle_model_id": null,
+  "warning_type": "SUSPENSION_STRAIN",
+  "target_metric": "vehicle_vibration_mm_s",
+  "prediction_probability": 0.6843,
+  "forecast_horizon_hours": 15,
+  "severity": "MEDIUM",
+  "warning_timestamp": "2026-09-19T13:04:46.035130+00:00",
+  "status": "OPEN",
+  "causal_run_id": null,
+  "last_seen_at": "2026-09-21T16:24:21.561920+00:00",
+  "forecast_gap_hours": 3,
+  "is_warranty_eligible": false,
+  "eligibility_notes": "Not eligible - driving-behavior exclusion: vertical_acceleration_g exceeded the fleet's 95th-percentile reading (1.34) - see the Driving-Behavior Exclusion Clauses document's SUSPENSION clause."
+}

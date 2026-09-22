@@ -65,3 +65,51 @@ class SimulationApproval(TimestampMixin, AiStateBase):
     decided_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
     __table_args__ = {"schema": AI_STATE_SCHEMA}
+
+
+class SimulationHumanReview(TimestampMixin, AiStateBase):
+    """One escalation request against a persisted run — who it was routed
+    to, why, and when. Append-only; the eventual decision is still
+    recorded via ``SimulationApproval``, never duplicated here."""
+
+    __tablename__ = "simulation_human_reviews"
+
+    id: Mapped[uuid.UUID] = mapped_column(uuid_pk(), primary_key=True, default=uuid.uuid4)
+    run_id: Mapped[uuid.UUID] = mapped_column(
+        uuid_pk(),
+        ForeignKey(f"{AI_STATE_SCHEMA}.simulation_runs.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    reviewer_role: Mapped[str] = mapped_column(String(32), nullable=False)
+    reason: Mapped[str | None] = mapped_column(Text, nullable=True)
+    requested_by: Mapped[str] = mapped_column(String(64), nullable=False, default="demo_user")
+    requested_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+    __table_args__ = {"schema": AI_STATE_SCHEMA}
+
+
+class SimulationComplianceCheck(TimestampMixin, AiStateBase):
+    """One compliance-rule evaluation against a persisted run — mirrors
+    the real canonical ``compliance_checks`` shape (rule_code/rule_name/
+    result/reason). Evaluated once by app/services/compliance_engine.py
+    and cached; a run's inputs never change after creation, so this is a
+    stable historical record, not a live-recomputed value."""
+
+    __tablename__ = "simulation_compliance_checks"
+
+    id: Mapped[uuid.UUID] = mapped_column(uuid_pk(), primary_key=True, default=uuid.uuid4)
+    run_id: Mapped[uuid.UUID] = mapped_column(
+        uuid_pk(),
+        ForeignKey(f"{AI_STATE_SCHEMA}.simulation_runs.id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    rule_code: Mapped[str] = mapped_column(String(64), nullable=False)
+    rule_name: Mapped[str] = mapped_column(String(128), nullable=False)
+    rule_version: Mapped[str] = mapped_column(String(16), nullable=False, default="v1")
+    result: Mapped[str] = mapped_column(String(24), nullable=False)
+    reason: Mapped[str] = mapped_column(Text, nullable=False)
+    evaluated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+    __table_args__ = {"schema": AI_STATE_SCHEMA}

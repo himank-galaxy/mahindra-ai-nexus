@@ -1,0 +1,17 @@
+{
+  "warning_id": "ebc9cbfc316344108e5502f63e948f3f",
+  "vehicle_id": "VEHUNIT_SYN_0000702",
+  "vehicle_model_id": null,
+  "warning_type": "HARSH_BRAKING_PATTERN",
+  "target_metric": "impact_g_force",
+  "prediction_probability": 0.9014,
+  "forecast_horizon_hours": 15,
+  "severity": "MEDIUM",
+  "warning_timestamp": "2026-09-20T05:23:33.128826+00:00",
+  "status": "OPEN",
+  "causal_run_id": null,
+  "last_seen_at": "2026-09-22T02:53:53.091305+00:00",
+  "forecast_gap_hours": 3,
+  "is_warranty_eligible": false,
+  "eligibility_notes": "Not eligible - driving-behavior exclusion: impact_g_force exceeded the fleet's 95th-percentile reading (0.80) - see the Driving-Behavior Exclusion Clauses document's BRAKING_SYSTEM clause."
+}

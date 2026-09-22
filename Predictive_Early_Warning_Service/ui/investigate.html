@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Warning Investigation</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.29.2/cytoscape.min.js"></script>
+</head>
+<body>
+  <header>
+    <span class="badge local">LOCAL TEST TOOL - NOT PRODUCTION</span>
+    <p><a class="back-link" href="warnings-list.html">&larr; Back to warnings list</a></p>
+    <h1>Warning Investigation</h1>
+    <p>The predictive model generated this warning. LPCMCI, run below, explains why it may be happening.</p>
+  </header>
+
+  <main>
+    <section class="panel" id="predictionSection">
+      <h2>Prediction</h2>
+      <p class="desc">What the predictive model found - this section does not involve LPCMCI.</p>
+      <div class="tiles" id="predictionTiles">
+        <div class="tile"><div class="label">Loading</div><div class="value">&mdash;</div></div>
+      </div>
+    </section>
+
+    <section class="panel" id="eligibilitySection">
+      <h2>Warranty &amp; Fleet Impact</h2>
+      <p class="desc">
+        Whether this vehicle is covered for this issue under Mahindra's warranty policy, and how much
+        this issue is costing across the whole fleet - computed by the warranty eligibility gate and
+        the scheduler's fleet-impact ranking, neither of which involve LPCMCI.
+      </p>
+      <div class="tiles" id="eligibilityTiles">
+        <div class="tile"><div class="label">Loading</div><div class="value">&mdash;</div></div>
+      </div>
+      <p id="eligibilityNotes" class="empty-note" style="margin-top: 10px;"></p>
+    </section>
+
+    <section class="panel">
+      <h2>Causal Investigation</h2>
+      <p class="desc">
+        Runs LPCMCI on this one vehicle's history ending exactly at the warning's own timestamp
+        (never later), with the target metric force-included. This is slow - expect anywhere from a
+        few seconds to a few minutes.
+      </p>
+      <button class="action-btn" id="investigateBtn">Run Investigation</button>
+      <div id="investigateStatus" style="margin-top: 10px; font-size: 12.5px; color: var(--text-dim);"></div>
+    </section>
+
+    <section class="panel" id="resultSection" style="display:none;">
+      <h2>Target-Centered Causal Graph</h2>
+      <p class="desc">Root-cause candidates, upstream causes, the target itself, and downstream effects.</p>
+
+      <div class="role-legend">
+        <span class="role-chip TARGET">TARGET</span>
+        <span class="role-chip ROOT_CANDIDATE">ROOT-CAUSE CANDIDATE</span>
+        <span class="role-chip UPSTREAM">UPSTREAM</span>
+        <span class="role-chip DOWNSTREAM">DOWNSTREAM</span>
+        <span class="role-chip UNCERTAIN_LINK">UNCERTAIN DIRECTION</span>
+      </div>
+
+      <div class="tiles" id="investigationTiles" style="margin-bottom: 14px;"></div>
+
+      <div id="cy"></div>
+
+      <div style="margin-top: 16px;">
+        <table>
+          <thead><tr><th>Variable</th><th>Role</th><th>Hops from target</th></tr></thead>
+          <tbody id="classificationsBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" id="explanationSection" style="display:none;">
+      <h2>AI Explanation</h2>
+      <p class="desc">
+        An automatically-generated plain-English report of the causal investigation above - what's
+        happening, the cause-effect chain, the likely root cause, what could go wrong, and what to do
+        next. Every fact below comes straight from the graph above; only "What To Do Next" is written
+        by an LLM, and only from a fixed menu of real candidate actions.
+      </p>
+
+      <div id="explanationLoadingNote" class="empty-note">Generating - this appears shortly after the investigation completes.</div>
+
+      <div id="explanationContent" style="display:none;">
+        <div class="explain-block">
+          <h3>🔍 What's Happening</h3>
+          <p id="explainWhatsHappening"></p>
+        </div>
+
+        <div class="explain-block">
+          <h3>🔗 Cause-Effect Chain</h3>
+          <p id="explainChainNarrative" class="chain-narrative"></p>
+          <div id="explainChainNodes" class="chain-nodes"></div>
+        </div>
+
+        <div class="explain-block">
+          <h3>🔎 Root Cause</h3>
+          <p id="explainRootCause"></p>
+        </div>
+
+        <div class="explain-block">
+          <h3>⚠️ What Could Go Wrong</h3>
+          <p id="explainWhatCouldGoWrong"></p>
+        </div>
+
+        <div class="explain-block">
+          <h3>🛠️ What To Do Next</h3>
+          <ol id="explainNextSteps" class="next-steps-list"></ol>
+          <p id="explainNextStepsNote" class="empty-note" style="display:none;"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" id="copilotSection" style="display:none;">
+      <h2>Ask the Copilot</h2>
+      <p class="desc">
+        Ask questions about this warning's causal graph, in plain English. Grounded in the
+        analysis above - it won't guess beyond what LPCMCI actually found.
+      </p>
+
+      <div class="chip-list" id="copilotSuggestions" style="margin-bottom: 12px;">
+        <button class="suggestion-chip" data-q="Why was this warning generated?">Why was this warning generated?</button>
+        <button class="suggestion-chip" data-q="What is the root cause?">What is the root cause?</button>
+        <button class="suggestion-chip" data-q="What does the target node represent?">What does the target node represent?</button>
+        <button class="suggestion-chip" data-q="How do the upstream nodes influence the target?">How do upstream nodes influence the target?</button>
+        <button class="suggestion-chip" data-q="What could happen downstream if this continues?">What could happen downstream?</button>
+        <button class="suggestion-chip" data-q="How confident is this analysis overall?">How confident is this analysis?</button>
+      </div>
+
+      <div id="copilotMessages" class="copilot-messages"></div>
+
+      <div id="copilotDisabledNote" class="empty-note" style="display:none;">
+        Run the investigation above first - the Copilot explains its results.
+      </div>
+
+      <form id="copilotForm" class="copilot-input-row">
+        <input id="copilotInput" type="text" placeholder="Ask a question about this warning..." autocomplete="off" />
+        <button class="action-btn" id="copilotSendBtn" type="submit">Send</button>
+        <button class="action-btn secondary-btn" id="copilotClearBtn" type="button">Clear chat</button>
+      </form>
+
+      <p class="empty-note" style="margin-top: 10px;">
+        This is statistical evidence from LPCMCI, explained by an LLM - not a guaranteed physical
+        diagnosis. The Copilot only knows what's in the analysis above.
+      </p>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="investigate.js"></script>
+</body>
+</html>

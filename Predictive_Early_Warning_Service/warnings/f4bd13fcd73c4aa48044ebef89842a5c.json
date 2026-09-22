@@ -1,0 +1,17 @@
+{
+  "warning_id": "f4bd13fcd73c4aa48044ebef89842a5c",
+  "vehicle_id": "VEHUNIT_SYN_0001313",
+  "vehicle_model_id": null,
+  "warning_type": "STEERING_STRESS",
+  "target_metric": "steering_torque_nm",
+  "prediction_probability": 0.6171,
+  "forecast_horizon_hours": 15,
+  "severity": "MEDIUM",
+  "warning_timestamp": "2026-09-16T00:19:30.313308+00:00",
+  "status": "OPEN",
+  "causal_run_id": null,
+  "last_seen_at": "2026-09-16T16:22:17.463140+00:00",
+  "forecast_gap_hours": 3,
+  "is_warranty_eligible": false,
+  "eligibility_notes": "Not eligible - driving-behavior exclusion: steering_angle_deg exceeded the fleet's 95th-percentile reading (10.96) - see the Driving-Behavior Exclusion Clauses document's STEERING clause."
+}

@@ -1,0 +1,17 @@
+{
+  "warning_id": "784f3eed9270420bb9ebe56b380c8a57",
+  "vehicle_id": "VEHUNIT_SYN_0000995",
+  "vehicle_model_id": null,
+  "warning_type": "SUSPENSION_STRAIN",
+  "target_metric": "vehicle_vibration_mm_s",
+  "prediction_probability": 0.7042,
+  "forecast_horizon_hours": 15,
+  "severity": "MEDIUM",
+  "warning_timestamp": "2026-09-16T13:17:20.431738+00:00",
+  "status": "OPEN",
+  "causal_run_id": null,
+  "last_seen_at": "2026-09-18T22:58:09.481308+00:00",
+  "forecast_gap_hours": 3,
+  "is_warranty_eligible": true,
+  "eligibility_notes": "Eligible - within coverage window, no driving-behavior exclusion triggered."
+}

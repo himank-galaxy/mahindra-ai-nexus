@@ -165,6 +165,56 @@ async def test_copilot_explains_only_the_current_visible_graph(mobility_client):
     assert "pcmci" not in explanation.lower()
 
 
+async def test_copilot_overview_covers_every_disconnected_group_and_selection_focuses_one(mobility_client, monkeypatch):
+    state = make_state()
+    extra = ("finance_application_count", "finance_approved_count")
+    keys = state.source.metrics + extra
+    values = np.column_stack((state.values, np.arange(100) + 2, np.arange(100) + 1))
+    source = replace(
+        state.source,
+        metrics=keys,
+        values=values,
+        features=tuple(feature_metadata(key, set(keys)) for key in keys),
+    )
+    second_edge = MobilityEdge(extra[0], extra[1], 1, 0.7, 0.001, 0.01)
+    monkeypatch.setattr(cache, "_current", replace(state, source=source, edges=state.edges + (second_edge,)))
+
+    view = {
+        "domain": "All Measures",
+        "focus": False,
+        "visible_metrics": [
+            "new_service_measure",
+            "lead_count",
+            *extra,
+        ],
+    }
+    overview = (
+        await mobility_client.post(
+            "/api/v1/mobility-twin/copilot/explain",
+            json={"snapshot_id": "first", "view_context": view},
+        )
+    ).json()["reply"]
+    assert "2 connected group(s)" in overview
+    assert "No discovered relationship joins these groups" in overview
+    assert "New Service Measure → Lead Count" in overview
+    assert "Finance Application Count → Finance Approved Count" in overview
+    assert "Roots (no incoming arrows)" in overview
+    assert "Terminal outcomes (no outgoing arrows)" in overview
+    assert "No measure is selected" in overview
+    assert "selected target" not in overview.lower()
+    assert "Average Delivery Delay" not in overview
+
+    focused = (
+        await mobility_client.post(
+            "/api/v1/mobility-twin/copilot/explain",
+            json={"snapshot_id": "first", "selected_metric": "lead_count", "view_context": view},
+        )
+    ).json()["reply"]
+    assert "Lead Count is currently" in focused
+    assert "other group(s) have no discovered link" in focused
+    assert "Finance Application Count" not in focused
+
+
 async def test_copilot_rejects_an_ungrounded_generated_explanation(mobility_client, monkeypatch):
     class UngroundedProvider:
         async def complete(self, _prompt):

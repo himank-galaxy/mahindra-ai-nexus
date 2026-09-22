@@ -1,0 +1,15 @@
+{
+  "warning_id": "c8db180d2f084bb289bc2ef9dd348136",
+  "turns": [
+    {
+      "role": "user",
+      "content": "explain this graph, why is the warning being generated",
+      "timestamp": "2026-09-03T14:40:30.076693+00:00"
+    },
+    {
+      "role": "assistant",
+      "content": "The system is generating a **BATTERY_OVERHEATING** warning because it predicts a **65% risk** that the battery temperature will become dangerously high within the next **3 to 15 hours**.\n\nBased on the analysis of this specific vehicle's history, the warning is being driven by a chain of events starting with the **steering angle**. The data shows a confident link where changes in the steering angle (measured 45 minutes prior) are associated with rising battery temperature.\n\nHere is the simple breakdown of the causal path found by the analysis:\n\n1.  **Steering Angle** changes are linked to **Steering Torque** (the force felt in the wheel).\n2.  That **Steering Torque** is then linked to the **Battery Temperature**.\n\nIn short, the statistics suggest that how the vehicle is being steered is a leading indicator that the battery temperature will rise. Please note that this is a statistical pattern from this vehicle's past data, not a guaranteed physical fact.",
+      "timestamp": "2026-09-03T14:40:30.077218+00:00"
+    }
+  ]
+}

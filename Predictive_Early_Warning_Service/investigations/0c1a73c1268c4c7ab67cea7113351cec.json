@@ -1,0 +1,528 @@
+{
+  "graph": {
+    "domain": "telematics",
+    "nodes": [
+      {
+        "var_name": "VEHUNIT_SYN_0001204||ambient_temperature_c",
+        "entity_id": "VEHUNIT_SYN_0001204",
+        "metric": "ambient_temperature_c",
+        "domain": "telematics"
+      },
+      {
+        "var_name": "VEHUNIT_SYN_0001204||battery_current_a",
+        "entity_id": "VEHUNIT_SYN_0001204",
+        "metric": "battery_current_a",
+        "domain": "telematics"
+      },
+      {
+        "var_name": "VEHUNIT_SYN_0001204||battery_internal_resistance_ohm",
+        "entity_id": "VEHUNIT_SYN_0001204",
+        "metric": "battery_internal_resistance_ohm",
+        "domain": "telematics"
+      },
+      {
+        "var_name": "VEHUNIT_SYN_0001204||battery_soc_pct",
+        "entity_id": "VEHUNIT_SYN_0001204",
+        "metric": "battery_soc_pct",
+        "domain": "telematics"
+      },
+      {
+        "var_name": "VEHUNIT_SYN_0001204||battery_temperature_c",
+        "entity_id": "VEHUNIT_SYN_0001204",
+        "metric": "battery_temperature_c",
+        "domain": "telematics"
+      },
+      {
+        "var_name": "VEHUNIT_SYN_0001204||battery_voltage_v",
+        "entity_id": "VEHUNIT_SYN_0001204",
+        "metric": "battery_voltage_v",
+        "domain": "telematics"
+      },
+      {
+        "var_name": "VEHUNIT_SYN_0001204||impact_g_force",
+        "entity_id": "VEHUNIT_SYN_0001204",
+        "metric": "impact_g_force",
+        "domain": "telematics"
+      },
+      {
+        "var_name": "VEHUNIT_SYN_0001204||lateral_acceleration_g",
+        "entity_id": "VEHUNIT_SYN_0001204",
+        "metric": "lateral_acceleration_g",
+        "domain": "telematics"
+      },
+      {
+        "var_name": "VEHUNIT_SYN_0001204||road_roughness_index",
+        "entity_id": "VEHUNIT_SYN_0001204",
+        "metric": "road_roughness_index",
+        "domain": "telematics"
+      },
+      {
+        "var_name": "VEHUNIT_SYN_0001204||steering_angle_deg",
+        "entity_id": "VEHUNIT_SYN_0001204",
+        "metric": "steering_angle_deg",
+        "domain": "telematics"
+      },
+      {
+        "var_name": "VEHUNIT_SYN_0001204||steering_torque_nm",
+        "entity_id": "VEHUNIT_SYN_0001204",
+        "metric": "steering_torque_nm",
+        "domain": "telematics"
+      },
+      {
+        "var_name": "VEHUNIT_SYN_0001204||torque_converter_slip_rpm",
+        "entity_id": "VEHUNIT_SYN_0001204",
+        "metric": "torque_converter_slip_rpm",
+        "domain": "telematics"
+      },
+      {
+        "var_name": "VEHUNIT_SYN_0001204||transmission_slip_ms",
+        "entity_id": "VEHUNIT_SYN_0001204",
+        "metric": "transmission_slip_ms",
+        "domain": "telematics"
+      },
+      {
+        "var_name": "VEHUNIT_SYN_0001204||transmission_temperature_c",
+        "entity_id": "VEHUNIT_SYN_0001204",
+        "metric": "transmission_temperature_c",
+        "domain": "telematics"
+      },
+      {
+        "var_name": "VEHUNIT_SYN_0001204||vehicle_speed_kph",
+        "entity_id": "VEHUNIT_SYN_0001204",
+        "metric": "vehicle_speed_kph",
+        "domain": "telematics"
+      },
+      {
+        "var_name": "VEHUNIT_SYN_0001204||vehicle_vibration_mm_s",
+        "entity_id": "VEHUNIT_SYN_0001204",
+        "metric": "vehicle_vibration_mm_s",
+        "domain": "telematics"
+      },
+      {
+        "var_name": "VEHUNIT_SYN_0001204||vertical_acceleration_g",
+        "entity_id": "VEHUNIT_SYN_0001204",
+        "metric": "vertical_acceleration_g",
+        "domain": "telematics"
+      }
+    ],
+    "edges": [
+      {
+        "source": "VEHUNIT_SYN_0001204||ambient_temperature_c",
+        "target": "VEHUNIT_SYN_0001204||ambient_temperature_c",
+        "lag": 1,
+        "edge_mark": "-->",
+        "strength": 0.7394372553535377,
+        "p_value": 4.2756304719396396e-16
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||ambient_temperature_c",
+        "target": "VEHUNIT_SYN_0001204||battery_temperature_c",
+        "lag": 0,
+        "edge_mark": "-->",
+        "strength": 0.22948297723401145,
+        "p_value": 0.03250553614218832
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||battery_current_a",
+        "target": "VEHUNIT_SYN_0001204||battery_temperature_c",
+        "lag": 0,
+        "edge_mark": "<->",
+        "strength": -0.8803243579957434,
+        "p_value": 6.115462111683928e-29
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||battery_current_a",
+        "target": "VEHUNIT_SYN_0001204||battery_voltage_v",
+        "lag": 0,
+        "edge_mark": "-->",
+        "strength": -0.9286018771629977,
+        "p_value": 8.685153125153467e-39
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||battery_current_a",
+        "target": "VEHUNIT_SYN_0001204||impact_g_force",
+        "lag": 1,
+        "edge_mark": "<->",
+        "strength": -0.2413006839261518,
+        "p_value": 0.025210011437425087
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||battery_internal_resistance_ohm",
+        "target": "VEHUNIT_SYN_0001204||battery_internal_resistance_ohm",
+        "lag": 1,
+        "edge_mark": "o->",
+        "strength": 0.3082622369795696,
+        "p_value": 0.0034788036716860526
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||battery_soc_pct",
+        "target": "VEHUNIT_SYN_0001204||battery_soc_pct",
+        "lag": 1,
+        "edge_mark": "o->",
+        "strength": 0.8428756837519802,
+        "p_value": 1.3555142454599579e-24
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||battery_soc_pct",
+        "target": "VEHUNIT_SYN_0001204||battery_soc_pct",
+        "lag": 2,
+        "edge_mark": "o->",
+        "strength": -0.46569906864433097,
+        "p_value": 5.484891277817945e-06
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||battery_soc_pct",
+        "target": "VEHUNIT_SYN_0001204||battery_soc_pct",
+        "lag": 3,
+        "edge_mark": "o->",
+        "strength": -0.21576920490368018,
+        "p_value": 0.04473242981872465
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||battery_temperature_c",
+        "target": "VEHUNIT_SYN_0001204||ambient_temperature_c",
+        "lag": 0,
+        "edge_mark": "<--",
+        "strength": 0.22948297723401145,
+        "p_value": 0.03250553614218832
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||battery_temperature_c",
+        "target": "VEHUNIT_SYN_0001204||battery_current_a",
+        "lag": 0,
+        "edge_mark": "<->",
+        "strength": -0.8803243579957434,
+        "p_value": 6.115462111683928e-29
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||battery_temperature_c",
+        "target": "VEHUNIT_SYN_0001204||battery_voltage_v",
+        "lag": 0,
+        "edge_mark": "<->",
+        "strength": -0.987675726953848,
+        "p_value": 1.933100032218855e-69
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||battery_voltage_v",
+        "target": "VEHUNIT_SYN_0001204||battery_current_a",
+        "lag": 0,
+        "edge_mark": "<--",
+        "strength": -0.9286018771629977,
+        "p_value": 8.685153125153467e-39
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||battery_voltage_v",
+        "target": "VEHUNIT_SYN_0001204||battery_temperature_c",
+        "lag": 0,
+        "edge_mark": "<->",
+        "strength": -0.987675726953848,
+        "p_value": 1.933100032218855e-69
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||impact_g_force",
+        "target": "VEHUNIT_SYN_0001204||impact_g_force",
+        "lag": 1,
+        "edge_mark": "<->",
+        "strength": 0.3323312954612133,
+        "p_value": 0.002144089957615441
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||impact_g_force",
+        "target": "VEHUNIT_SYN_0001204||vehicle_vibration_mm_s",
+        "lag": 0,
+        "edge_mark": "<--",
+        "strength": 0.6245907268196182,
+        "p_value": 1.3055589327791952e-10
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||impact_g_force",
+        "target": "VEHUNIT_SYN_0001204||vertical_acceleration_g",
+        "lag": 0,
+        "edge_mark": "<--",
+        "strength": 0.4360909351958453,
+        "p_value": 2.703830518914392e-05
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||lateral_acceleration_g",
+        "target": "VEHUNIT_SYN_0001204||lateral_acceleration_g",
+        "lag": 1,
+        "edge_mark": "-->",
+        "strength": 0.7804523495974873,
+        "p_value": 8.118238548818988e-19
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||lateral_acceleration_g",
+        "target": "VEHUNIT_SYN_0001204||lateral_acceleration_g",
+        "lag": 3,
+        "edge_mark": "-->",
+        "strength": -0.3869757895190703,
+        "p_value": 0.00021338807102716043
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||road_roughness_index",
+        "target": "VEHUNIT_SYN_0001204||battery_soc_pct",
+        "lag": 3,
+        "edge_mark": "-->",
+        "strength": 0.22421126754234547,
+        "p_value": 0.03572614565126879
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||road_roughness_index",
+        "target": "VEHUNIT_SYN_0001204||lateral_acceleration_g",
+        "lag": 1,
+        "edge_mark": "<->",
+        "strength": -0.28409421444950084,
+        "p_value": 0.008414525733736673
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||road_roughness_index",
+        "target": "VEHUNIT_SYN_0001204||road_roughness_index",
+        "lag": 1,
+        "edge_mark": "-->",
+        "strength": 0.6678598717790037,
+        "p_value": 1.5966469509173699e-12
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||road_roughness_index",
+        "target": "VEHUNIT_SYN_0001204||vertical_acceleration_g",
+        "lag": 0,
+        "edge_mark": "<->",
+        "strength": 0.23850186182969496,
+        "p_value": 0.027006200128302904
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||steering_angle_deg",
+        "target": "VEHUNIT_SYN_0001204||steering_angle_deg",
+        "lag": 1,
+        "edge_mark": "-->",
+        "strength": 0.5422438229250661,
+        "p_value": 6.949996605238082e-08
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||steering_angle_deg",
+        "target": "VEHUNIT_SYN_0001204||steering_torque_nm",
+        "lag": 0,
+        "edge_mark": "-->",
+        "strength": 0.48031638299440627,
+        "p_value": 2.5008301436411027e-06
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||steering_torque_nm",
+        "target": "VEHUNIT_SYN_0001204||steering_angle_deg",
+        "lag": 0,
+        "edge_mark": "<--",
+        "strength": 0.48031638299440627,
+        "p_value": 2.5008301436411027e-06
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||steering_torque_nm",
+        "target": "VEHUNIT_SYN_0001204||steering_angle_deg",
+        "lag": 1,
+        "edge_mark": "-->",
+        "strength": -0.40060380032608695,
+        "p_value": 0.00012061564108840778
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||steering_torque_nm",
+        "target": "VEHUNIT_SYN_0001204||steering_torque_nm",
+        "lag": 1,
+        "edge_mark": "-->",
+        "strength": 0.43921701898509985,
+        "p_value": 2.3305049981891565e-05
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||torque_converter_slip_rpm",
+        "target": "VEHUNIT_SYN_0001204||transmission_slip_ms",
+        "lag": 0,
+        "edge_mark": "<-o",
+        "strength": 0.7842371666863285,
+        "p_value": 1.6195709368248776e-19
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||torque_converter_slip_rpm",
+        "target": "VEHUNIT_SYN_0001204||vehicle_speed_kph",
+        "lag": 0,
+        "edge_mark": "<-o",
+        "strength": 0.5977503535528129,
+        "p_value": 9.79631077369229e-10
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||transmission_slip_ms",
+        "target": "VEHUNIT_SYN_0001204||torque_converter_slip_rpm",
+        "lag": 0,
+        "edge_mark": "o->",
+        "strength": 0.7842371666863285,
+        "p_value": 1.6195709368248776e-19
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||vehicle_speed_kph",
+        "target": "VEHUNIT_SYN_0001204||torque_converter_slip_rpm",
+        "lag": 0,
+        "edge_mark": "o->",
+        "strength": 0.5977503535528129,
+        "p_value": 9.79631077369229e-10
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||vehicle_vibration_mm_s",
+        "target": "VEHUNIT_SYN_0001204||impact_g_force",
+        "lag": 0,
+        "edge_mark": "-->",
+        "strength": 0.6245907268196182,
+        "p_value": 1.3055589327791952e-10
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||vehicle_vibration_mm_s",
+        "target": "VEHUNIT_SYN_0001204||vehicle_vibration_mm_s",
+        "lag": 1,
+        "edge_mark": "-->",
+        "strength": 0.4619216989322057,
+        "p_value": 6.680183508762887e-06
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||vehicle_vibration_mm_s",
+        "target": "VEHUNIT_SYN_0001204||vertical_acceleration_g",
+        "lag": 0,
+        "edge_mark": "<--",
+        "strength": 0.37869700159329767,
+        "p_value": 0.00032390675182576863
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||vertical_acceleration_g",
+        "target": "VEHUNIT_SYN_0001204||impact_g_force",
+        "lag": 0,
+        "edge_mark": "-->",
+        "strength": 0.4360909351958453,
+        "p_value": 2.703830518914392e-05
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||vertical_acceleration_g",
+        "target": "VEHUNIT_SYN_0001204||lateral_acceleration_g",
+        "lag": 1,
+        "edge_mark": "<->",
+        "strength": -0.3690200310206463,
+        "p_value": 0.0005519050605830853
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||vertical_acceleration_g",
+        "target": "VEHUNIT_SYN_0001204||road_roughness_index",
+        "lag": 0,
+        "edge_mark": "<->",
+        "strength": 0.23850186182969496,
+        "p_value": 0.027006200128302904
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||vertical_acceleration_g",
+        "target": "VEHUNIT_SYN_0001204||vehicle_vibration_mm_s",
+        "lag": 0,
+        "edge_mark": "-->",
+        "strength": 0.37869700159329767,
+        "p_value": 0.00032390675182576863
+      },
+      {
+        "source": "VEHUNIT_SYN_0001204||vertical_acceleration_g",
+        "target": "VEHUNIT_SYN_0001204||vertical_acceleration_g",
+        "lag": 1,
+        "edge_mark": "-->",
+        "strength": 0.40582297111893406,
+        "p_value": 0.0001059351907535656
+      }
+    ]
+  },
+  "classifications": [
+    {
+      "var_name": "VEHUNIT_SYN_0001204||battery_internal_resistance_ohm",
+      "role": "TARGET",
+      "hops": null
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001204||ambient_temperature_c",
+      "role": "UNRELATED",
+      "hops": null
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001204||battery_current_a",
+      "role": "UNRELATED",
+      "hops": null
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001204||battery_soc_pct",
+      "role": "UNRELATED",
+      "hops": null
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001204||battery_temperature_c",
+      "role": "UNRELATED",
+      "hops": null
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001204||battery_voltage_v",
+      "role": "UNRELATED",
+      "hops": null
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001204||impact_g_force",
+      "role": "UNRELATED",
+      "hops": null
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001204||lateral_acceleration_g",
+      "role": "UNRELATED",
+      "hops": null
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001204||road_roughness_index",
+      "role": "UNRELATED",
+      "hops": null
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001204||steering_angle_deg",
+      "role": "UNRELATED",
+      "hops": null
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001204||steering_torque_nm",
+      "role": "UNRELATED",
+      "hops": null
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001204||torque_converter_slip_rpm",
+      "role": "UNRELATED",
+      "hops": null
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001204||transmission_slip_ms",
+      "role": "UNRELATED",
+      "hops": null
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001204||transmission_temperature_c",
+      "role": "UNRELATED",
+      "hops": null
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001204||vehicle_speed_kph",
+      "role": "UNRELATED",
+      "hops": null
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001204||vehicle_vibration_mm_s",
+      "role": "UNRELATED",
+      "hops": null
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001204||vertical_acceleration_g",
+      "role": "UNRELATED",
+      "hops": null
+    }
+  ],
+  "window_start": "2026-09-14T06:23:01.835658+00:00",
+  "window_end": "2026-09-15T06:23:01.835658+00:00",
+  "raw_row_count": 87,
+  "panel_shape": [
+    95,
+    17
+  ],
+  "target_metric": "battery_internal_resistance_ohm",
+  "vehicle_id": "VEHUNIT_SYN_0001204",
+  "saved_at": "2026-09-15T11:07:43.558462+00:00"
+}

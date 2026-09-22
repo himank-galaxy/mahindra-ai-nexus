@@ -143,6 +143,14 @@ export type SimulateOffer = {
 };
 
 // --- Collections -----------------------------------------------------------
+// Real recorded categories (see app/repositories/collections_simulation.py)
+// — shared by the Collections Simulation inputs above and the Collections
+// AI Swarm "Modify" action below, so a human override always maps to a
+// real historical category the recovery model was actually trained on.
+export type CollectionsChannel = "SMS" | "WHATSAPP" | "EMAIL" | "CALL" | "FIELD_VISIT";
+export type CollectionsOffer =
+  "NONE" | "PAYMENT_REMINDER" | "PARTIAL_PAYMENT_PLAN" | "REPAYMENT_PLAN_DISCUSSION";
+
 export type MetricTile = {
   label: string;
   value: string;
@@ -154,39 +162,142 @@ export type CollectionsAgent = {
   status: string;
 };
 
+// Real backend-derived priority (see app/services/collections_priority.py)
+// and the filter-tab bucket (see CollectionsService._categorize) — both
+// computed server-side, never assigned client-side.
+export type CollectionsPriority = "Critical" | "High" | "Medium" | "Low";
+export type CollectionsCategory = "actionable" | "review_required" | "approved" | "resolved";
+
 export type CollectionsCase = {
   id: string;
+  case_id: string;
   customer: string;
   dpd: number;
   out: string;
   roll: number;
   channel: string;
   action: string;
+  best_action: string;
   prob: number;
   flag: string;
   status: string;
+  governance_track: "canonical" | "live";
+  decision_code: string | null;
+  category: CollectionsCategory;
+  priority: CollectionsPriority;
+  priority_reason: string;
+  scored_at: string;
+  model_version: string;
+};
+
+export type CaseTrustLedger = {
+  track: "canonical" | "live" | "none";
+  decision_code: string | null;
+  approval: string;
+  audit_status: string;
+  compliance: ComplianceCheck[];
+  priority: CollectionsPriority;
+  priority_reason: string;
+  scored_at: string;
+  model_version: string;
+  recommended_channel: string | null;
+  recommended_offer: string | null;
+  modified_channel: string | null;
+  modified_offer: string | null;
+  modification_reason: string | null;
+  outcome: Outcome;
 };
 
 // --- Logistics ----------------------------------------------------------------
+// Real backend-derived priority (see app/services/logistics_priority.py) —
+// computed server-side, never assigned client-side. Mirrors
+// CollectionsPriority's exact same 4-level shape.
+export type LogisticsPriority = "Critical" | "High" | "Medium" | "Low";
+export type LogisticsAction = "MAINTAIN" | "REROUTE";
+
 export type LogisticsRoute = {
   id: string;
+  route_id: string;
   name: string;
   slaRisk: number;
   delayProb: number;
   cost: string;
   action: string;
   rerouted: boolean;
+  active_shipments: number;
+  at_risk_shipments: number;
+  status: string;
+  priority: LogisticsPriority;
+  priority_reason: string;
+  scored_at: string;
+  model_version: string;
 };
 
 export type Signal = {
   label: string;
   value: string;
   tone: string;
+  threshold: string;
+  affected_routes: string[];
 };
 
 export type AutoHeal = {
   route: LogisticsRoute;
   steps: string[];
+  approved_shipments: number;
+  already_decided_shipments: number;
+};
+
+export type LogisticsShipment = {
+  shipment_id: string;
+  status: string;
+  priority: string;
+  dispatch_time: string;
+  expected_arrival: string;
+  actual_arrival: string | null;
+  sla_deadline: string;
+  delay_minutes: number;
+  sla_breach: boolean;
+  vehicle_id: string;
+  current_warehouse: string | null;
+  delay_probability: number;
+  breach_probability: number;
+  recommended_action: string;
+  recommended_route_label: string | null;
+  governance_track: "canonical" | "live";
+  decision_status: string;
+  decision_code: string | null;
+};
+
+export type ShipmentTrustLedger = {
+  track: "canonical" | "live" | "none";
+  decision_code: string | null;
+  approval: string;
+  audit_status: string;
+  compliance: ComplianceCheck[];
+  priority: LogisticsPriority;
+  priority_reason: string;
+  scored_at: string;
+  model_version: string;
+  recommended_action: string | null;
+  recommended_route_id: string | null;
+  modified_action: string | null;
+  modified_route_id: string | null;
+  modification_reason: string | null;
+  outcome: Outcome;
+};
+
+export type SlaReport = {
+  route_id: string;
+  route_name: string;
+  active_shipments: number;
+  on_time_shipments: number;
+  at_risk_shipments: number;
+  expected_breaches: number;
+  average_delay_minutes: number;
+  cost_exposure_inr: number;
+  recommended_action: string;
+  drivers: ExplanationDriver[];
 };
 
 // --- Circularity ----------------------------------------------------------------
@@ -220,12 +331,66 @@ export type TrustDecision = {
   approval: string;
   risk: string;
   audit: string;
+  execution_eligible: boolean;
+  execution_eligible_reason: string;
 };
 
-export type ComplianceRule = {
-  label: string;
-  status: string;
+export type TrustLineageStep = {
+  step: number;
+  title: string;
+  detail: string | Record<string, unknown>;
 };
+
+export type ComplianceCheck = {
+  rule_code: string;
+  rule_name: string;
+  result: "PASS" | "REVIEW_REQUIRED" | "FAIL" | "NOT_APPLICABLE";
+  reason: string;
+};
+
+export type ExplanationDriver = {
+  name: string;
+  direction: "positive" | "negative";
+  contribution: number;
+  source: "trained_model" | "calibrated_heuristic";
+  detail: string;
+};
+
+export type EvidenceItem = {
+  label: string;
+  value: string;
+};
+
+export type Explanation = {
+  recommendation: string;
+  confidence: number;
+  confidence_basis: "trained_model" | "calibrated_heuristic" | "generated";
+  confidence_reason: string;
+  drivers: ExplanationDriver[];
+  supporting_evidence: EvidenceItem[];
+};
+
+export type AuditEvent = {
+  event_type: string;
+  event_at: string;
+  actor: string;
+  summary: string;
+};
+
+export type Outcome = {
+  outcome_status: "OBSERVED" | "PENDING";
+  expected_impact: Record<string, unknown> | null;
+  observed_outcome_type: string | null;
+  observed_outcome_value: string | null;
+  observed_at: string | null;
+  business_outcome_observed: boolean | null;
+  business_outcome_note: string | null;
+};
+
+// Real reviewer-role vocabulary the backend accepts — mirrors
+// app/schemas/trust.py's EscalateDecisionIn.
+export type ReviewerRole =
+  "Business Owner" | "Domain Expert" | "Risk Reviewer" | "Compliance Reviewer" | "Quality Reviewer";
 
 // --- Agents & XR -------------------------------------------------------------
 export type AiAgent = {
@@ -740,13 +905,7 @@ export type AutoSalesSimIn = {
 };
 
 export type SimulationRunStatus =
-  | "DRAFT"
-  | "COMPLETED"
-  | "PROPOSED"
-  | "APPROVED"
-  | "REJECTED"
-  | "HUMAN_REVIEW"
-  | "EXECUTED";
+  "DRAFT" | "COMPLETED" | "PROPOSED" | "APPROVED" | "REJECTED" | "HUMAN_REVIEW" | "EXECUTED";
 
 export type AutoSalesSimOut = {
   run_id: string;
@@ -828,11 +987,10 @@ export type DealerAllocationSimOut = {
 
 export type CollectionsSimIn = {
   risk: "Low" | "Medium" | "High";
-  // Real recorded categories (see app/repositories/collections_simulation.py)
-  // — no UI-to-real translation, so every choice trains on genuine
-  // historical outcomes.
-  channel: "SMS" | "WHATSAPP" | "EMAIL" | "CALL" | "FIELD_VISIT";
-  offer: "NONE" | "PAYMENT_REMINDER" | "PARTIAL_PAYMENT_PLAN" | "REPAYMENT_PLAN_DISCUSSION";
+  // No UI-to-real translation — every choice trains on genuine historical
+  // outcomes (see CollectionsChannel/CollectionsOffer above).
+  channel: CollectionsChannel;
+  offer: CollectionsOffer;
   field: number;
 };
 

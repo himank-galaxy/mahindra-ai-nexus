@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Causal Discovery - Test UI</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.29.2/cytoscape.min.js"></script>
+</head>
+<body>
+  <header>
+    <span class="badge local">LOCAL TEST TOOL - NOT PRODUCTION</span>
+    <h1>Causal Discovery Service &mdash; Test UI</h1>
+    <p>
+      Runs the real ParCorr + LPCMCI algorithm against live data from
+      <code>manufacturing_timeseries</code> / <code>vehicle_telematics_timeseries</code>
+      and renders whatever causal graph it discovers. This page only shows the
+      sections that actually depend on the causal engine itself &mdash; no
+      warranty claims, exposure figures, or business-side panels are included.
+    </p>
+    <div class="warn-banner">
+      LPCMCI is slow and its runtime grows very fast with the number of
+      variables. A run with a handful of entities can take several minutes.
+      Start small (2-4 entities) and increase only once you've confirmed a
+      small run completes.
+    </div>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Run controls</h2>
+      <p class="desc">Trigger a real LPCMCI run against the live database (read-only).</p>
+      <div class="controls-row">
+        <div class="field">
+          <label for="domain">Domain</label>
+          <select id="domain">
+            <option value="manufacturing">Manufacturing</option>
+            <option value="telematics">Telematics</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="maxEntities">Entities</label>
+          <input id="maxEntities" type="number" min="1" max="30" value="1" />
+        </div>
+        <div class="field">
+          <label for="tauMax">tau_max (blank = default)</label>
+          <input id="tauMax" type="number" min="1" max="20" placeholder="default" />
+        </div>
+        <div class="field">
+          <label for="pcAlpha">pc_alpha (blank = default)</label>
+          <input id="pcAlpha" type="number" min="0.001" max="0.99" step="0.01" placeholder="default" />
+        </div>
+        <button class="run-btn" id="runBtn">Run LPCMCI</button>
+      </div>
+      <div class="status-line" id="statusLine">
+        <span class="status-pill IDLE">IDLE</span> No run started yet.
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Model / Run Freshness</h2>
+      <p class="desc">Metadata about the causal run currently shown below - equivalent to the old screen's "Model Freshness" block.</p>
+      <div class="tiles" id="runTiles">
+        <div class="tile"><div class="label">Run ID</div><div class="value">&mdash;</div></div>
+        <div class="tile"><div class="label">Domain</div><div class="value">&mdash;</div></div>
+        <div class="tile"><div class="label">tau_min / tau_max</div><div class="value">&mdash;</div></div>
+        <div class="tile"><div class="label">pc_alpha</div><div class="value">&mdash;</div></div>
+        <div class="tile"><div class="label">Window</div><div class="value">&mdash;</div></div>
+        <div class="tile"><div class="label">Edges found</div><div class="value">&mdash;</div></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Panel &amp; Preprocessing Summary</h2>
+      <p class="desc">What the causal engine actually analyzed - entity selection, panel shape, and columns dropped along the way.</p>
+      <div class="tiles" id="panelTiles">
+        <div class="tile"><div class="label">Entities considered</div><div class="value">&mdash;</div></div>
+        <div class="tile"><div class="label">Entities selected</div><div class="value">&mdash;</div></div>
+        <div class="tile"><div class="label">Raw rows fetched</div><div class="value">&mdash;</div></div>
+        <div class="tile"><div class="label">Panel shape (T, N)</div><div class="value">&mdash;</div></div>
+        <div class="tile"><div class="label">Dropped (near-constant)</div><div class="value">&mdash;</div></div>
+        <div class="tile"><div class="label">Missing data %</div><div class="value">&mdash;</div></div>
+      </div>
+      <div style="margin-top: 12px;">
+        <div class="label" style="font-size:11px;color:var(--text-dim);text-transform:uppercase;margin-bottom:6px;">Selected entities</div>
+        <div class="chip-list" id="entityChips"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Causal Discovery Graph</h2>
+      <p class="desc">
+        Nodes are entity||metric variables; edges are cross-variable relationships LPCMCI discovered, labeled with lag
+        (in resample steps). Self-loops (a variable correlating with its own past) are summarized on the node label
+        instead of drawn as loops, and mirrored duplicate edges between the same pair are merged into one - see the
+        full, unfiltered list in the table below the graph.
+      </p>
+
+      <div class="controls-row" style="margin-bottom: 12px;">
+        <div class="field">
+          <label for="minStrength">Min |strength| to show</label>
+          <input id="minStrength" type="number" min="0" max="1" step="0.05" value="0" />
+        </div>
+        <div class="field" style="flex-direction: row; align-items: center; gap: 6px; padding-top: 18px;">
+          <input id="showSelfLoops" type="checkbox" style="width: auto;" />
+          <label for="showSelfLoops" style="text-transform: none; font-size: 12.5px;">Draw self-loops as loop arrows</label>
+        </div>
+      </div>
+
+      <div class="chip-list" style="margin-bottom: 10px;">
+        <span class="chip"><span class="legend-swatch legend-swatch-pos"></span> red line = positive relationship</span>
+        <span class="chip"><span class="legend-swatch legend-swatch-neg"></span> blue line = negative relationship</span>
+        <span class="chip">thicker line = stronger relationship</span>
+      </div>
+
+      <p class="desc" id="graphSummary" style="margin-bottom: 10px;"></p>
+
+      <div id="cy"></div>
+
+      <div style="margin-top: 12px;">
+        <div class="label" style="font-size:11px;color:var(--text-dim);text-transform:uppercase;margin-bottom:6px;">
+          Variables with no cross-variable relationship at these settings
+        </div>
+        <div class="chip-list" id="isolatedNodes"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Discovered Causal Candidates</h2>
+      <p class="desc">Every edge LPCMCI kept: source, target, lag, sign, strength, and p-value. Equivalent in spirit to the old screen's candidate-support table, without the lineage-specific columns this generic service doesn't compute.</p>
+      <div id="edgesTableWrap">
+        <p class="empty-note">Run LPCMCI to populate this table.</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

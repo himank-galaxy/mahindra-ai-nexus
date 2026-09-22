@@ -8,7 +8,7 @@
   },
   "data_factory": "Synthetic Data Factory",
   "data_origin": "SYNTHETIC",
-  "dataset_count": 59,
+  "dataset_count": 58,
   "datasets": [
     {
       "bytes": 6161,
@@ -87,7 +87,7 @@
       "storage_class": "ground_truth"
     },
     {
-      "bytes": 25061,
+      "bytes": 25071,
       "column_names": [
         "evaluation_case_id",
         "domain",
@@ -124,7 +124,7 @@
       "file": "data/ground_truth/copilot/copilot_eval_ground_truth.csv",
       "logical_path": "ground_truth/copilot/copilot_eval_ground_truth",
       "rows": 100,
-      "sha256": "46298b47ad3b90b2e73e31c7c312ed32fcc0f7147003f26460e65508ac330b4c",
+      "sha256": "7ffd59380a355c830581d5fe420a5a265fb1f30b9d4cab6cedff5e0af980a055",
       "storage_class": "ground_truth"
     },
     {
@@ -288,7 +288,7 @@
       "storage_class": "ground_truth"
     },
     {
-      "bytes": 4281218,
+      "bytes": 4281224,
       "column_names": [
         "agent_run_id",
         "workflow_run_id",
@@ -329,11 +329,11 @@
       "file": "data/synthetic/agents/agent_events.csv",
       "logical_path": "synthetic/agents/agent_events",
       "rows": 10000,
-      "sha256": "976eafc667c710e381808b2e6ae0be163369d46c2567802234782148d78298da",
+      "sha256": "e6fdb30f6c8ed318e1a9a0da056bfa13107731ae75ddf4c1129274bc6301eb6b",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 340389,
+      "bytes": 340404,
       "column_names": [
         "workflow_run_id",
         "recommendation_id",
@@ -386,11 +386,11 @@
       "file": "data/synthetic/agents/agent_workflow_runs.csv",
       "logical_path": "synthetic/agents/agent_workflow_runs",
       "rows": 1000,
-      "sha256": "29c4f6a3ecb9b746a2fe46bd7f0ea40f69627b8ab9fa86e89c9d54d28fee1512",
+      "sha256": "31981c018765b267ed1a7b819361b1a689791065c5fa8065d4cd808638f07219",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 777737,
+      "bytes": 786549,
       "column_names": [
         "allocation_id",
         "booking_id",
@@ -488,12 +488,12 @@
       },
       "file": "data/synthetic/auto/allocations.csv",
       "logical_path": "synthetic/auto/allocations",
-      "rows": 1348,
-      "sha256": "cc926375e3d9031538b08025980ea4b85a8d3739c7a26d4c8f240516e54959e9",
+      "rows": 1364,
+      "sha256": "5178f8e2fecaf14204119b2ad04e07ff18d173e85773f29ee743d67aaf64906f",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 525649,
+      "bytes": 520387,
       "column_names": [
         "booking_id",
         "lead_id",
@@ -557,12 +557,12 @@
       },
       "file": "data/synthetic/auto/bookings.csv",
       "logical_path": "synthetic/auto/bookings",
-      "rows": 1611,
-      "sha256": "37226055ed2cb79d4c4fbdd7e1c908b31ae9843ceb82de6d43815aa4d9c16762",
+      "rows": 1597,
+      "sha256": "3115a3b15eb349648329ff2fa96c3b50c0ad1e569dab093a0cb4a7ab332d9e48",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 82704,
+      "bytes": 72879,
       "column_names": [
         "cancellation_id",
         "booking_id",
@@ -626,12 +626,12 @@
       },
       "file": "data/synthetic/auto/cancellations.csv",
       "logical_path": "synthetic/auto/cancellations",
-      "rows": 263,
-      "sha256": "8e094d719e615b0428e6ca9a714c85eeccce578f0f81c7de844176eb425ff76f",
+      "rows": 233,
+      "sha256": "e26e262a96f284382d74162f9ca297c2fad0dd81845c10f961a040a52f6212d3",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 808698,
+      "bytes": 808528,
       "column_names": [
         "customer_id",
         "region_id",
@@ -670,11 +670,11 @@
       "file": "data/synthetic/auto/customers.csv",
       "logical_path": "synthetic/auto/customers",
       "rows": 5000,
-      "sha256": "92ff64069480f0fc5b3925baac1c59a5d68b1077958c31780be962b96ce6125b",
+      "sha256": "165cef2b9e922af3ec38548e5d33597db2d129cfc0c769a8daa7c59017e03746",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 1087918,
+      "bytes": 1098798,
       "column_names": [
         "delivery_id",
         "allocation_id",
@@ -734,14 +734,14 @@
       ],
       "columns": 55,
       "dtypes": {
-        "actual_delivery_date": "datetime64[ns, UTC+05:30]",
-        "allocation_date": "datetime64[ns, UTC+05:30]",
+        "actual_delivery_date": "datetime64[ns, Asia/Kolkata]",
+        "allocation_date": "datetime64[ns, Asia/Kolkata]",
         "allocation_id": "object",
         "allocation_priority": "object",
         "allocation_wait_hours": "float64",
         "base_transit_days": "float64",
         "booking_id": "object",
-        "booking_timestamp": "datetime64[ns, UTC+05:30]",
+        "booking_timestamp": "datetime64[ns, Asia/Kolkata]",
         "city_id": "object",
         "city_name": "object",
         "customer_handover_completed": "bool",
@@ -756,7 +756,7 @@
         "delivery_status": "object",
         "delivery_variance_days": "float64",
         "demand_pressure": "bool",
-        "dispatch_at": "datetime64[ns, UTC+05:30]",
+        "dispatch_at": "datetime64[ns, Asia/Kolkata]",
         "dispatch_delay_hours": "float64",
         "disruption_days": "float64",
         "early_days": "float64",
@@ -764,7 +764,7 @@
         "handover_score": "float64",
         "lead_id": "object",
         "normal_handover_delay": "bool",
-        "physical_ready_date": "datetime64[ns, UTC+05:30]",
+        "physical_ready_date": "datetime64[ns, Asia/Kolkata]",
         "plant_id": "object",
         "plant_name": "object",
         "primary_supplier_id": "object",
@@ -774,8 +774,8 @@
         "production_line_id": "object",
         "production_line_name": "object",
         "production_quality_score": "float64",
-        "projected_delivery_date": "datetime64[ns, UTC+05:30]",
-        "promised_delivery_date": "datetime64[ns, UTC+05:30]",
+        "projected_delivery_date": "datetime64[ns, Asia/Kolkata]",
+        "promised_delivery_date": "datetime64[ns, Asia/Kolkata]",
         "quality_hold": "bool",
         "region_id": "object",
         "region_name": "object",
@@ -792,12 +792,12 @@
       },
       "file": "data/synthetic/auto/deliveries.csv",
       "logical_path": "synthetic/auto/deliveries",
-      "rows": 1348,
-      "sha256": "5eee847c9910ac9fdb15d32c21b2389f087899458e7e9545cc7d20e1391e358d",
+      "rows": 1364,
+      "sha256": "a34212e6014e9b6229991caf1f79f45a67dbb81551b2f19a66476546d522b567",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 339805,
+      "bytes": 330770,
       "column_names": [
         "finance_application_id",
         "booking_id",
@@ -855,12 +855,12 @@
       },
       "file": "data/synthetic/auto/finance_applications.csv",
       "logical_path": "synthetic/auto/finance_applications",
-      "rows": 1085,
-      "sha256": "775949c29e177d3803161a2c5fcd63d9ccdc3d81dd8a97ea27b5b51564804cbb",
+      "rows": 1058,
+      "sha256": "41c2eef603e6d292fbca43808abb47566c8674c17da49f414a714f00064130ef",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 5055548,
+      "bytes": 5052826,
       "column_names": [
         "followup_id",
         "lead_id",
@@ -917,11 +917,11 @@
       "file": "data/synthetic/auto/followups.csv",
       "logical_path": "synthetic/auto/followups",
       "rows": 16804,
-      "sha256": "308615ff0c8e622a39c66014c4810d9b9ac404374b7912448854dc2f2decb60c",
+      "sha256": "0ace914ad5601e50c0c247e3f9f98509db94677cd7b9feba9d1ecaa4b761ce78",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 2474135,
+      "bytes": 2472599,
       "column_names": [
         "lead_id",
         "customer_id",
@@ -972,7 +972,7 @@
       "file": "data/synthetic/auto/leads.csv",
       "logical_path": "synthetic/auto/leads",
       "rows": 10000,
-      "sha256": "70f88957b31440b3a2126675be6a4ed516a770a925558bac73350342631ccc6c",
+      "sha256": "689b02af9600ffe828a57994d64a9e5b7694f7653857cccd6c2a1a8a528b86f5",
       "storage_class": "synthetic"
     },
     {
@@ -1087,7 +1087,7 @@
       "storage_class": "synthetic"
     },
     {
-      "bytes": 734358,
+      "bytes": 738363,
       "column_names": [
         "service_event_id",
         "delivery_id",
@@ -1139,56 +1139,56 @@
       "columns": 46,
       "dtypes": {
         "accident_impact_g_force": "float64",
-        "allocation_id": "str",
-        "booking_id": "str",
-        "city_id": "str",
-        "city_name": "str",
+        "allocation_id": "object",
+        "booking_id": "object",
+        "city_id": "object",
+        "city_name": "object",
         "complaint_reported": "bool",
-        "customer_id": "str",
-        "data_origin": "str",
+        "customer_id": "object",
+        "data_origin": "object",
         "days_since_delivery": "float64",
-        "delivery_id": "str",
-        "diagnosis": "str",
-        "generator_version": "str",
+        "delivery_id": "object",
+        "diagnosis": "object",
+        "generator_version": "object",
         "is_accident_caused": "bool",
-        "issue_category": "str",
+        "issue_category": "object",
         "odometer_km": "int64",
-        "plant_id": "str",
-        "plant_name": "str",
-        "primary_supplier_id": "str",
-        "primary_supplier_lot_id": "str",
-        "primary_supplier_name": "str",
-        "production_batch_id": "str",
-        "production_line_id": "str",
-        "production_line_name": "str",
+        "plant_id": "object",
+        "plant_name": "object",
+        "primary_supplier_id": "object",
+        "primary_supplier_lot_id": "object",
+        "primary_supplier_name": "object",
+        "production_batch_id": "object",
+        "production_line_id": "object",
+        "production_line_name": "object",
         "production_quality_score": "float64",
-        "region_id": "str",
-        "region_name": "str",
+        "region_id": "object",
+        "region_name": "object",
         "repair_required": "bool",
-        "representative_machine_id": "str",
-        "representative_machine_name": "str",
-        "service_completed_at": "datetime64[us, UTC+05:30]",
-        "service_dealer_id": "str",
-        "service_dealer_name": "str",
+        "representative_machine_id": "object",
+        "representative_machine_name": "object",
+        "service_completed_at": "datetime64[ns, Asia/Kolkata]",
+        "service_dealer_id": "object",
+        "service_dealer_name": "object",
         "service_duration_hours": "float64",
-        "service_event_id": "str",
+        "service_event_id": "object",
         "service_score": "float64",
-        "service_started_at": "datetime64[us, UTC+05:30]",
-        "service_status": "str",
-        "service_type": "str",
-        "severity": "str",
-        "supplier_component_category": "str",
+        "service_started_at": "datetime64[ns, Asia/Kolkata]",
+        "service_status": "object",
+        "service_type": "object",
+        "severity": "object",
+        "supplier_component_category": "object",
         "supplier_lot_quality_score": "float64",
-        "variant": "str",
-        "vehicle_id": "str",
-        "vehicle_model_id": "str",
-        "vehicle_model_name": "str",
+        "variant": "object",
+        "vehicle_id": "object",
+        "vehicle_model_id": "object",
+        "vehicle_model_name": "object",
         "warranty_candidate": "bool"
       },
       "file": "data/synthetic/auto/service_events.csv",
       "logical_path": "synthetic/auto/service_events",
-      "rows": 1137,
-      "sha256": "ac3adaac8c51d42d10ba6935b82603e77e6b62cc7e10a68b88729b32458da806",
+      "rows": 1144,
+      "sha256": "9774917563f210fc1cf3e061642c3200c0ee6a02a35d913f9585237f4b578d85",
       "storage_class": "synthetic"
     },
     {
@@ -1239,7 +1239,7 @@
       "storage_class": "synthetic"
     },
     {
-      "bytes": 3484,
+      "bytes": 3476,
       "column_names": [
         "supplier_id",
         "supplier_name",
@@ -1280,11 +1280,11 @@
       "file": "data/synthetic/auto/suppliers.csv",
       "logical_path": "synthetic/auto/suppliers",
       "rows": 20,
-      "sha256": "c79b41c1126bf067297aac155a1a06f8263ad748611adbfd4ad7b9ce44f7f71c",
+      "sha256": "e52ada81dd495f18b4f4dbe962507da285d882ac1a7da742ddcd3adf38303b2c",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 1793974,
+      "bytes": 1793616,
       "column_names": [
         "test_drive_id",
         "lead_id",
@@ -1355,11 +1355,11 @@
       "file": "data/synthetic/auto/test_drives.csv",
       "logical_path": "synthetic/auto/test_drives",
       "rows": 5325,
-      "sha256": "18d9b3c97a82dfda5247c9fb06772b6006aa98ef7c38f57da0d71c6fe1cc5e89",
+      "sha256": "4c29ec3caf2b0affb90e128fdd92c79f5665a8bdabbc3dbb93a47ffb5043f108",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 36960,
+      "bytes": 37208,
       "column_names": [
         "warranty_claim_id",
         "service_event_id",
@@ -1409,56 +1409,56 @@
       ],
       "columns": 45,
       "dtypes": {
-        "allocation_id": "str",
+        "allocation_id": "object",
         "approved_amount_inr": "float64",
-        "booking_id": "str",
-        "city_id": "str",
-        "city_name": "str",
+        "booking_id": "object",
+        "city_id": "object",
+        "city_name": "object",
         "claim_amount_inr": "float64",
         "claim_probability": "float64",
-        "claim_status": "str",
-        "claim_submitted_at": "datetime64[us, UTC+05:30]",
-        "customer_id": "str",
-        "data_origin": "str",
-        "decision_at": "datetime64[us, UTC+05:30]",
-        "delivery_id": "str",
-        "diagnosis": "str",
-        "failure_code": "str",
-        "generator_version": "str",
-        "issue_category": "str",
+        "claim_status": "object",
+        "claim_submitted_at": "datetime64[ns, Asia/Kolkata]",
+        "customer_id": "object",
+        "data_origin": "object",
+        "decision_at": "datetime64[ns, Asia/Kolkata]",
+        "delivery_id": "object",
+        "diagnosis": "object",
+        "failure_code": "object",
+        "generator_version": "object",
+        "issue_category": "object",
         "odometer_km": "int64",
-        "plant_id": "str",
-        "plant_name": "str",
-        "primary_supplier_id": "str",
-        "primary_supplier_lot_id": "str",
-        "primary_supplier_name": "str",
-        "production_batch_id": "str",
-        "production_line_id": "str",
-        "production_line_name": "str",
+        "plant_id": "object",
+        "plant_name": "object",
+        "primary_supplier_id": "object",
+        "primary_supplier_lot_id": "object",
+        "primary_supplier_name": "object",
+        "production_batch_id": "object",
+        "production_line_id": "object",
+        "production_line_name": "object",
         "production_quality_score": "float64",
-        "region_id": "str",
-        "region_name": "str",
-        "representative_machine_id": "str",
-        "representative_machine_name": "str",
-        "root_cause_domain": "str",
-        "service_dealer_id": "str",
-        "service_dealer_name": "str",
+        "region_id": "object",
+        "region_name": "object",
+        "representative_machine_id": "object",
+        "representative_machine_name": "object",
+        "root_cause_domain": "object",
+        "service_dealer_id": "object",
+        "service_dealer_name": "object",
         "service_duration_hours": "float64",
-        "service_event_id": "str",
-        "severity": "str",
-        "supplier_component_category": "str",
+        "service_event_id": "object",
+        "severity": "object",
+        "supplier_component_category": "object",
         "supplier_lot_quality_score": "float64",
-        "variant": "str",
+        "variant": "object",
         "vehicle_age_days": "float64",
-        "vehicle_id": "str",
-        "vehicle_model_id": "str",
-        "vehicle_model_name": "str",
-        "warranty_claim_id": "str"
+        "vehicle_id": "object",
+        "vehicle_model_id": "object",
+        "vehicle_model_name": "object",
+        "warranty_claim_id": "object"
       },
       "file": "data/synthetic/auto/warranty_claims.csv",
       "logical_path": "synthetic/auto/warranty_claims",
       "rows": 53,
-      "sha256": "7e1c5267c252cbe7f47f35f8787c2933962d23ddf36d7d7a558b145cf7dc11cc",
+      "sha256": "8abe015189a17ec4c0eefc9174b8451191edcac168d1b1f663f9aeb43d62680a",
       "storage_class": "synthetic"
     },
     {
@@ -1543,7 +1543,7 @@
       "storage_class": "synthetic"
     },
     {
-      "bytes": 29236517,
+      "bytes": 29077156,
       "column_names": [
         "region_id",
         "region_name",
@@ -1620,11 +1620,11 @@
       "file": "data/synthetic/causal/mobility_timeseries.csv",
       "logical_path": "synthetic/causal/mobility_timeseries",
       "rows": 172800,
-      "sha256": "1ee2580705047300307f7911a6cf928356891c70e263e2f41d1b6de5557c6bd5",
+      "sha256": "a8b995d88ed384be33ca9f015d7914c544ee5eb267c7edf2c334a76edf946e05",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 67765996,
+      "bytes": 68199878,
       "column_names": [
         "timestamp",
         "vehicle_id",
@@ -1666,27 +1666,27 @@
         "battery_soc_pct": "float64",
         "battery_temperature_c": "float64",
         "battery_voltage_v": "float64",
-        "data_origin": "str",
+        "data_origin": "object",
         "dtc_count": "int64",
-        "generator_version": "str",
+        "generator_version": "object",
         "impact_g_force": "float64",
         "lateral_acceleration_g": "float64",
         "odometer_km": "float64",
-        "plant_id": "str",
-        "production_batch_id": "str",
-        "production_line_id": "str",
+        "plant_id": "object",
+        "production_batch_id": "object",
+        "production_line_id": "object",
         "road_roughness_index": "float64",
         "steering_angle_deg": "float64",
         "steering_torque_nm": "float64",
-        "supplier_lot_id": "str",
-        "timestamp": "datetime64[us, UTC+05:30]",
+        "supplier_lot_id": "object",
+        "timestamp": "datetime64[ns, Asia/Kolkata]",
         "torque_converter_slip_rpm": "float64",
         "transmission_slip_ms": "float64",
         "transmission_temperature_c": "float64",
-        "variant": "str",
-        "vehicle_id": "str",
-        "vehicle_model_id": "str",
-        "vehicle_model_name": "str",
+        "variant": "object",
+        "vehicle_id": "object",
+        "vehicle_model_id": "object",
+        "vehicle_model_name": "object",
         "vehicle_speed_kph": "float64",
         "vehicle_vibration_mm_s": "float64",
         "vertical_acceleration_g": "float64",
@@ -1695,11 +1695,11 @@
       "file": "data/synthetic/causal/vehicle_telematics_timeseries.csv",
       "logical_path": "synthetic/causal/vehicle_telematics_timeseries",
       "rows": 241920,
-      "sha256": "660e7fe544b4bc5efd1da92254bc8fa342e158b278f7cb6c8c3d28189c388a7a",
+      "sha256": "9dbaa792b3053f68f2d057c7bd7569b2d3f0a78880c84c8da169e65017cdaa7e",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 359290,
+      "bytes": 359118,
       "column_names": [
         "carbon_credit_listing_id",
         "elv_assessment_id",
@@ -1804,11 +1804,11 @@
       "file": "data/synthetic/circularity/credit_listings.csv",
       "logical_path": "synthetic/circularity/credit_listings",
       "rows": 750,
-      "sha256": "507bfe22cb68aeca0240ed48ddcb0e79779766f9efda78ff11ac1be44a981681",
+      "sha256": "a1762e1f5c90a003e96c11efe2e3e5e9c349aea5428c878a1a255ab3aaa5597c",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 1676046,
+      "bytes": 1675358,
       "column_names": [
         "dmrv_record_id",
         "rvsf_job_card_id",
@@ -1919,11 +1919,11 @@
       "file": "data/synthetic/circularity/dmrv_records.csv",
       "logical_path": "synthetic/circularity/dmrv_records",
       "rows": 3000,
-      "sha256": "a292a5a129a3525d5cb6ef4fcc5a8470ad314ed5cc4a4d26714501d1d3db7857",
+      "sha256": "66a8525f687a6e76ba7d3ead2672b1fce0e596f95facfc6617ddbc4d85e37d50",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 238228,
+      "bytes": 238154,
       "column_names": [
         "elv_assessment_id",
         "elv_vehicle_id",
@@ -2008,11 +2008,11 @@
       "file": "data/synthetic/circularity/elv_assessments.csv",
       "logical_path": "synthetic/circularity/elv_assessments",
       "rows": 750,
-      "sha256": "47c79a1f7bf2f1dd77af7479bb20e8254228e718736be205b09c0c4591ed5e98",
+      "sha256": "d3822e2162b15ff9970e974b879c9d494cd53f79c7d6b75d6d4cb3ece08e6646",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 705436,
+      "bytes": 705092,
       "column_names": [
         "rvsf_job_card_id",
         "elv_assessment_id",
@@ -2109,11 +2109,11 @@
       "file": "data/synthetic/circularity/rvsf_job_cards.csv",
       "logical_path": "synthetic/circularity/rvsf_job_cards",
       "rows": 1500,
-      "sha256": "a4e74bed7da95b51ce845713ca6fc4dea9ce44319d9cf2eb96d0351fc0b234e5",
+      "sha256": "f3cd8f4a0f14d9c226ea6f91159568c18d2c60009fe14888282b7da13e0fcb6f",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 649945,
+      "bytes": 649723,
       "column_names": [
         "collection_case_id",
         "loan_account_id",
@@ -2184,11 +2184,11 @@
       "file": "data/synthetic/collections/collection_cases.csv",
       "logical_path": "synthetic/collections/collection_cases",
       "rows": 1974,
-      "sha256": "923ac9be0c737fb23a719980382f009743e0dca2090eef18a3f3adfc8fb8b3de",
+      "sha256": "bd6b1b26098087b0bd27dd7a533f44966bce6616c911c8bb4a95067e5aa5da23",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 3028376,
+      "bytes": 3027186,
       "column_names": [
         "collection_interaction_id",
         "collection_case_id",
@@ -2259,7 +2259,7 @@
       "file": "data/synthetic/collections/collection_interactions.csv",
       "logical_path": "synthetic/collections/collection_interactions",
       "rows": 8793,
-      "sha256": "9e494709d5650907aaf3db9a2a0fe87b54b132db8e4a7182be1d42da871339a5",
+      "sha256": "89c3e575904abcedf60ab31d362987546537df7dfa8698c35748bf55e4f35a9a",
       "storage_class": "synthetic"
     },
     {
@@ -2298,7 +2298,7 @@
       "file": "data/synthetic/copilot/copilot_eval_questions.csv",
       "logical_path": "synthetic/copilot/copilot_eval_questions",
       "rows": 100,
-      "sha256": "c75625d1983b3142076053a9ae7ea8ab36d32fc2a821006edbea9d5578698311",
+      "sha256": "2a44ac88d7f039aecea895e10ce16ce037ba4afc8fed65cedc5460aab92356c4",
       "storage_class": "synthetic"
     },
     {
@@ -2329,7 +2329,7 @@
       "storage_class": "synthetic"
     },
     {
-      "bytes": 303502,
+      "bytes": 303158,
       "column_names": [
         "cross_sell_event_id",
         "finance_customer_id",
@@ -2384,11 +2384,11 @@
       "file": "data/synthetic/finance/cross_sell_events.csv",
       "logical_path": "synthetic/finance/cross_sell_events",
       "rows": 967,
-      "sha256": "7a775e085ececc59b32a34a3fe20a4a6757dc9c45a0a563ff7d7fb70b8a5b586",
+      "sha256": "6cbfa890fa6f9676aad1d6362c100c5f3ff1329451769dd5cbde9d5e468adebf",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 518393,
+      "bytes": 518019,
       "column_names": [
         "finance_customer_id",
         "region_id",
@@ -2429,11 +2429,11 @@
       "file": "data/synthetic/finance/finance_customers.csv",
       "logical_path": "synthetic/finance/finance_customers",
       "rows": 3000,
-      "sha256": "ee28c6dc2ac17ee64451fd6ad6648da6b8d89c40fd115d0915653790c248e8c1",
+      "sha256": "1781a6ab3ee03b3b43b8c4dce41a3a626138eccbdb42b00b3485541fa2c39c34",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 1617954,
+      "bytes": 1617508,
       "column_names": [
         "loan_account_id",
         "finance_customer_id",
@@ -2492,11 +2492,11 @@
       "file": "data/synthetic/finance/loan_accounts.csv",
       "logical_path": "synthetic/finance/loan_accounts",
       "rows": 5000,
-      "sha256": "037c73b0420fc52de8f780bf274485a95f546c40cdee715412ed297ba77b074b",
+      "sha256": "897d27110958671dd38c699c6c38e31fb39b3bfca3ef6cd92825e014924b2820",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 19234394,
+      "bytes": 19227858,
       "column_names": [
         "payment_event_id",
         "loan_account_id",
@@ -2559,11 +2559,11 @@
       "file": "data/synthetic/finance/payment_history.csv",
       "logical_path": "synthetic/finance/payment_history",
       "rows": 60191,
-      "sha256": "0a117214bd9907f1ed0dceaba29e912c25d51f85fefab135389f82552d041065",
+      "sha256": "48f4b4b8d2a36c2b0e730b646a54c8f28e09769e4e6b52491090748e34c95332",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 309702,
+      "bytes": 309708,
       "column_names": [
         "action_id",
         "workflow_run_id",
@@ -2606,11 +2606,11 @@
       "file": "data/synthetic/governance/action_outcomes.csv",
       "logical_path": "synthetic/governance/action_outcomes",
       "rows": 864,
-      "sha256": "ff45b1608c796231ec2ec1c2f085c2914863524acf553ff8a7d1470734392bfa",
+      "sha256": "cc4be0e267cc72039346687eebd71b8cbc8a9d9c744082870af439cef951c5b1",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 7896458,
+      "bytes": 7895027,
       "column_names": [
         "audit_event_id",
         "recommendation_id",
@@ -2661,11 +2661,11 @@
       "file": "data/synthetic/governance/audit_events.csv",
       "logical_path": "synthetic/governance/audit_events",
       "rows": 10000,
-      "sha256": "dea9f80329ff735f136eb5c6371ebf8bd8a8c8ba1ab6105ee0d646d91f5a42de",
+      "sha256": "5367be77cbfd89fe96e80b85019632e9f519e1be59f63b9af6d99c97574e846d",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 4043836,
+      "bytes": 4043611,
       "column_names": [
         "compliance_check_id",
         "decision_id",
@@ -2700,7 +2700,7 @@
       "file": "data/synthetic/governance/compliance_checks.csv",
       "logical_path": "synthetic/governance/compliance_checks",
       "rows": 10000,
-      "sha256": "95fbde9cdefaeacadf4cd086f3878fe3eb7ddad8b4c3a5e18dbb8b9f7deb7e53",
+      "sha256": "472babdf82fd3dca4109ef9395e41f8ae888ef10956879a90b6cd47d46aae289",
       "storage_class": "synthetic"
     },
     {
@@ -2735,11 +2735,11 @@
       "file": "data/synthetic/governance/human_reviews.csv",
       "logical_path": "synthetic/governance/human_reviews",
       "rows": 300,
-      "sha256": "e49e2f0b897a19c549cd4d51459e9ce99ff985d2e33b14fe063b977415f3df1e",
+      "sha256": "393274a4ee7a349ad786e8a2e6b602df0de0c5e2a158f0649513d20f23e33cf3",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 2209433,
+      "bytes": 2208829,
       "column_names": [
         "recommendation_id",
         "domain",
@@ -2776,11 +2776,11 @@
       "file": "data/synthetic/governance/recommendations.csv",
       "logical_path": "synthetic/governance/recommendations",
       "rows": 2000,
-      "sha256": "ecee791e7748c8615e23e0be15663f7cd226a7707989105999067345897aa7b7",
+      "sha256": "c042fa0695c0084ed61c2cfb80ff5f2173a0560fb08a23d241618339bd251a41",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 566082,
+      "bytes": 566260,
       "column_names": [
         "decision_id",
         "recommendation_id",
@@ -2835,11 +2835,11 @@
       "file": "data/synthetic/governance/trust_decisions.csv",
       "logical_path": "synthetic/governance/trust_decisions",
       "rows": 2000,
-      "sha256": "f77b011877abcdae5949aa0e7d7a28eb2aa63d110b0938f9b4698f71e5ad487e",
+      "sha256": "1d51f3bb48ae0ca58f102e2f5996e7077fbc7a22bc04cad14d514edd67290a5b",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 3841516,
+      "bytes": 3797933,
       "column_names": [
         "shipment_id",
         "route_id",
@@ -2932,11 +2932,11 @@
       "file": "data/synthetic/logistics/shipments.csv",
       "logical_path": "synthetic/logistics/shipments",
       "rows": 7500,
-      "sha256": "3425e5d68503866cf6da2b9f2baf957ccb2a7f7d6c55206b0061cf314a242bb2",
+      "sha256": "88cfc3db8240c83a6e4770542187c366d827646abae8b3433e791ce097425ac6",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 4807849,
+      "bytes": 4704355,
       "column_names": [
         "warehouse_event_id",
         "shipment_id",
@@ -3003,11 +3003,11 @@
       "file": "data/synthetic/logistics/warehouse_events.csv",
       "logical_path": "synthetic/logistics/warehouse_events",
       "rows": 15000,
-      "sha256": "81f378e4dd959ca63f4ad632d1db1f38eba76424f49b30a33ebe7bae41410b3e",
+      "sha256": "28855b0fc7bab732747a214dd6620d8f1eecb6616ae1a8d48a48be43913deba4",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 1025,
+      "bytes": 1424,
       "column_names": [
         "city_id",
         "city_name",
@@ -3025,12 +3025,12 @@
       },
       "file": "data/synthetic/master/cities.csv",
       "logical_path": "synthetic/master/cities",
-      "rows": 23,
-      "sha256": "fae569a8870e9b3073c5f9cd5ac4061765f8f7bf7b53a2b310260d313a2354f3",
+      "rows": 33,
+      "sha256": "e6a41fe9a7b08fdb4b36748e103b4cb4984a05baa4c241bd823f2a027eabcc2c",
       "storage_class": "synthetic"
     },
     {
-      "bytes": 4131,
+      "bytes": 5393,
       "column_names": [
         "dealer_id",
         "dealer_name",
@@ -3070,8 +3070,8 @@
       },
       "file": "data/synthetic/master/dealers.csv",
       "logical_path": "synthetic/master/dealers",
-      "rows": 30,
-      "sha256": "0d6e4370ccb697c11b9247fe08cc48be16634a0d7cd0fb20be0218bc4a6d004f",
+      "rows": 40,
+      "sha256": "6979123959c5c028baca00580253f6c43fad43c245c3c03307ff195c02d86521",
       "storage_class": "synthetic"
     },
     {
@@ -3234,7 +3234,7 @@
       "storage_class": "synthetic"
     },
     {
-      "bytes": 3789,
+      "bytes": 22353,
       "column_names": [
         "route_id",
         "origin_warehouse_id",
@@ -3288,8 +3288,8 @@
       },
       "file": "data/synthetic/master/routes.csv",
       "logical_path": "synthetic/master/routes",
-      "rows": 15,
-      "sha256": "089c8bd2ae2bceb7da18bd282bd17532bcc5bd804a127cc7174550c8c2fe1051",
+      "rows": 100,
+      "sha256": "8397d530891ecc2a41ecb9de0a5caf9ebc4c5919bae8a4acae40bca3267bfe94",
       "storage_class": "synthetic"
     },
     {
@@ -3332,7 +3332,7 @@
       "storage_class": "synthetic"
     },
     {
-      "bytes": 1261,
+      "bytes": 3472,
       "column_names": [
         "warehouse_id",
         "warehouse_name",
@@ -3366,8 +3366,8 @@
       },
       "file": "data/synthetic/master/warehouses.csv",
       "logical_path": "synthetic/master/warehouses",
-      "rows": 8,
-      "sha256": "6f27e632161d9468590ee8780ffa2a9d83e9d00083d27088ad9cd4dcc676d259",
+      "rows": 26,
+      "sha256": "441371ce6c9192b161c25c172e95f6f85feaef359f3d7a3d978df237739d933b",
       "storage_class": "synthetic"
     },
     {
@@ -3459,71 +3459,6 @@
       "rows": 2000,
       "sha256": "f687795038a3b307f612ddd1376f092e549b941df61333bac09c4a111820cec0",
       "storage_class": "synthetic"
-    },
-    {
-      "bytes": 8207,
-      "column_names": [
-        "insurance_claim_id",
-        "policy_number",
-        "service_event_id",
-        "delivery_id",
-        "vehicle_id",
-        "vehicle_model_id",
-        "vehicle_model_name",
-        "variant",
-        "vehicle_age_days",
-        "odometer_km",
-        "service_dealer_id",
-        "service_dealer_name",
-        "region_id",
-        "region_name",
-        "city_id",
-        "city_name",
-        "supplier_component_category",
-        "severity",
-        "accident_impact_g_force",
-        "claim_submitted_at",
-        "decision_at",
-        "claim_amount_inr",
-        "approved_amount_inr",
-        "claim_status",
-        "data_origin",
-        "generator_version"
-      ],
-      "columns": 26,
-      "dtypes": {
-        "accident_impact_g_force": "float64",
-        "approved_amount_inr": "float64",
-        "city_id": "str",
-        "city_name": "str",
-        "claim_amount_inr": "float64",
-        "claim_status": "str",
-        "claim_submitted_at": "datetime64[us, UTC+05:30]",
-        "data_origin": "str",
-        "decision_at": "datetime64[us, UTC+05:30]",
-        "delivery_id": "str",
-        "generator_version": "str",
-        "insurance_claim_id": "str",
-        "odometer_km": "int64",
-        "policy_number": "str",
-        "region_id": "str",
-        "region_name": "str",
-        "service_dealer_id": "str",
-        "service_dealer_name": "str",
-        "service_event_id": "str",
-        "severity": "str",
-        "supplier_component_category": "str",
-        "variant": "str",
-        "vehicle_age_days": "float64",
-        "vehicle_id": "str",
-        "vehicle_model_id": "str",
-        "vehicle_model_name": "str"
-      },
-      "file": "data/synthetic/auto/insurance_claims.csv",
-      "logical_path": "synthetic/auto/insurance_claims",
-      "rows": 22,
-      "sha256": "32a9efd065ea784d39120f6cdffc4bfaaba10171098a9285c3a91f7f6faee2e5",
-      "storage_class": "synthetic"
     }
   ],
   "generation_window": {
@@ -3535,9 +3470,9 @@
   "ground_truth_dataset_count": 7,
   "manifest_version": "1.0.0",
   "project": "Mahindra AI Nexus",
-  "registry_sha256": "739ac870479c42ba1e187585d9de3eccde3331ae37ad3834fdc0b7b69d1c2edd",
+  "registry_sha256": "842e9f6d04b552a011b13c0e4856c17d851245901207d50d4b12f7904d10a539",
   "scenario_version": "1.0.0",
   "seed": 4172,
-  "synthetic_dataset_count": 52,
-  "total_rows": 1817411
+  "synthetic_dataset_count": 51,
+  "total_rows": 1817480
 }

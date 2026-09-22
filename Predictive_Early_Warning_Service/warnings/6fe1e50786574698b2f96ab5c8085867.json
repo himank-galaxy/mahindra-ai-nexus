@@ -1,0 +1,17 @@
+{
+  "warning_id": "6fe1e50786574698b2f96ab5c8085867",
+  "vehicle_id": "VEHUNIT_SYN_0001004",
+  "vehicle_model_id": null,
+  "warning_type": "DRIVETRAIN_SLIP",
+  "target_metric": "transmission_slip_ms",
+  "prediction_probability": 0.694,
+  "forecast_horizon_hours": 15,
+  "severity": "MEDIUM",
+  "warning_timestamp": "2026-09-18T11:44:18.814117+00:00",
+  "status": "OPEN",
+  "causal_run_id": null,
+  "last_seen_at": "2026-09-20T11:18:52.896948+00:00",
+  "forecast_gap_hours": 3,
+  "is_warranty_eligible": false,
+  "eligibility_notes": "Not eligible - driving-behavior exclusion: torque_converter_slip_rpm exceeded the fleet's 95th-percentile reading (269.08) - see the Driving-Behavior Exclusion Clauses document's DRIVETRAIN_COMPONENTS clause."
+}

@@ -1,0 +1,291 @@
+{
+  "domain": "manufacturing",
+  "nodes": [
+    {
+      "var_name": "MACHINE_SYN_042||ambient_humidity_pct",
+      "entity_id": "MACHINE_SYN_042",
+      "metric": "ambient_humidity_pct",
+      "domain": "manufacturing"
+    },
+    {
+      "var_name": "MACHINE_SYN_042||ambient_temperature_c",
+      "entity_id": "MACHINE_SYN_042",
+      "metric": "ambient_temperature_c",
+      "domain": "manufacturing"
+    },
+    {
+      "var_name": "MACHINE_SYN_042||cycle_time_seconds",
+      "entity_id": "MACHINE_SYN_042",
+      "metric": "cycle_time_seconds",
+      "domain": "manufacturing"
+    },
+    {
+      "var_name": "MACHINE_SYN_042||defect_rate",
+      "entity_id": "MACHINE_SYN_042",
+      "metric": "defect_rate",
+      "domain": "manufacturing"
+    },
+    {
+      "var_name": "MACHINE_SYN_042||hours_since_maintenance",
+      "entity_id": "MACHINE_SYN_042",
+      "metric": "hours_since_maintenance",
+      "domain": "manufacturing"
+    },
+    {
+      "var_name": "MACHINE_SYN_042||line_speed_units_per_hour",
+      "entity_id": "MACHINE_SYN_042",
+      "metric": "line_speed_units_per_hour",
+      "domain": "manufacturing"
+    },
+    {
+      "var_name": "MACHINE_SYN_042||machine_load",
+      "entity_id": "MACHINE_SYN_042",
+      "metric": "machine_load",
+      "domain": "manufacturing"
+    },
+    {
+      "var_name": "MACHINE_SYN_042||machine_temperature_c",
+      "entity_id": "MACHINE_SYN_042",
+      "metric": "machine_temperature_c",
+      "domain": "manufacturing"
+    },
+    {
+      "var_name": "MACHINE_SYN_042||power_kw",
+      "entity_id": "MACHINE_SYN_042",
+      "metric": "power_kw",
+      "domain": "manufacturing"
+    },
+    {
+      "var_name": "MACHINE_SYN_042||quality_score",
+      "entity_id": "MACHINE_SYN_042",
+      "metric": "quality_score",
+      "domain": "manufacturing"
+    },
+    {
+      "var_name": "MACHINE_SYN_042||rework_rate",
+      "entity_id": "MACHINE_SYN_042",
+      "metric": "rework_rate",
+      "domain": "manufacturing"
+    },
+    {
+      "var_name": "MACHINE_SYN_042||supplier_lot_quality_score",
+      "entity_id": "MACHINE_SYN_042",
+      "metric": "supplier_lot_quality_score",
+      "domain": "manufacturing"
+    },
+    {
+      "var_name": "MACHINE_SYN_042||torque_deviation_nm",
+      "entity_id": "MACHINE_SYN_042",
+      "metric": "torque_deviation_nm",
+      "domain": "manufacturing"
+    },
+    {
+      "var_name": "MACHINE_SYN_042||vibration_mm_s",
+      "entity_id": "MACHINE_SYN_042",
+      "metric": "vibration_mm_s",
+      "domain": "manufacturing"
+    }
+  ],
+  "edges": [
+    {
+      "source": "MACHINE_SYN_042||ambient_humidity_pct",
+      "target": "MACHINE_SYN_042||ambient_humidity_pct",
+      "lag": 1,
+      "edge_mark": "o->",
+      "strength": 0.9993087412418987,
+      "p_value": 0.0
+    },
+    {
+      "source": "MACHINE_SYN_042||ambient_temperature_c",
+      "target": "MACHINE_SYN_042||ambient_temperature_c",
+      "lag": 1,
+      "edge_mark": "o->",
+      "strength": 0.951158290009436,
+      "p_value": 1.7280091486425625e-146
+    },
+    {
+      "source": "MACHINE_SYN_042||cycle_time_seconds",
+      "target": "MACHINE_SYN_042||line_speed_units_per_hour",
+      "lag": 0,
+      "edge_mark": "<--",
+      "strength": -0.8550330981724229,
+      "p_value": 2.0911261310997018e-82
+    },
+    {
+      "source": "MACHINE_SYN_042||cycle_time_seconds",
+      "target": "MACHINE_SYN_042||power_kw",
+      "lag": 0,
+      "edge_mark": "-->",
+      "strength": -0.23726807919090406,
+      "p_value": 5.374864700100143e-05
+    },
+    {
+      "source": "MACHINE_SYN_042||defect_rate",
+      "target": "MACHINE_SYN_042||defect_rate",
+      "lag": 1,
+      "edge_mark": "o->",
+      "strength": 0.9568982810525755,
+      "p_value": 1.863308455413983e-153
+    },
+    {
+      "source": "MACHINE_SYN_042||defect_rate",
+      "target": "MACHINE_SYN_042||quality_score",
+      "lag": 0,
+      "edge_mark": "o-o",
+      "strength": -0.26305841978543465,
+      "p_value": 7.023707595706217e-06
+    },
+    {
+      "source": "MACHINE_SYN_042||defect_rate",
+      "target": "MACHINE_SYN_042||quality_score",
+      "lag": 1,
+      "edge_mark": "o->",
+      "strength": 0.12135332859594579,
+      "p_value": 0.04099092043193439
+    },
+    {
+      "source": "MACHINE_SYN_042||defect_rate",
+      "target": "MACHINE_SYN_042||rework_rate",
+      "lag": 1,
+      "edge_mark": "o->",
+      "strength": 0.42294292667398364,
+      "p_value": 8.533564806628124e-14
+    },
+    {
+      "source": "MACHINE_SYN_042||hours_since_maintenance",
+      "target": "MACHINE_SYN_042||ambient_humidity_pct",
+      "lag": 1,
+      "edge_mark": "o->",
+      "strength": -0.41007027247291084,
+      "p_value": 5.512817169592628e-13
+    },
+    {
+      "source": "MACHINE_SYN_042||hours_since_maintenance",
+      "target": "MACHINE_SYN_042||hours_since_maintenance",
+      "lag": 1,
+      "edge_mark": "o->",
+      "strength": 0.9920962496811957,
+      "p_value": 3.757461466830668e-257
+    },
+    {
+      "source": "MACHINE_SYN_042||line_speed_units_per_hour",
+      "target": "MACHINE_SYN_042||cycle_time_seconds",
+      "lag": 0,
+      "edge_mark": "-->",
+      "strength": -0.8550330981724229,
+      "p_value": 2.0911261310997018e-82
+    },
+    {
+      "source": "MACHINE_SYN_042||line_speed_units_per_hour",
+      "target": "MACHINE_SYN_042||line_speed_units_per_hour",
+      "lag": 1,
+      "edge_mark": "o->",
+      "strength": 0.14055457911863392,
+      "p_value": 0.017586837081484695
+    },
+    {
+      "source": "MACHINE_SYN_042||machine_load",
+      "target": "MACHINE_SYN_042||ambient_temperature_c",
+      "lag": 1,
+      "edge_mark": "o->",
+      "strength": -0.13951472316473748,
+      "p_value": 0.018449832674470992
+    },
+    {
+      "source": "MACHINE_SYN_042||machine_load",
+      "target": "MACHINE_SYN_042||machine_load",
+      "lag": 1,
+      "edge_mark": "o->",
+      "strength": 0.9709993404130848,
+      "p_value": 6.564521607995514e-178
+    },
+    {
+      "source": "MACHINE_SYN_042||machine_load",
+      "target": "MACHINE_SYN_042||power_kw",
+      "lag": 0,
+      "edge_mark": "-->",
+      "strength": 0.3282570146625526,
+      "p_value": 1.4681892382950544e-08
+    },
+    {
+      "source": "MACHINE_SYN_042||machine_temperature_c",
+      "target": "MACHINE_SYN_042||machine_load",
+      "lag": 1,
+      "edge_mark": "o->",
+      "strength": 0.18754655217939462,
+      "p_value": 0.0014701922628112937
+    },
+    {
+      "source": "MACHINE_SYN_042||machine_temperature_c",
+      "target": "MACHINE_SYN_042||machine_temperature_c",
+      "lag": 1,
+      "edge_mark": "o->",
+      "strength": 0.9578507172241248,
+      "p_value": 2.448217170213112e-155
+    },
+    {
+      "source": "MACHINE_SYN_042||power_kw",
+      "target": "MACHINE_SYN_042||cycle_time_seconds",
+      "lag": 0,
+      "edge_mark": "<--",
+      "strength": -0.23726807919090406,
+      "p_value": 5.374864700100143e-05
+    },
+    {
+      "source": "MACHINE_SYN_042||power_kw",
+      "target": "MACHINE_SYN_042||cycle_time_seconds",
+      "lag": 1,
+      "edge_mark": "<->",
+      "strength": -0.1174662114483128,
+      "p_value": 0.04876289212606934
+    },
+    {
+      "source": "MACHINE_SYN_042||power_kw",
+      "target": "MACHINE_SYN_042||machine_load",
+      "lag": 0,
+      "edge_mark": "<--",
+      "strength": 0.3282570146625526,
+      "p_value": 1.4681892382950544e-08
+    },
+    {
+      "source": "MACHINE_SYN_042||quality_score",
+      "target": "MACHINE_SYN_042||defect_rate",
+      "lag": 0,
+      "edge_mark": "o-o",
+      "strength": -0.26305841978543465,
+      "p_value": 7.023707595706217e-06
+    },
+    {
+      "source": "MACHINE_SYN_042||rework_rate",
+      "target": "MACHINE_SYN_042||hours_since_maintenance",
+      "lag": 1,
+      "edge_mark": "o->",
+      "strength": 0.12365455705840929,
+      "p_value": 0.03694526347014334
+    },
+    {
+      "source": "MACHINE_SYN_042||rework_rate",
+      "target": "MACHINE_SYN_042||rework_rate",
+      "lag": 1,
+      "edge_mark": "o->",
+      "strength": 0.9998057294114152,
+      "p_value": 0.0
+    },
+    {
+      "source": "MACHINE_SYN_042||supplier_lot_quality_score",
+      "target": "MACHINE_SYN_042||supplier_lot_quality_score",
+      "lag": 1,
+      "edge_mark": "o->",
+      "strength": 0.9166636424863497,
+      "p_value": 9.806031534626212e-115
+    },
+    {
+      "source": "MACHINE_SYN_042||vibration_mm_s",
+      "target": "MACHINE_SYN_042||vibration_mm_s",
+      "lag": 1,
+      "edge_mark": "o->",
+      "strength": 0.9741763877080639,
+      "p_value": 6.087803401103697e-185
+    }
+  ]
+}

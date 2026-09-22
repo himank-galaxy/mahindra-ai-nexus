@@ -330,7 +330,7 @@ EXPECTED_GENERATOR_VERSION = "1.0.0"
 EXPECTED_SEED = 4172
 
 EXPECTED_DATASET_COUNT = 58
-EXPECTED_REGISTERED_ROWS = 1817365
+EXPECTED_REGISTERED_ROWS = 1817480
 
 
 # ============================================================
@@ -347,13 +347,13 @@ EXPECTED_DATASET_ROWS = {
         4,
 
     "synthetic/master/cities":
-        23,
+        33,
 
     "synthetic/master/vehicle_models":
         5,
 
     "synthetic/master/dealers":
-        30,
+        40,
 
     "synthetic/master/plants":
         7,
@@ -365,10 +365,10 @@ EXPECTED_DATASET_ROWS = {
         120,
 
     "synthetic/master/warehouses":
-        8,
+        26,
 
     "synthetic/master/routes":
-        15,
+        100,
 
     "synthetic/master/finance_products":
         6,
@@ -390,13 +390,13 @@ EXPECTED_DATASET_ROWS = {
         5325,
 
     "synthetic/auto/bookings":
-        1611,
+        1597,
 
     "synthetic/auto/finance_applications":
-        1085,
+        1058,
 
     "synthetic/auto/cancellations":
-        263,
+        233,
 
     "synthetic/auto/suppliers":
         20,
@@ -408,13 +408,13 @@ EXPECTED_DATASET_ROWS = {
         1484,
 
     "synthetic/auto/allocations":
-        1348,
+        1364,
 
     "synthetic/auto/deliveries":
-        1348,
+        1364,
 
     "synthetic/auto/service_events":
-        1113,
+        1144,
 
     "synthetic/auto/warranty_claims":
         53,

@@ -1,0 +1,17 @@
+{
+  "warning_id": "a078d70b81b441e799c0e79de90663c7",
+  "vehicle_id": "VEHUNIT_SYN_0000661",
+  "vehicle_model_id": null,
+  "warning_type": "TRANSMISSION_OVERHEATING",
+  "target_metric": "transmission_temperature_c",
+  "prediction_probability": 0.7074,
+  "forecast_horizon_hours": 15,
+  "severity": "HIGH",
+  "warning_timestamp": "2026-09-15T19:00:40.320583+00:00",
+  "status": "OPEN",
+  "causal_run_id": null,
+  "last_seen_at": "2026-09-17T11:21:38.602422+00:00",
+  "forecast_gap_hours": 3,
+  "is_warranty_eligible": false,
+  "eligibility_notes": "Not eligible - driving-behavior exclusion: torque_converter_slip_rpm exceeded the fleet's 95th-percentile reading (269.08) - see the Driving-Behavior Exclusion Clauses document's DRIVETRAIN_COMPONENTS clause."
+}

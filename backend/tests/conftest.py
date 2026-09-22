@@ -9,6 +9,7 @@ SQLite (aiosqlite) engine — the portable column variants in
 
 from __future__ import annotations
 
+import json
 import os
 import random
 from collections.abc import AsyncIterator
@@ -1015,6 +1016,151 @@ async def credit_pricing_seed(db_session: AsyncSession) -> None:
     listings, assessments = _credit_pricing_seed_rows(rng)
     await db_session.execute(runtime_tables["elv_assessments"].insert(), assessments)
     await db_session.execute(runtime_tables["credit_listings"].insert(), listings)
+    await db_session.commit()
+
+
+def _canonical_recommendation_row(
+    recommendation_id: str,
+    *,
+    expected_impact: dict | None,
+    confidence: float = 0.82,
+    risk_level: str = "MEDIUM",
+) -> dict:
+    return {
+        "recommendation_id": recommendation_id,
+        "domain": "COLLECTIONS",
+        "use_case": "COLLECTIONS_RECOVERY",
+        "target_entity_type": "COLLECTION_CASE",
+        "target_entity_id": "seed-case-outcome-1",
+        "recommendation_type": "RECOMMEND_PAYMENT_PLAN",
+        "generated_at": datetime(2026, 1, 5, tzinfo=UTC),
+        "evidence_json": json.dumps({"dpd": 45, "outstanding_inr": 120000}),
+        "expected_impact": json.dumps(expected_impact) if expected_impact is not None else json.dumps({}),
+        "confidence": confidence,
+        "risk_level": risk_level,
+        "status": "ACCEPTED",
+        "data_origin": "TEST_SEED",
+        "generator_version": "test",
+    }
+
+
+def _canonical_decision_row(decision_id: str, recommendation_id: str, *, decision: str = "APPROVED") -> dict:
+    return {
+        "decision_id": decision_id,
+        "recommendation_id": recommendation_id,
+        "domain": "COLLECTIONS",
+        "use_case": "COLLECTIONS_RECOVERY",
+        "target_entity_type": "COLLECTION_CASE",
+        "target_entity_id": "seed-case-outcome-1",
+        "recommendation_type": "RECOMMEND_PAYMENT_PLAN",
+        "recommendation_confidence": 0.82,
+        "recommendation_risk_level": "MEDIUM",
+        "decision_mode": "AUTOMATED_POLICY",
+        "decision": decision,
+        "decided_at": datetime(2026, 1, 5, 1, 0, tzinfo=UTC),
+        "compliance_checks_count": 5,
+        "compliance_pass_count": 5,
+        "compliance_warn_count": 0,
+        "compliance_fail_count": 0,
+        "compliance_review_required_count": 0,
+        "human_review_required": False,
+        "human_review_id": None,
+        "review_priority_score": 0.1,
+        "decision_reason_code": "AUTO_APPROVED",
+        "data_origin": "TEST_SEED",
+        "generator_version": "test",
+    }
+
+
+def _canonical_action_outcome_row(
+    action_id: str,
+    recommendation_id: str,
+    decision_id: str,
+    *,
+    outcome_value: str = "EXECUTED",
+    business_outcome_observed: bool = True,
+    business_outcome_note: str = "Customer honored the revised payment plan.",
+    observed_at: datetime | None = None,
+) -> dict:
+    return {
+        "action_id": action_id,
+        "workflow_run_id": "seed-workflow-1",
+        "recommendation_id": recommendation_id,
+        "decision_id": decision_id,
+        "domain": "COLLECTIONS",
+        "target_entity_type": "COLLECTION_CASE",
+        "target_entity_id": "seed-case-outcome-1",
+        "action_type": "SEND_PAYMENT_PLAN_OFFER",
+        "action_status": "EXECUTED",
+        "outcome_type": "ACTION_EXECUTION_STATUS",
+        "outcome_value": outcome_value,
+        "outcome_scope": "SINGLE_CASE",
+        "business_outcome_observed": business_outcome_observed,
+        "business_outcome_note": business_outcome_note,
+        "observed_at": observed_at or datetime(2026, 1, 6, tzinfo=UTC),
+        "data_origin": "TEST_SEED",
+        "generator_version": "test",
+    }
+
+
+# Real IDs used by the outcome-tracking tests — see
+# tests/api/test_trust_outcome.py.
+CANONICAL_OUTCOME_OBSERVED_DECISION_ID = "DEC_SEED_OUTCOME_OBSERVED"
+CANONICAL_OUTCOME_OBSERVED_2_DECISION_ID = "DEC_SEED_OUTCOME_OBSERVED_2"
+CANONICAL_OUTCOME_PENDING_DECISION_ID = "DEC_SEED_OUTCOME_PENDING"
+CANONICAL_OUTCOME_EMPTY_DECISION_ID = "DEC_SEED_OUTCOME_EMPTY"
+
+
+@pytest_asyncio.fixture
+async def canonical_trust_outcome_seed(db_session: AsyncSession) -> None:
+    """Seed real-shaped trust_decisions/recommendations/action_outcomes
+    covering the three outcome states: observed, expected-but-pending,
+    and genuinely empty (recommendation row missing — a defensive edge
+    case, never a real production shape, used only to prove the code
+    degrades to a clean empty state rather than fabricating a value)."""
+    recommendations = [
+        _canonical_recommendation_row(
+            "REC_SEED_OUTCOME_OBSERVED",
+            expected_impact={"metric": "recovery_probability", "direction": "IMPROVE", "value": 0.15},
+        ),
+        _canonical_recommendation_row(
+            "REC_SEED_OUTCOME_OBSERVED_2",
+            expected_impact={"metric": "recovery_probability", "direction": "IMPROVE", "value": 0.22},
+        ),
+        _canonical_recommendation_row(
+            "REC_SEED_OUTCOME_PENDING",
+            expected_impact={"metric": "recovery_probability", "direction": "IMPROVE", "value": 0.09},
+        ),
+        # Deliberately no recommendation row for CANONICAL_OUTCOME_EMPTY_DECISION_ID.
+    ]
+    decisions = [
+        _canonical_decision_row(CANONICAL_OUTCOME_OBSERVED_DECISION_ID, "REC_SEED_OUTCOME_OBSERVED"),
+        _canonical_decision_row(CANONICAL_OUTCOME_OBSERVED_2_DECISION_ID, "REC_SEED_OUTCOME_OBSERVED_2"),
+        _canonical_decision_row(CANONICAL_OUTCOME_PENDING_DECISION_ID, "REC_SEED_OUTCOME_PENDING"),
+        _canonical_decision_row(CANONICAL_OUTCOME_EMPTY_DECISION_ID, "REC_SEED_OUTCOME_MISSING", decision="REJECTED"),
+    ]
+    action_outcomes = [
+        _canonical_action_outcome_row(
+            "ACT_SEED_OUTCOME_1",
+            "REC_SEED_OUTCOME_OBSERVED",
+            CANONICAL_OUTCOME_OBSERVED_DECISION_ID,
+            outcome_value="EXECUTED",
+            business_outcome_observed=True,
+            business_outcome_note="Customer honored the revised payment plan.",
+        ),
+        _canonical_action_outcome_row(
+            "ACT_SEED_OUTCOME_2",
+            "REC_SEED_OUTCOME_OBSERVED_2",
+            CANONICAL_OUTCOME_OBSERVED_2_DECISION_ID,
+            outcome_value="FAILED",
+            business_outcome_observed=False,
+            business_outcome_note="Customer did not respond to the offer.",
+        ),
+        # Deliberately no action_outcomes row for the PENDING/EMPTY decisions.
+    ]
+    await db_session.execute(runtime_tables["recommendations"].insert(), recommendations)
+    await db_session.execute(runtime_tables["trust_decisions"].insert(), decisions)
+    await db_session.execute(runtime_tables["action_outcomes"].insert(), action_outcomes)
     await db_session.commit()
 
 

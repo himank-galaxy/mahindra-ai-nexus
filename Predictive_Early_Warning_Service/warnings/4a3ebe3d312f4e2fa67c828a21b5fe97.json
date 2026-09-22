@@ -1,0 +1,17 @@
+{
+  "warning_id": "4a3ebe3d312f4e2fa67c828a21b5fe97",
+  "vehicle_id": "VEHUNIT_SYN_0000335",
+  "vehicle_model_id": null,
+  "warning_type": "TRANSMISSION_OVERHEATING",
+  "target_metric": "transmission_temperature_c",
+  "prediction_probability": 0.9154,
+  "forecast_horizon_hours": 15,
+  "severity": "HIGH",
+  "warning_timestamp": "2026-09-15T13:18:07.951835+00:00",
+  "status": "OPEN",
+  "causal_run_id": null,
+  "last_seen_at": "2026-09-16T09:07:05.257141+00:00",
+  "forecast_gap_hours": 3,
+  "is_warranty_eligible": false,
+  "eligibility_notes": "Not eligible - driving-behavior exclusion: transmission_temperature_c exceeded the fleet's 95th-percentile reading (74.22) - see the Driving-Behavior Exclusion Clauses document's DRIVETRAIN_COMPONENTS clause."
+}

@@ -1,0 +1,53 @@
+{
+  "warning_id": "1dab5bd814dd4179a8cf21735215ccbe",
+  "generated_at": "2026-09-16T11:13:19.840545+00:00",
+  "whats_happening": "Vehicle VEHUNIT_SYN_0000373 is showing drivetrain slip. The system detected a predicted risk of 72%, likely within 3-15 hours from when this was first detected, and traced the cause-and-effect chain below to help identify what triggered it and what else could be affected.",
+  "chain_narrative": "transmission_slip_ms.",
+  "chain_nodes": [
+    {
+      "var_name": "VEHUNIT_SYN_0000373||transmission_slip_ms",
+      "entity_id": "VEHUNIT_SYN_0000373",
+      "metric": "transmission_slip_ms",
+      "role": "TARGET",
+      "role_label": "Main Alert",
+      "role_icon": "\ud83c\udfaf",
+      "hops": null,
+      "explanation": "Tracks transmission_slip_ms on this vehicle - this is the metric the warning is actually about."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000373||torque_converter_slip_rpm",
+      "entity_id": "VEHUNIT_SYN_0000373",
+      "metric": "torque_converter_slip_rpm",
+      "role": "UNCERTAIN_LINK",
+      "role_label": "Uncertain Link",
+      "role_icon": "\u2753",
+      "hops": null,
+      "explanation": "Tracks torque_converter_slip_rpm on this vehicle. This has a real statistical link to the warning, but the direction of cause-and-effect could not be confidently resolved."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000373||vehicle_vibration_mm_s",
+      "entity_id": "VEHUNIT_SYN_0000373",
+      "metric": "vehicle_vibration_mm_s",
+      "role": "UNCERTAIN_LINK",
+      "role_label": "Uncertain Link",
+      "role_icon": "\u2753",
+      "hops": null,
+      "explanation": "Tracks vehicle_vibration_mm_s on this vehicle. This has a real statistical link to the warning, but the direction of cause-and-effect could not be confidently resolved."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000373||vehicle_speed_kph",
+      "entity_id": "VEHUNIT_SYN_0000373",
+      "metric": "vehicle_speed_kph",
+      "role": "UNCERTAIN_LINK",
+      "role_label": "Uncertain Link",
+      "role_icon": "\u2753",
+      "hops": null,
+      "explanation": "Tracks vehicle_speed_kph on this vehicle. This has a real statistical link to the warning, but the direction of cause-and-effect could not be confidently resolved."
+    }
+  ],
+  "root_cause_summary": "No confidently-directed root cause was found in this analysis - either nothing in this graph statistically precedes the warning, or the direction could not be resolved (see any uncertain-direction relationships below).",
+  "what_could_go_wrong": "No downstream effects were found in this analysis.",
+  "next_steps": [],
+  "next_steps_source": "fallback_menu",
+  "saved_at": "2026-09-16T11:13:19.842801+00:00"
+}

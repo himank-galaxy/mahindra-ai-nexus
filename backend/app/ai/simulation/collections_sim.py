@@ -20,7 +20,7 @@ from __future__ import annotations
 from typing import Any
 
 from app.ai.simulation.confidence import trained_model_confidence
-from app.ai.simulation.models.collections_model import FRIENDLY_NAMES, get_or_train_models
+from app.ai.simulation.models.collections_model import CollectionsModels, FRIENDLY_NAMES, get_or_train_models
 from app.ai.utils import js_round
 from app.repositories.collections_simulation import CHANNEL_DISPLAY_NAMES, OFFER_DISPLAY_NAMES, CollectionsSimulationRepository
 from app.schemas.simulation import CollectionsSimIn
@@ -66,6 +66,95 @@ def _friction(channel: str, field_intensity_pct: int) -> int:
     return min(100, FRICTION_BY_CHANNEL[channel] + js_round(field_intensity_pct / 100 * FRICTION_FIELD_INTENSITY_WEIGHT))
 
 
+def sweep_best_channel_offer(
+    models: CollectionsModels,
+    recovery_features: dict[str, float],
+    outstanding_inr: float,
+    field_intensity_pct: int = 0,
+    seed_channel: str | None = None,
+    seed_offer: str | None = None,
+) -> tuple[str, str, float, float]:
+    """Sweep the real action space (5 channels x 4 offers) for these real
+    recovery features and return whichever maximizes expected net
+    recovery — never simply the highest recovery probability alone.
+    Reused for both a cohort's averaged features (``run()`` below) and a
+    single real case's own features (see app/services/collections.py).
+
+    ``seed_channel``/``seed_offer`` seed the starting "best" with a
+    specific combination (e.g. the caller's own scenario selection) so a
+    later candidate must be *strictly* better to replace it — without a
+    seed, the sweep starts from the first channel/offer in the real
+    category lists.
+    """
+    best_channel = seed_channel or CHANNELS[0]
+    best_offer = seed_offer or OFFERS[0]
+    best_prob = models.recovery.predict_proba(recovery_features, {"channel": best_channel, "offer_type": best_offer})
+    best_net = best_prob * outstanding_inr - _cost_inr(best_channel, field_intensity_pct)
+    for candidate_channel in CHANNELS:
+        for candidate_offer in OFFERS:
+            candidate_prob = models.recovery.predict_proba(
+                recovery_features, {"channel": candidate_channel, "offer_type": candidate_offer}
+            )
+            candidate_cost = _cost_inr(candidate_channel, field_intensity_pct)
+            candidate_net = candidate_prob * outstanding_inr - candidate_cost
+            if candidate_net > best_net:
+                best_channel, best_offer, best_prob, best_net = (
+                    candidate_channel,
+                    candidate_offer,
+                    candidate_prob,
+                    candidate_net,
+                )
+    return best_channel, best_offer, best_prob, best_net
+
+
+def recovery_drivers(models: CollectionsModels, channel: str, offer: str) -> list[dict[str, Any]]:
+    """Top-2 real numeric drivers plus the specific channel/offer's own
+    historical effect — the real evidence behind a recovery-model
+    prediction for this exact channel/offer combination. Reused for both
+    the cohort simulation (``run()`` below) and case-level compliance
+    evidence (see app/services/collections.py)."""
+    channel_label = CHANNEL_DISPLAY_NAMES[channel]
+    offer_label = OFFER_DISPLAY_NAMES[offer]
+    drivers: list[dict[str, Any]] = [
+        {
+            "name": FRIENDLY_NAMES.get(feature, feature),
+            "direction": direction,
+            "contribution": round(coefficient, 3),
+            "source": "trained_model",
+            "detail": (
+                f"Standardized effect on predicted recovery probability "
+                f"(recovery model holdout AUC {models.recovery.holdout_auc:.2f})."
+            ),
+        }
+        for feature, coefficient, direction in models.recovery.numeric_drivers()[:2]
+    ]
+    channel_coef = models.recovery.categorical_coefficient("channel", channel)
+    drivers.append(
+        {
+            "name": f"Channel: {channel_label}",
+            "direction": "positive" if (channel_coef or 0) >= 0 else "negative",
+            "contribution": round(channel_coef, 3) if channel_coef is not None else 0.0,
+            "source": "trained_model",
+            "detail": "This channel's own historical recovery effect vs. the reference channel."
+            if channel_coef is not None
+            else "Reference channel for this effect — no separate contrast estimated against itself.",
+        }
+    )
+    offer_coef = models.recovery.categorical_coefficient("offer_type", offer)
+    drivers.append(
+        {
+            "name": f"Offer: {offer_label}",
+            "direction": "positive" if (offer_coef or 0) >= 0 else "negative",
+            "contribution": round(offer_coef, 3) if offer_coef is not None else 0.0,
+            "source": "trained_model",
+            "detail": "This offer's own historical recovery effect vs. the reference offer."
+            if offer_coef is not None
+            else "Reference offer for this effect — no separate contrast estimated against itself.",
+        }
+    )
+    return drivers
+
+
 async def run(payload: CollectionsSimIn, repo: CollectionsSimulationRepository) -> dict[str, Any]:
     models = await get_or_train_models(repo)
     recovery_features, recovery_cohort_size = models.cohort_recovery_features(payload.risk)
@@ -93,16 +182,14 @@ async def run(payload: CollectionsSimIn, repo: CollectionsSimulationRepository) 
     # offers) for THIS risk segment and field intensity, and recommend
     # whichever maximizes expected net recovery — never simply the
     # highest recovery probability alone.
-    best_channel, best_offer, best_net = payload.channel, payload.offer, net_recovery_inr
-    for candidate_channel in CHANNELS:
-        for candidate_offer in OFFERS:
-            candidate_prob = models.recovery.predict_proba(
-                recovery_features, {"channel": candidate_channel, "offer_type": candidate_offer}
-            )
-            candidate_cost = _cost_inr(candidate_channel, payload.field)
-            candidate_net = candidate_prob * avg_outstanding_inr - candidate_cost
-            if candidate_net > best_net:
-                best_channel, best_offer, best_net = candidate_channel, candidate_offer, candidate_net
+    best_channel, best_offer, _best_prob, best_net = sweep_best_channel_offer(
+        models,
+        recovery_features,
+        avg_outstanding_inr,
+        payload.field,
+        seed_channel=payload.channel,
+        seed_offer=payload.offer,
+    )
 
     matches_selection = best_channel == payload.channel and best_offer == payload.offer
     channel_label = CHANNEL_DISPLAY_NAMES[payload.channel]
@@ -120,43 +207,7 @@ async def run(payload: CollectionsSimIn, repo: CollectionsSimulationRepository) 
         f"₹{js_round(avg_outstanding_inr)})."
     )
 
-    predictive_drivers: list[dict[str, Any]] = [
-        {
-            "name": FRIENDLY_NAMES.get(feature, feature),
-            "direction": direction,
-            "contribution": round(coefficient, 3),
-            "source": "trained_model",
-            "detail": (
-                f"Standardized effect on predicted recovery probability "
-                f"(recovery model holdout AUC {models.recovery.holdout_auc:.2f})."
-            ),
-        }
-        for feature, coefficient, direction in models.recovery.numeric_drivers()[:2]
-    ]
-    channel_coef = models.recovery.categorical_coefficient("channel", payload.channel)
-    predictive_drivers.append(
-        {
-            "name": f"Channel: {channel_label}",
-            "direction": "positive" if (channel_coef or 0) >= 0 else "negative",
-            "contribution": round(channel_coef, 3) if channel_coef is not None else 0.0,
-            "source": "trained_model",
-            "detail": "This channel's own historical recovery effect vs. the reference channel."
-            if channel_coef is not None
-            else "Reference channel for this effect — no separate contrast estimated against itself.",
-        }
-    )
-    offer_coef = models.recovery.categorical_coefficient("offer_type", payload.offer)
-    predictive_drivers.append(
-        {
-            "name": f"Offer: {offer_label}",
-            "direction": "positive" if (offer_coef or 0) >= 0 else "negative",
-            "contribution": round(offer_coef, 3) if offer_coef is not None else 0.0,
-            "source": "trained_model",
-            "detail": "This offer's own historical recovery effect vs. the reference offer."
-            if offer_coef is not None
-            else "Reference offer for this effect — no separate contrast estimated against itself.",
-        }
-    )
+    predictive_drivers = recovery_drivers(models, payload.channel, payload.offer)
 
     return {
         "prob": js_round(recovery_prob * 100),

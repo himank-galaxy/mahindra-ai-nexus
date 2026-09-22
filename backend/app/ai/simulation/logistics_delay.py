@@ -84,6 +84,22 @@ def _mixture_probability(
     )
 
 
+def expected_risk_cost_inr(
+    models: LogisticsDelayModels,
+    route_id: str,
+    delay_prob: float,
+    breach_prob: float,
+) -> float:
+    """The calibrated rupee cost of a real predicted delay/breach
+    probability alone — never including the route's own base freight
+    cost (see ``_route_outcome`` below, which adds that in for the
+    scenario's "total expected cost" concept). Reused for real per-
+    shipment/route risk exposure (see app/services/operational_logistics.py)
+    without pulling in the scenario-only base-cost term."""
+    expected_delay_minutes = delay_prob * models.mean_delay_minutes_when_delayed(route_id)
+    return (expected_delay_minutes / 60) * COST_PER_DELAY_HOUR_INR + breach_prob * SLA_BREACH_PENALTY_INR
+
+
 def _route_outcome(
     models: LogisticsDelayModels,
     route: dict,
@@ -95,13 +111,96 @@ def _route_outcome(
     """``(expected_cost_inr, delay_probability, breach_probability)`` for one candidate route."""
     delay_prob = _mixture_probability(models.any_delay, features, route["route_id"], priority, weather_p, vehicle_p)
     breach_prob = _mixture_probability(models.breach, features, route["route_id"], priority, weather_p, vehicle_p)
-    expected_delay_minutes = delay_prob * models.mean_delay_minutes_when_delayed(route["route_id"])
-    cost = (
-        route["baseline_cost_inr"]
-        + (expected_delay_minutes / 60) * COST_PER_DELAY_HOUR_INR
-        + breach_prob * SLA_BREACH_PENALTY_INR
-    )
+    cost = route["baseline_cost_inr"] + expected_risk_cost_inr(models, route["route_id"], delay_prob, breach_prob)
     return cost, delay_prob, breach_prob
+
+
+def best_route_for_shipment(
+    models: LogisticsDelayModels,
+    shipment_features: dict[str, float],
+    priority: str,
+    current_route: dict,
+    alternatives: list[dict],
+) -> tuple[dict, float, float, float]:
+    """Sweep every real alternative route on the same corridor for one
+    real shipment, holding that shipment's own real recorded weather/
+    vehicle/warehouse features fixed (never a scenario slider — the
+    shipment already has these as genuine 0/1 flags and a real
+    warehouse-congestion reading), and return whichever route minimizes
+    expected cost. Mirrors Collections' ``sweep_best_channel_offer``
+    exactly, with ``route_id`` swept instead of channel/offer.
+
+    Returns ``(best_route, best_delay_prob, best_breach_prob, best_cost_inr)``.
+    """
+
+    def _score(route: dict) -> tuple[float, float, float]:
+        features = {**shipment_features, "distance_km": float(route["distance_km"])}
+        categorical = {"route_id": route["route_id"], "priority": priority}
+        delay_prob = models.any_delay.predict_proba(features, categorical)
+        breach_prob = models.breach.predict_proba(features, categorical)
+        cost = float(route["baseline_cost_inr"]) + expected_risk_cost_inr(
+            models, route["route_id"], delay_prob, breach_prob
+        )
+        return delay_prob, breach_prob, cost
+
+    best_route = current_route
+    best_delay, best_breach, best_cost = _score(current_route)
+    for candidate in alternatives:
+        candidate_delay, candidate_breach, candidate_cost = _score(candidate)
+        if candidate_cost < best_cost:
+            best_route, best_delay, best_breach, best_cost = candidate, candidate_delay, candidate_breach, candidate_cost
+    return best_route, best_delay, best_breach, best_cost
+
+
+def breach_drivers(models: LogisticsDelayModels, route_id: str, route_label: str, priority: str) -> list[dict[str, Any]]:
+    """Top-2 real numeric drivers plus this route/priority's own
+    historical breach effect — the real evidence behind a breach-model
+    prediction. Reused for both the cohort simulation (``run()`` below)
+    and real per-shipment/route compliance evidence (see
+    app/services/operational_logistics.py)."""
+    priority_label = PRIORITY_DISPLAY_NAMES[priority]
+    drivers: list[dict[str, Any]] = [
+        {
+            "name": FRIENDLY_NAMES.get(feature, feature),
+            "direction": direction,
+            "contribution": round(coefficient, 3),
+            "source": "trained_model",
+            "detail": (
+                f"Standardized effect on predicted SLA-breach probability "
+                f"(breach model holdout AUC {models.breach.holdout_auc:.2f})."
+            ),
+        }
+        for feature, coefficient, direction in models.breach.numeric_drivers()[:2]
+    ]
+    route_coef = models.breach.categorical_coefficient("route_id", route_id)
+    drivers.append(
+        {
+            "name": f"Route: {route_label}",
+            "direction": "positive" if (route_coef or 0) >= 0 else "negative",
+            "contribution": round(route_coef, 3) if route_coef is not None else 0.0,
+            "source": "trained_model",
+            "detail": (
+                "This route's own historical breach effect vs. the reference route."
+                if route_coef is not None
+                else "Reference route for this effect — no separate contrast estimated against itself."
+            ),
+        }
+    )
+    priority_coef = models.breach.categorical_coefficient("priority", priority)
+    drivers.append(
+        {
+            "name": f"Priority: {priority_label}",
+            "direction": "positive" if (priority_coef or 0) >= 0 else "negative",
+            "contribution": round(priority_coef, 3) if priority_coef is not None else 0.0,
+            "source": "trained_model",
+            "detail": (
+                "This priority tier's own historical breach effect vs. the reference tier."
+                if priority_coef is not None
+                else "Reference priority tier for this effect — no separate contrast estimated against itself."
+            ),
+        }
+    )
+    return drivers
 
 
 async def run(payload: LogisticsDelaySimIn, repo: LogisticsDelaySimulationRepository) -> dict[str, Any]:
@@ -155,49 +254,7 @@ async def run(payload: LogisticsDelaySimIn, repo: LogisticsDelaySimulationReposi
             f"({route_cohort_size} shipments observed on {route_label})."
         )
 
-    priority_label = PRIORITY_DISPLAY_NAMES[payload.sla]
-
-    predictive_drivers: list[dict[str, Any]] = [
-        {
-            "name": FRIENDLY_NAMES.get(feature, feature),
-            "direction": direction,
-            "contribution": round(coefficient, 3),
-            "source": "trained_model",
-            "detail": (
-                f"Standardized effect on predicted SLA-breach probability "
-                f"(breach model holdout AUC {models.breach.holdout_auc:.2f})."
-            ),
-        }
-        for feature, coefficient, direction in models.breach.numeric_drivers()[:2]
-    ]
-    route_coef = models.breach.categorical_coefficient("route_id", payload.route)
-    predictive_drivers.append(
-        {
-            "name": f"Route: {route_label}",
-            "direction": "positive" if (route_coef or 0) >= 0 else "negative",
-            "contribution": round(route_coef, 3) if route_coef is not None else 0.0,
-            "source": "trained_model",
-            "detail": (
-                "This route's own historical breach effect vs. the reference route."
-                if route_coef is not None
-                else "Reference route for this effect — no separate contrast estimated against itself."
-            ),
-        }
-    )
-    priority_coef = models.breach.categorical_coefficient("priority", payload.sla)
-    predictive_drivers.append(
-        {
-            "name": f"Priority: {priority_label}",
-            "direction": "positive" if (priority_coef or 0) >= 0 else "negative",
-            "contribution": round(priority_coef, 3) if priority_coef is not None else 0.0,
-            "source": "trained_model",
-            "detail": (
-                "This priority tier's own historical breach effect vs. the reference tier."
-                if priority_coef is not None
-                else "Reference priority tier for this effect — no separate contrast estimated against itself."
-            ),
-        }
-    )
+    predictive_drivers = breach_drivers(models, payload.route, route_label, payload.sla)
 
     return {
         "delay": js_round(delay_prob * 100),

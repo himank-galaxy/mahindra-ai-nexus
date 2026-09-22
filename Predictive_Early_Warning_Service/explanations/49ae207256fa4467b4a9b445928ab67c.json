@@ -1,0 +1,53 @@
+{
+  "warning_id": "49ae207256fa4467b4a9b445928ab67c",
+  "generated_at": "2026-09-18T14:16:24.384333+00:00",
+  "whats_happening": "Vehicle VEHUNIT_SYN_0001326 is showing harsh braking pattern. The system detected a predicted risk of 61%, likely within 3-15 hours from when this was first detected, and traced the cause-and-effect chain below to help identify what triggered it and what else could be affected.",
+  "chain_narrative": "vehicle_vibration_mm_s, which in turn leads to impact_g_force (strength +0.63) (the metric this warning is about).",
+  "chain_nodes": [
+    {
+      "var_name": "VEHUNIT_SYN_0001326||vehicle_vibration_mm_s",
+      "entity_id": "VEHUNIT_SYN_0001326",
+      "metric": "vehicle_vibration_mm_s",
+      "role": "ROOT_CANDIDATE",
+      "role_label": "Root Cause",
+      "role_icon": "\ud83d\udd34",
+      "hops": 1,
+      "explanation": "Tracks vehicle_vibration_mm_s on this vehicle. This has been identified as a root-cause candidate - no confidently-directed cause was found for it within this analysis."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001326||impact_g_force",
+      "entity_id": "VEHUNIT_SYN_0001326",
+      "metric": "impact_g_force",
+      "role": "TARGET",
+      "role_label": "Main Alert",
+      "role_icon": "\ud83c\udfaf",
+      "hops": null,
+      "explanation": "Tracks impact_g_force on this vehicle - this is the metric the warning is actually about."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001326||vertical_acceleration_g",
+      "entity_id": "VEHUNIT_SYN_0001326",
+      "metric": "vertical_acceleration_g",
+      "role": "UNCERTAIN_LINK",
+      "role_label": "Uncertain Link",
+      "role_icon": "\u2753",
+      "hops": null,
+      "explanation": "Tracks vertical_acceleration_g on this vehicle. This has a real statistical link to the warning, but the direction of cause-and-effect could not be confidently resolved."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001326||road_roughness_index",
+      "entity_id": "VEHUNIT_SYN_0001326",
+      "metric": "road_roughness_index",
+      "role": "UNCERTAIN_LINK",
+      "role_label": "Uncertain Link",
+      "role_icon": "\u2753",
+      "hops": null,
+      "explanation": "Tracks road_roughness_index on this vehicle. This has a real statistical link to the warning, but the direction of cause-and-effect could not be confidently resolved."
+    }
+  ],
+  "root_cause_summary": "The analysis points to vehicle_vibration_mm_s as the most likely starting point of the problem - this is where the issue originates before spreading to other parts of the system, based on this graph.",
+  "what_could_go_wrong": "No downstream effects were found in this analysis.",
+  "next_steps": [],
+  "next_steps_source": "fallback_menu",
+  "saved_at": "2026-09-18T14:16:24.385383+00:00"
+}

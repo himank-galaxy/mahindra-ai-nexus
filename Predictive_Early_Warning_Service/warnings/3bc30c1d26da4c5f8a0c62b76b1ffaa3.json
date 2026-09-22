@@ -1,0 +1,15 @@
+{
+  "warning_id": "3bc30c1d26da4c5f8a0c62b76b1ffaa3",
+  "vehicle_id": "VEHUNIT_SYN_0000841",
+  "vehicle_model_id": null,
+  "warning_type": "LOW_BATTERY_VOLTAGE",
+  "target_metric": "battery_voltage_v",
+  "prediction_probability": 0.6376,
+  "forecast_horizon_hours": 15,
+  "severity": "HIGH",
+  "warning_timestamp": "2026-09-03T01:11:45.357080+00:00",
+  "status": "OPEN",
+  "causal_run_id": null,
+  "last_seen_at": "2026-09-11T15:24:19.610242+00:00",
+  "forecast_gap_hours": 3
+}

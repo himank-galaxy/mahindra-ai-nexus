@@ -1,0 +1,153 @@
+{
+  "warning_id": "867adbec22f742f49776711c8f854989",
+  "generated_at": "2026-09-21T12:58:42.433222+00:00",
+  "whats_happening": "Vehicle VEHUNIT_SYN_0000114 is showing suspension strain. The system detected a predicted risk of 71%, likely within 3-15 hours from when this was first detected, and traced the cause-and-effect chain below to help identify what triggered it and what else could be affected.",
+  "chain_narrative": "road_roughness_index, which in turn leads to vertical_acceleration_g (strength +0.30), which in turn leads to impact_g_force (strength +0.29), which in turn leads to vehicle_vibration_mm_s (strength +0.58) (the metric this warning is about), which in turn leads to battery_temperature_c, torque_converter_slip_rpm and vehicle_speed_kph, which in turn leads to battery_current_a, battery_voltage_v and lateral_acceleration_g.",
+  "chain_nodes": [
+    {
+      "var_name": "VEHUNIT_SYN_0000114||road_roughness_index",
+      "entity_id": "VEHUNIT_SYN_0000114",
+      "metric": "road_roughness_index",
+      "role": "ROOT_CANDIDATE",
+      "role_label": "Root Cause",
+      "role_icon": "\ud83d\udd34",
+      "hops": 3,
+      "explanation": "Tracks road_roughness_index on this vehicle. This has been identified as a root-cause candidate - no confidently-directed cause was found for it within this analysis."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000114||vertical_acceleration_g",
+      "entity_id": "VEHUNIT_SYN_0000114",
+      "metric": "vertical_acceleration_g",
+      "role": "UPSTREAM",
+      "role_label": "Contributing Factor",
+      "role_icon": "\ud83d\udd35",
+      "hops": 2,
+      "explanation": "Tracks vertical_acceleration_g on this vehicle. This is an intermediate step the warning is statistically linked to on its way through the chain."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000114||impact_g_force",
+      "entity_id": "VEHUNIT_SYN_0000114",
+      "metric": "impact_g_force",
+      "role": "UPSTREAM",
+      "role_label": "Contributing Factor",
+      "role_icon": "\ud83d\udd35",
+      "hops": 1,
+      "explanation": "Tracks impact_g_force on this vehicle. This is an intermediate step the warning is statistically linked to on its way through the chain."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000114||vehicle_vibration_mm_s",
+      "entity_id": "VEHUNIT_SYN_0000114",
+      "metric": "vehicle_vibration_mm_s",
+      "role": "TARGET",
+      "role_label": "Main Alert",
+      "role_icon": "\ud83c\udfaf",
+      "hops": null,
+      "explanation": "Tracks vehicle_vibration_mm_s on this vehicle - this is the metric the warning is actually about."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000114||battery_temperature_c",
+      "entity_id": "VEHUNIT_SYN_0000114",
+      "metric": "battery_temperature_c",
+      "role": "DOWNSTREAM",
+      "role_label": "Affected / At Risk",
+      "role_icon": "\u26a0\ufe0f",
+      "hops": 1,
+      "explanation": "Tracks battery_temperature_c on this vehicle. This represents a downstream metric that may be affected if the current condition continues."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000114||torque_converter_slip_rpm",
+      "entity_id": "VEHUNIT_SYN_0000114",
+      "metric": "torque_converter_slip_rpm",
+      "role": "DOWNSTREAM",
+      "role_label": "Affected / At Risk",
+      "role_icon": "\u26a0\ufe0f",
+      "hops": 1,
+      "explanation": "Tracks torque_converter_slip_rpm on this vehicle. This represents a downstream metric that may be affected if the current condition continues."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000114||vehicle_speed_kph",
+      "entity_id": "VEHUNIT_SYN_0000114",
+      "metric": "vehicle_speed_kph",
+      "role": "DOWNSTREAM",
+      "role_label": "Affected / At Risk",
+      "role_icon": "\u26a0\ufe0f",
+      "hops": 1,
+      "explanation": "Tracks vehicle_speed_kph on this vehicle. This represents a downstream metric that may be affected if the current condition continues."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000114||battery_current_a",
+      "entity_id": "VEHUNIT_SYN_0000114",
+      "metric": "battery_current_a",
+      "role": "DOWNSTREAM",
+      "role_label": "Affected / At Risk",
+      "role_icon": "\u26a0\ufe0f",
+      "hops": 2,
+      "explanation": "Tracks battery_current_a on this vehicle. This represents a downstream metric that may be affected if the current condition continues."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000114||battery_voltage_v",
+      "entity_id": "VEHUNIT_SYN_0000114",
+      "metric": "battery_voltage_v",
+      "role": "DOWNSTREAM",
+      "role_label": "Affected / At Risk",
+      "role_icon": "\u26a0\ufe0f",
+      "hops": 2,
+      "explanation": "Tracks battery_voltage_v on this vehicle. This represents a downstream metric that may be affected if the current condition continues."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000114||lateral_acceleration_g",
+      "entity_id": "VEHUNIT_SYN_0000114",
+      "metric": "lateral_acceleration_g",
+      "role": "DOWNSTREAM",
+      "role_label": "Affected / At Risk",
+      "role_icon": "\u26a0\ufe0f",
+      "hops": 2,
+      "explanation": "Tracks lateral_acceleration_g on this vehicle. This represents a downstream metric that may be affected if the current condition continues."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000114||ambient_temperature_c",
+      "entity_id": "VEHUNIT_SYN_0000114",
+      "metric": "ambient_temperature_c",
+      "role": "UNCERTAIN_LINK",
+      "role_label": "Uncertain Link",
+      "role_icon": "\u2753",
+      "hops": null,
+      "explanation": "Tracks ambient_temperature_c on this vehicle. This has a real statistical link to the warning, but the direction of cause-and-effect could not be confidently resolved."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000114||battery_soc_pct",
+      "entity_id": "VEHUNIT_SYN_0000114",
+      "metric": "battery_soc_pct",
+      "role": "UNCERTAIN_LINK",
+      "role_label": "Uncertain Link",
+      "role_icon": "\u2753",
+      "hops": null,
+      "explanation": "Tracks battery_soc_pct on this vehicle. This has a real statistical link to the warning, but the direction of cause-and-effect could not be confidently resolved."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000114||steering_angle_deg",
+      "entity_id": "VEHUNIT_SYN_0000114",
+      "metric": "steering_angle_deg",
+      "role": "UNCERTAIN_LINK",
+      "role_label": "Uncertain Link",
+      "role_icon": "\u2753",
+      "hops": null,
+      "explanation": "Tracks steering_angle_deg on this vehicle. This has a real statistical link to the warning, but the direction of cause-and-effect could not be confidently resolved."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000114||transmission_slip_ms",
+      "entity_id": "VEHUNIT_SYN_0000114",
+      "metric": "transmission_slip_ms",
+      "role": "UNCERTAIN_LINK",
+      "role_label": "Uncertain Link",
+      "role_icon": "\u2753",
+      "hops": null,
+      "explanation": "Tracks transmission_slip_ms on this vehicle. This has a real statistical link to the warning, but the direction of cause-and-effect could not be confidently resolved."
+    }
+  ],
+  "root_cause_summary": "The analysis points to road_roughness_index as the most likely starting point of the problem - this is where the issue originates before spreading to other parts of the system, based on this graph.",
+  "what_could_go_wrong": "If this issue is not addressed, it could affect: battery_current_a, battery_temperature_c, battery_voltage_v, lateral_acceleration_g, torque_converter_slip_rpm, vehicle_speed_kph. This could lead to reduced vehicle performance, additional wear on related components, or an unplanned service visit.",
+  "next_steps": [],
+  "next_steps_source": "fallback_menu",
+  "saved_at": "2026-09-21T12:58:42.435061+00:00"
+}

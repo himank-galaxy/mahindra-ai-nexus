@@ -1,0 +1,17 @@
+{
+  "warning_id": "4551e97bf2b34c399c99b81b1c8a52ff",
+  "vehicle_id": "VEHUNIT_SYN_0000700",
+  "vehicle_model_id": null,
+  "warning_type": "BATTERY_DEGRADATION",
+  "target_metric": "battery_internal_resistance_ohm",
+  "prediction_probability": 0.6045,
+  "forecast_horizon_hours": 15,
+  "severity": "MEDIUM",
+  "warning_timestamp": "2026-09-19T08:58:34.174787+00:00",
+  "status": "OPEN",
+  "causal_run_id": null,
+  "last_seen_at": "2026-09-19T08:58:34.174787+00:00",
+  "forecast_gap_hours": 3,
+  "is_warranty_eligible": false,
+  "eligibility_notes": "Not eligible - not base warranty covered."
+}

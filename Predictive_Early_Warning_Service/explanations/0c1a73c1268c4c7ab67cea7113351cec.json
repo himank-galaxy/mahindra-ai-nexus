@@ -1,0 +1,28 @@
+{
+  "warning_id": "0c1a73c1268c4c7ab67cea7113351cec",
+  "generated_at": "2026-09-15T11:07:44.497160+00:00",
+  "whats_happening": "Vehicle VEHUNIT_SYN_0001204 is showing a battery degradation risk. The system detected a predicted risk of 70%, likely within 3-15 hours from when this was first detected, and traced the cause-and-effect chain below to help identify what triggered it and what else could be affected.",
+  "chain_narrative": "battery_internal_resistance_ohm.",
+  "chain_nodes": [
+    {
+      "var_name": "VEHUNIT_SYN_0001204||battery_internal_resistance_ohm",
+      "entity_id": "VEHUNIT_SYN_0001204",
+      "metric": "battery_internal_resistance_ohm",
+      "role": "TARGET",
+      "role_label": "Main Alert",
+      "role_icon": "\ud83c\udfaf",
+      "hops": null,
+      "explanation": "Tracks battery_internal_resistance_ohm on this vehicle - this is the metric the warning is actually about."
+    }
+  ],
+  "root_cause_summary": "No confidently-directed root cause was found in this analysis - either nothing in this graph statistically precedes the warning, or the direction could not be resolved (see any uncertain-direction relationships below).",
+  "what_could_go_wrong": "No downstream effects were found in this analysis.",
+  "next_steps": [
+    "Compare this vehicle's degradation curve against others from the same production batch",
+    "Review the vehicle's charging history for patterns known to accelerate degradation (e.g. frequent fast-charging, deep discharge cycles)",
+    "Advise the driver on charging practices that reduce further degradation",
+    "Schedule a battery capacity / state-of-health test"
+  ],
+  "next_steps_source": "llm",
+  "saved_at": "2026-09-15T11:07:44.497377+00:00"
+}

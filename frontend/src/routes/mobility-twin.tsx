@@ -205,11 +205,7 @@ function MobilityTwin() {
   const endRef = useRef<HTMLDivElement | null>(null);
   const resolvedSelectedKey = graph?.nodes.some((node) => node.metric_key === selectedKey)
     ? selectedKey
-    : (graph?.kpis[0]?.metric_key ?? graph?.nodes[0]?.metric_key ?? null);
-  const activeNode = graph?.nodes.find((n) => n.metric_key === resolvedSelectedKey);
-  const detailQuery = useMobilityNodeDetail(activeNode?.metric_key ?? null, metadata?.snapshot_id);
-  const detail =
-    detailQuery.data?.snapshot_id === metadata?.snapshot_id ? detailQuery.data : undefined;
+    : null;
   const subset = useMemo(() => {
     const nodes = graph?.nodes ?? [],
       edges = graph?.edge_details ?? [];
@@ -263,6 +259,10 @@ function MobilityTwin() {
   const visibleSelectedKey = subset.nodes.some((node) => node.metric_key === resolvedSelectedKey)
     ? (resolvedSelectedKey ?? undefined)
     : undefined;
+  const activeNode = subset.nodes.find((node) => node.metric_key === visibleSelectedKey);
+  const detailQuery = useMobilityNodeDetail(activeNode?.metric_key ?? null, metadata?.snapshot_id);
+  const detail =
+    detailQuery.data?.snapshot_id === metadata?.snapshot_id ? detailQuery.data : undefined;
   const explanationQuery = useMobilityCopilotExplanation({
     snapshotId: metadata?.snapshot_id,
     selectedMetric: visibleSelectedKey,
@@ -309,10 +309,10 @@ function MobilityTwin() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signature]);
   const nodes = subset.nodes.map((n) => {
-    const incoming = graph?.edge_details.some((e) => e.target === n.metric_key),
-      outgoing = graph?.edge_details.some((e) => e.source === n.metric_key);
+    const incoming = subset.edges.some((e) => e.target === n.metric_key),
+      outgoing = subset.edges.some((e) => e.source === n.metric_key);
     const role =
-      n.metric_key === resolvedSelectedKey
+      n.metric_key === visibleSelectedKey
         ? "target"
         : !incoming
           ? "root"
@@ -328,7 +328,7 @@ function MobilityTwin() {
         domain: domain(n.metric_key),
         role,
         color: colors[role],
-        active: n.metric_key === resolvedSelectedKey,
+        active: n.metric_key === visibleSelectedKey,
       },
       style: {
         opacity: search && !n.label.toLowerCase().includes(search.toLowerCase()) ? 0.25 : 1,
@@ -346,15 +346,15 @@ function MobilityTwin() {
       strokeWidth: 1 + Math.abs(e.score) * 3,
       strokeDasharray: e.score < 0 ? "6 4" : undefined,
       opacity:
-        !resolvedSelectedKey ||
+        !visibleSelectedKey ||
         focus ||
-        e.source === resolvedSelectedKey ||
-        e.target === resolvedSelectedKey
+        e.source === visibleSelectedKey ||
+        e.target === visibleSelectedKey
           ? 1
           : 0.3,
     },
     label:
-      e.source === resolvedSelectedKey || e.target === resolvedSelectedKey
+      e.source === visibleSelectedKey || e.target === visibleSelectedKey
         ? `${formatLag(e.lag_minutes)} · ${e.score.toFixed(2)}`
         : undefined,
     labelStyle: { fill: "#cbd5e1", fontSize: 10 },
@@ -390,9 +390,9 @@ function MobilityTwin() {
         <summary className="cursor-pointer text-sky-400">How to read this causal graph</summary>
         <p className="mt-3">
           Nodes represent measured business activity. Red roots have no discovered incoming
-          relationship; green nodes are intermediate drivers; blue marks your selected target; amber
-          marks terminal outcomes. These roles describe the observed graph, not proven root causes.
-          Blue solid arrows show positive associations and red dashed arrows show negative
+          relationship; green nodes are intermediate drivers; amber marks terminal outcomes. A node
+          turns blue when you select it. These roles describe the observed graph, not proven root
+          causes. Blue solid arrows show positive associations and red dashed arrows show negative
           associations at the indicated lag. Neither colour means good or bad performance.
           Relationships do not establish an intervention's effect.
         </p>
@@ -479,6 +479,7 @@ function MobilityTwin() {
                 setFilter("All Measures");
                 setSearch("");
                 setFocus(false);
+                setSelectedKey(null);
                 void flow.fitView({ duration: 300 });
               }}
             >
@@ -487,7 +488,7 @@ function MobilityTwin() {
             <Button
               size="sm"
               variant={focus ? "default" : "outline"}
-              disabled={!resolvedSelectedKey}
+              disabled={!visibleSelectedKey}
               onClick={() => setFocus(!focus)}
             >
               {focus ? "Clear Focus" : "Active Chains"}
@@ -569,18 +570,20 @@ function MobilityTwin() {
           </div>
           <div className="mt-3 flex flex-wrap justify-between gap-3 text-xs">
             <div className="flex flex-wrap gap-4">
-              {Object.entries(colors).map(([role, color]) => (
-                <span key={role} style={{ color }}>
-                  ●{" "}
-                  {role === "root"
-                    ? "Upstream roots"
-                    : role === "intermediate"
-                      ? "Intermediate drivers"
-                      : role === "target"
-                        ? "Selected target"
-                        : "Terminal outcomes"}
-                </span>
-              ))}
+              {Object.entries(colors)
+                .filter(([role]) => role !== "target" || visibleSelectedKey)
+                .map(([role, color]) => (
+                  <span key={role} style={{ color }}>
+                    ●{" "}
+                    {role === "root"
+                      ? "Upstream roots"
+                      : role === "intermediate"
+                        ? "Intermediate drivers"
+                        : role === "target"
+                          ? "Selected target"
+                          : "Terminal outcomes"}
+                  </span>
+                ))}
             </div>
             <span className="text-slate-400">
               Showing {nodes.length} of {graph?.nodes.length ?? 0} nodes · {edges.length}{" "}

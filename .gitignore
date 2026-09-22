@@ -50,3 +50,10 @@ logs/
 
 # --- Lovable sync cache ---
 .lovable/
+# --- Runtime-generated prediction outputs ---
+Predictive_Early_Warning_Service/warranty_predictions/
+
+# --- Continuously generated live data ---
+Live_Data_Formation/**/Data_Parquet/
+*.parquet
+*.dump

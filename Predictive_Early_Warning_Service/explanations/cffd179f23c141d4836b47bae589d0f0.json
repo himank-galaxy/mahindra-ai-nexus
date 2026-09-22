@@ -1,0 +1,53 @@
+{
+  "warning_id": "cffd179f23c141d4836b47bae589d0f0",
+  "generated_at": "2026-09-16T11:14:56.735871+00:00",
+  "whats_happening": "Vehicle VEHUNIT_SYN_0000309 is showing harsh braking pattern. The system detected a predicted risk of 64%, likely within 3-15 hours from when this was first detected, and traced the cause-and-effect chain below to help identify what triggered it and what else could be affected.",
+  "chain_narrative": "ambient_temperature_c, which in turn leads to battery_soc_pct (strength +0.67), which in turn leads to impact_g_force (strength -0.24) (the metric this warning is about).",
+  "chain_nodes": [
+    {
+      "var_name": "VEHUNIT_SYN_0000309||ambient_temperature_c",
+      "entity_id": "VEHUNIT_SYN_0000309",
+      "metric": "ambient_temperature_c",
+      "role": "ROOT_CANDIDATE",
+      "role_label": "Root Cause",
+      "role_icon": "\ud83d\udd34",
+      "hops": 2,
+      "explanation": "Tracks ambient_temperature_c on this vehicle. This has been identified as a root-cause candidate - no confidently-directed cause was found for it within this analysis."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000309||battery_soc_pct",
+      "entity_id": "VEHUNIT_SYN_0000309",
+      "metric": "battery_soc_pct",
+      "role": "UPSTREAM",
+      "role_label": "Contributing Factor",
+      "role_icon": "\ud83d\udd35",
+      "hops": 1,
+      "explanation": "Tracks battery_soc_pct on this vehicle. This is an intermediate step the warning is statistically linked to on its way through the chain."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000309||impact_g_force",
+      "entity_id": "VEHUNIT_SYN_0000309",
+      "metric": "impact_g_force",
+      "role": "TARGET",
+      "role_label": "Main Alert",
+      "role_icon": "\ud83c\udfaf",
+      "hops": null,
+      "explanation": "Tracks impact_g_force on this vehicle - this is the metric the warning is actually about."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000309||lateral_acceleration_g",
+      "entity_id": "VEHUNIT_SYN_0000309",
+      "metric": "lateral_acceleration_g",
+      "role": "UNCERTAIN_LINK",
+      "role_label": "Uncertain Link",
+      "role_icon": "\u2753",
+      "hops": null,
+      "explanation": "Tracks lateral_acceleration_g on this vehicle. This has a real statistical link to the warning, but the direction of cause-and-effect could not be confidently resolved."
+    }
+  ],
+  "root_cause_summary": "The analysis points to ambient_temperature_c as the most likely starting point of the problem - this is where the issue originates before spreading to other parts of the system, based on this graph.",
+  "what_could_go_wrong": "No downstream effects were found in this analysis.",
+  "next_steps": [],
+  "next_steps_source": "fallback_menu",
+  "saved_at": "2026-09-16T11:14:56.737003+00:00"
+}

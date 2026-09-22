@@ -1,0 +1,49 @@
+{
+  "run_id": "305a65537f9d41d9b68f68054b694c7f",
+  "written_at": "2026-08-31T12:57:08.010406+00:00",
+  "domain": "telematics",
+  "source": "test_ui",
+  "tau_min": 0,
+  "tau_max": 1,
+  "pc_alpha": 0.05,
+  "lpcmci_executed": true,
+  "window_start": "2026-08-24T12:33:32.565557+00:00",
+  "window_end": "2026-08-31T12:33:32.565557+00:00",
+  "entities_considered": 1346,
+  "entities_excluded_min_rows": 0,
+  "entities_selected": [
+    "VEHUNIT_SYN_0001313"
+  ],
+  "raw_row_count": 9296,
+  "panel_shape": [
+    672,
+    19
+  ],
+  "final_columns": [
+    "VEHUNIT_SYN_0001313||ambient_temperature_c",
+    "VEHUNIT_SYN_0001313||battery_current_a",
+    "VEHUNIT_SYN_0001313||battery_internal_resistance_ohm",
+    "VEHUNIT_SYN_0001313||battery_soc_pct",
+    "VEHUNIT_SYN_0001313||battery_temperature_c",
+    "VEHUNIT_SYN_0001313||battery_voltage_v",
+    "VEHUNIT_SYN_0001313||dtc_count",
+    "VEHUNIT_SYN_0001313||impact_g_force",
+    "VEHUNIT_SYN_0001313||lateral_acceleration_g",
+    "VEHUNIT_SYN_0001313||road_roughness_index",
+    "VEHUNIT_SYN_0001313||steering_angle_deg",
+    "VEHUNIT_SYN_0001313||steering_torque_nm",
+    "VEHUNIT_SYN_0001313||torque_converter_slip_rpm",
+    "VEHUNIT_SYN_0001313||transmission_slip_ms",
+    "VEHUNIT_SYN_0001313||transmission_temperature_c",
+    "VEHUNIT_SYN_0001313||vehicle_speed_kph",
+    "VEHUNIT_SYN_0001313||vehicle_vibration_mm_s",
+    "VEHUNIT_SYN_0001313||vertical_acceleration_g",
+    "VEHUNIT_SYN_0001313||warning_flag"
+  ],
+  "columns_dropped_near_constant": [],
+  "columns_with_stationarity_warning": [
+    "VEHUNIT_SYN_0001313||battery_internal_resistance_ohm",
+    "VEHUNIT_SYN_0001313||steering_angle_deg"
+  ],
+  "missing_data_pct_after_interpolation": 0.0
+}

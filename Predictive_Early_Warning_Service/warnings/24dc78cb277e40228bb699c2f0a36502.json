@@ -1,0 +1,15 @@
+{
+  "warning_id": "24dc78cb277e40228bb699c2f0a36502",
+  "vehicle_id": "VEHUNIT_SYN_0000354",
+  "vehicle_model_id": null,
+  "warning_type": "TRANSMISSION_OVERHEATING",
+  "target_metric": "transmission_temperature_c",
+  "prediction_probability": 0.6175,
+  "forecast_horizon_hours": 15,
+  "severity": "HIGH",
+  "warning_timestamp": "2026-09-15T11:39:10.478364+00:00",
+  "status": "OPEN",
+  "causal_run_id": null,
+  "last_seen_at": "2026-09-15T11:39:10.478364+00:00",
+  "forecast_gap_hours": 3
+}

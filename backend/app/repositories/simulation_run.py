@@ -14,7 +14,12 @@ from typing import Any
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.simulation import SimulationApproval, SimulationRun
+from app.models.simulation import (
+    SimulationApproval,
+    SimulationComplianceCheck,
+    SimulationHumanReview,
+    SimulationRun,
+)
 
 
 class SimulationRunRepository:
@@ -95,3 +100,63 @@ class SimulationRunRepository:
             .limit(1)
         )
         return result.scalar_one_or_none()
+
+    async def create_human_review(
+        self,
+        *,
+        run_id: uuid.UUID,
+        reviewer_role: str,
+        reason: str | None = None,
+        requested_by: str = "demo_user",
+    ) -> SimulationHumanReview:
+        review = SimulationHumanReview(
+            run_id=run_id,
+            reviewer_role=reviewer_role,
+            reason=reason,
+            requested_by=requested_by,
+            requested_at=datetime.now(UTC),
+        )
+        self._session.add(review)
+        await self._session.commit()
+        await self._session.refresh(review)
+        return review
+
+    async def get_human_reviews(self, run_id: uuid.UUID) -> list[SimulationHumanReview]:
+        result = await self._session.execute(
+            select(SimulationHumanReview)
+            .where(SimulationHumanReview.run_id == run_id)
+            .order_by(SimulationHumanReview.requested_at)
+        )
+        return list(result.scalars().all())
+
+    async def get_compliance_checks(self, run_id: uuid.UUID) -> list[SimulationComplianceCheck]:
+        result = await self._session.execute(
+            select(SimulationComplianceCheck)
+            .where(SimulationComplianceCheck.run_id == run_id)
+            .order_by(SimulationComplianceCheck.evaluated_at)
+        )
+        return list(result.scalars().all())
+
+    async def create_compliance_checks(
+        self,
+        run_id: uuid.UUID,
+        checks: list[tuple[str, str, str, str]],
+    ) -> list[SimulationComplianceCheck]:
+        """``checks`` is a list of ``(rule_code, rule_name, result, reason)``."""
+        now = datetime.now(UTC)
+        rows = [
+            SimulationComplianceCheck(
+                run_id=run_id,
+                rule_code=rule_code,
+                rule_name=rule_name,
+                result=result,
+                reason=reason,
+                evaluated_at=now,
+            )
+            for rule_code, rule_name, result, reason in checks
+        ]
+        self._session.add_all(rows)
+        await self._session.commit()
+        for row in rows:
+            await self._session.refresh(row)
+        return rows

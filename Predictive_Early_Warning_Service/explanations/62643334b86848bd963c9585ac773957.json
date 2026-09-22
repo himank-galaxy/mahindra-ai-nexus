@@ -1,0 +1,33 @@
+{
+  "warning_id": "62643334b86848bd963c9585ac773957",
+  "generated_at": "2026-09-15T13:10:36.515747+00:00",
+  "whats_happening": "Vehicle VEHUNIT_SYN_0001340 is showing underbody impact risk. The system detected a predicted risk of 69%, likely within 3-15 hours from when this was first detected, and traced the cause-and-effect chain below to help identify what triggered it and what else could be affected.",
+  "chain_narrative": "road_roughness_index.",
+  "chain_nodes": [
+    {
+      "var_name": "VEHUNIT_SYN_0001340||road_roughness_index",
+      "entity_id": "VEHUNIT_SYN_0001340",
+      "metric": "road_roughness_index",
+      "role": "TARGET",
+      "role_label": "Main Alert",
+      "role_icon": "\ud83c\udfaf",
+      "hops": null,
+      "explanation": "Tracks road_roughness_index on this vehicle - this is the metric the warning is actually about."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001340||ambient_temperature_c",
+      "entity_id": "VEHUNIT_SYN_0001340",
+      "metric": "ambient_temperature_c",
+      "role": "UNCERTAIN_LINK",
+      "role_label": "Uncertain Link",
+      "role_icon": "\u2753",
+      "hops": null,
+      "explanation": "Tracks ambient_temperature_c on this vehicle. This has a real statistical link to the warning, but the direction of cause-and-effect could not be confidently resolved."
+    }
+  ],
+  "root_cause_summary": "No confidently-directed root cause was found in this analysis - either nothing in this graph statistically precedes the warning, or the direction could not be resolved (see any uncertain-direction relationships below).",
+  "what_could_go_wrong": "No downstream effects were found in this analysis.",
+  "next_steps": [],
+  "next_steps_source": "fallback_menu",
+  "saved_at": "2026-09-15T13:10:36.516194+00:00"
+}

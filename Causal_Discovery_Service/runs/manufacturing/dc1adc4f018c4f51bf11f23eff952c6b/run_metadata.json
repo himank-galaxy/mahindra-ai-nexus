@@ -1,0 +1,57 @@
+{
+  "run_id": "dc1adc4f018c4f51bf11f23eff952c6b",
+  "written_at": "2026-08-29T09:36:49.998221+00:00",
+  "domain": "manufacturing",
+  "source": "test_ui",
+  "tau_min": 0,
+  "tau_max": 2,
+  "pc_alpha": 0.05,
+  "lpcmci_executed": true,
+  "window_start": "2026-08-28T09:36:41.734489+00:00",
+  "window_end": "2026-08-29T09:36:41.734489+00:00",
+  "entities_considered": 120,
+  "entities_excluded_min_rows": 0,
+  "entities_selected": [
+    "MACHINE_SYN_026"
+  ],
+  "raw_row_count": 939,
+  "panel_shape": [
+    289,
+    14
+  ],
+  "final_columns": [
+    "MACHINE_SYN_026||ambient_humidity_pct",
+    "MACHINE_SYN_026||ambient_temperature_c",
+    "MACHINE_SYN_026||cycle_time_seconds",
+    "MACHINE_SYN_026||defect_rate",
+    "MACHINE_SYN_026||hours_since_maintenance",
+    "MACHINE_SYN_026||line_speed_units_per_hour",
+    "MACHINE_SYN_026||machine_load",
+    "MACHINE_SYN_026||machine_temperature_c",
+    "MACHINE_SYN_026||power_kw",
+    "MACHINE_SYN_026||quality_score",
+    "MACHINE_SYN_026||rework_rate",
+    "MACHINE_SYN_026||supplier_lot_quality_score",
+    "MACHINE_SYN_026||torque_deviation_nm",
+    "MACHINE_SYN_026||vibration_mm_s"
+  ],
+  "columns_dropped_near_constant": [
+    "MACHINE_SYN_026||downtime_minutes",
+    "MACHINE_SYN_026||maintenance_overdue_hours"
+  ],
+  "columns_with_stationarity_warning": [
+    "MACHINE_SYN_026||ambient_humidity_pct",
+    "MACHINE_SYN_026||ambient_temperature_c",
+    "MACHINE_SYN_026||cycle_time_seconds",
+    "MACHINE_SYN_026||defect_rate",
+    "MACHINE_SYN_026||hours_since_maintenance",
+    "MACHINE_SYN_026||line_speed_units_per_hour",
+    "MACHINE_SYN_026||machine_load",
+    "MACHINE_SYN_026||machine_temperature_c",
+    "MACHINE_SYN_026||power_kw",
+    "MACHINE_SYN_026||quality_score",
+    "MACHINE_SYN_026||rework_rate",
+    "MACHINE_SYN_026||supplier_lot_quality_score"
+  ],
+  "missing_data_pct_after_interpolation": 0.0
+}

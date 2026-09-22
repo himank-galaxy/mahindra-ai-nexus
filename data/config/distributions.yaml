@@ -24,35 +24,48 @@ geography:
   cities_by_region:
 
     West:
-      Pune: 0.27
-      Mumbai: 0.23
-      Nashik: 0.16
-      Ahmedabad: 0.13
-      Surat: 0.11
-      Igatpuri: 0.10
+      Pune: 0.20
+      Mumbai: 0.17
+      Nashik: 0.12
+      Ahmedabad: 0.10
+      Surat: 0.08
+      Igatpuri: 0.07
+      Bhiwandi: 0.08
+      Phaltan: 0.06
+      Chakan: 0.06
+      Indore: 0.03
+      Bhopal: 0.03
 
     North:
-      Delhi: 0.27
-      Jaipur: 0.20
-      Lucknow: 0.18
-      Chandigarh: 0.12
-      Gurugram: 0.13
-      Haridwar: 0.10
+      Delhi: 0.24
+      Jaipur: 0.18
+      Lucknow: 0.16
+      Chandigarh: 0.11
+      Gurugram: 0.12
+      Haridwar: 0.09
+      Luhari: 0.10
 
     South:
-      Chennai: 0.24
-      Bengaluru: 0.27
-      Hyderabad: 0.20
-      Kochi: 0.08
-      Coimbatore: 0.08
-      Zaheerabad: 0.13
+      Chennai: 0.20
+      Bengaluru: 0.23
+      Hyderabad: 0.17
+      Kochi: 0.07
+      Coimbatore: 0.07
+      Zaheerabad: 0.11
+      Cuddalore: 0.08
+      Hosur: 0.07
 
     East:
-      Kolkata: 0.35
-      Guwahati: 0.20
-      Bhubaneswar: 0.20
-      Patna: 0.15
-      Ranchi: 0.10
+      Kolkata: 0.28
+      Guwahati: 0.16
+      Bhubaneswar: 0.16
+      Patna: 0.12
+      Ranchi: 0.08
+      Malda: 0.10
+      # Tripura maps onto this system's "East" macro-region — the app's
+      # geography model has exactly 4 regions (West/North/South/East),
+      # no separate Northeast-state-level region exists.
+      Agartala: 0.10
 
 # ============================================================
 # VEHICLE MODELS

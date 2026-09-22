@@ -140,7 +140,7 @@ export function useMobilityCopilotExplanation(input: {
         },
       }),
     enabled: apiEnabled && !!input.snapshotId && input.viewContext.visible_metrics.length > 0,
-    staleTime: Infinity,
+    staleTime: 0,
     retry: false,
   });
 }

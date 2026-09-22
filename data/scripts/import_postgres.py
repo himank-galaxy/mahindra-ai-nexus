@@ -54,7 +54,7 @@ import asyncpg
 # Static runtime contract
 # ---------------------------------------------------------------------------
 
-EXPECTED_ALEMBIC_REVISION = "runtime_0002"
+EXPECTED_ALEMBIC_REVISION = "runtime_0003"
 
 EXPECTED_TOTAL_DATASETS = 58
 EXPECTED_RUNTIME_DATASETS = 51

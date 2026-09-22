@@ -90,7 +90,7 @@ master:
     count: 4
 
   cities:
-    target_count: 23
+    target_count: 33
 
   vehicle_models:
     models:
@@ -101,7 +101,7 @@ master:
       - "XUV 3XO"
 
   dealers:
-    count: 30
+    count: 40
 
   plants:
     count: 7
@@ -115,13 +115,13 @@ master:
     max: 8
 
   warehouses:
-    count: 8
+    count: 26
 
   suppliers:
     count: 20
 
   logistics_routes:
-    target_count: 15
+    target_count: 100
 
 # ============================================================
 # AUTO / DEALER

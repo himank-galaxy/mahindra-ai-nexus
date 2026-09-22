@@ -1,0 +1,15 @@
+{
+  "warning_id": "51e4319764364a91956bb1d2da129107",
+  "vehicle_id": "VEHUNIT_SYN_0000059",
+  "vehicle_model_id": null,
+  "warning_type": "BATTERY_DEGRADATION",
+  "target_metric": "battery_internal_resistance_ohm",
+  "prediction_probability": 0.726,
+  "forecast_horizon_hours": 15,
+  "severity": "MEDIUM",
+  "warning_timestamp": "2026-09-06T12:39:48.297323+00:00",
+  "status": "OPEN",
+  "causal_run_id": null,
+  "last_seen_at": "2026-09-07T02:38:56.984893+00:00",
+  "forecast_gap_hours": 3
+}

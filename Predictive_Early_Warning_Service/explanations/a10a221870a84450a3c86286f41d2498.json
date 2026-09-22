@@ -1,0 +1,77 @@
+{
+  "warning_id": "a10a221870a84450a3c86286f41d2498",
+  "generated_at": "2026-09-08T11:48:25.621706+00:00",
+  "whats_happening": "Vehicle VEHUNIT_SYN_0001283 is showing a battery degradation risk. The system detected a predicted risk of 61%, likely within 3-15 hours from when this was first detected, and traced the cause-and-effect chain below to help identify what triggered it and what else could be affected.",
+  "chain_narrative": "battery_internal_resistance_ohm.",
+  "chain_nodes": [
+    {
+      "var_name": "VEHUNIT_SYN_0001283||battery_internal_resistance_ohm",
+      "entity_id": "VEHUNIT_SYN_0001283",
+      "metric": "battery_internal_resistance_ohm",
+      "role": "TARGET",
+      "role_label": "Main Alert",
+      "role_icon": "\ud83c\udfaf",
+      "hops": null,
+      "explanation": "Tracks battery_internal_resistance_ohm on this vehicle - this is the metric the warning is actually about."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001283||road_roughness_index",
+      "entity_id": "VEHUNIT_SYN_0001283",
+      "metric": "road_roughness_index",
+      "role": "UNCERTAIN_LINK",
+      "role_label": "Uncertain Link",
+      "role_icon": "\u2753",
+      "hops": null,
+      "explanation": "Tracks road_roughness_index on this vehicle. This has a real statistical link to the warning, but the direction of cause-and-effect could not be confidently resolved."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001283||steering_torque_nm",
+      "entity_id": "VEHUNIT_SYN_0001283",
+      "metric": "steering_torque_nm",
+      "role": "UNCERTAIN_LINK",
+      "role_label": "Uncertain Link",
+      "role_icon": "\u2753",
+      "hops": null,
+      "explanation": "Tracks steering_torque_nm on this vehicle. This has a real statistical link to the warning, but the direction of cause-and-effect could not be confidently resolved."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001283||lateral_acceleration_g",
+      "entity_id": "VEHUNIT_SYN_0001283",
+      "metric": "lateral_acceleration_g",
+      "role": "UNCERTAIN_LINK",
+      "role_label": "Uncertain Link",
+      "role_icon": "\u2753",
+      "hops": null,
+      "explanation": "Tracks lateral_acceleration_g on this vehicle. This has a real statistical link to the warning, but the direction of cause-and-effect could not be confidently resolved."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001283||steering_angle_deg",
+      "entity_id": "VEHUNIT_SYN_0001283",
+      "metric": "steering_angle_deg",
+      "role": "UNCERTAIN_LINK",
+      "role_label": "Uncertain Link",
+      "role_icon": "\u2753",
+      "hops": null,
+      "explanation": "Tracks steering_angle_deg on this vehicle. This has a real statistical link to the warning, but the direction of cause-and-effect could not be confidently resolved."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0001283||ambient_temperature_c",
+      "entity_id": "VEHUNIT_SYN_0001283",
+      "metric": "ambient_temperature_c",
+      "role": "UNCERTAIN_LINK",
+      "role_label": "Uncertain Link",
+      "role_icon": "\u2753",
+      "hops": null,
+      "explanation": "Tracks ambient_temperature_c on this vehicle. This has a real statistical link to the warning, but the direction of cause-and-effect could not be confidently resolved."
+    }
+  ],
+  "root_cause_summary": "No confidently-directed root cause was found in this analysis - either nothing in this graph statistically precedes the warning, or the direction could not be resolved (see any uncertain-direction relationships below).",
+  "what_could_go_wrong": "No downstream effects were found in this analysis.",
+  "next_steps": [
+    "Compare this vehicle's degradation curve against others from the same production batch",
+    "Review the vehicle's charging history for patterns known to accelerate degradation (e.g. frequent fast-charging, deep discharge cycles)",
+    "Advise the driver on charging practices that reduce further degradation"
+  ],
+  "next_steps_source": "llm",
+  "saved_at": "2026-09-08T11:48:25.621948+00:00"
+}

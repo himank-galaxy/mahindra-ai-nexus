@@ -1,0 +1,43 @@
+{
+  "warning_id": "142ca008bf37475a822e4751b1ef49e6",
+  "generated_at": "2026-09-15T13:19:33.143523+00:00",
+  "whats_happening": "Vehicle VEHUNIT_SYN_0000010 is showing steering stress. The system detected a predicted risk of 76%, likely within 3-15 hours from when this was first detected, and traced the cause-and-effect chain below to help identify what triggered it and what else could be affected.",
+  "chain_narrative": "steering_torque_nm, which in turn leads to steering_angle_deg (strength +0.93).",
+  "chain_nodes": [
+    {
+      "var_name": "VEHUNIT_SYN_0000010||steering_torque_nm",
+      "entity_id": "VEHUNIT_SYN_0000010",
+      "metric": "steering_torque_nm",
+      "role": "TARGET",
+      "role_label": "Main Alert",
+      "role_icon": "\ud83c\udfaf",
+      "hops": null,
+      "explanation": "Tracks steering_torque_nm on this vehicle - this is the metric the warning is actually about."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000010||steering_angle_deg",
+      "entity_id": "VEHUNIT_SYN_0000010",
+      "metric": "steering_angle_deg",
+      "role": "DOWNSTREAM",
+      "role_label": "Affected / At Risk",
+      "role_icon": "\u26a0\ufe0f",
+      "hops": 1,
+      "explanation": "Tracks steering_angle_deg on this vehicle. This represents a downstream metric that may be affected if the current condition continues."
+    },
+    {
+      "var_name": "VEHUNIT_SYN_0000010||transmission_temperature_c",
+      "entity_id": "VEHUNIT_SYN_0000010",
+      "metric": "transmission_temperature_c",
+      "role": "UNCERTAIN_LINK",
+      "role_label": "Uncertain Link",
+      "role_icon": "\u2753",
+      "hops": null,
+      "explanation": "Tracks transmission_temperature_c on this vehicle. This has a real statistical link to the warning, but the direction of cause-and-effect could not be confidently resolved."
+    }
+  ],
+  "root_cause_summary": "No confidently-directed root cause was found in this analysis - either nothing in this graph statistically precedes the warning, or the direction could not be resolved (see any uncertain-direction relationships below).",
+  "what_could_go_wrong": "If this issue is not addressed, it could affect: steering_angle_deg. This could lead to reduced vehicle performance, additional wear on related components, or an unplanned service visit.",
+  "next_steps": [],
+  "next_steps_source": "fallback_menu",
+  "saved_at": "2026-09-15T13:19:33.144239+00:00"
+}

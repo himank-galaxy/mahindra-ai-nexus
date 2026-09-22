@@ -3,6 +3,7 @@
 import { apiFetch } from "@/lib/api/client";
 import type {
   AiAgent,
+  AuditEvent,
   AutoHeal,
   AutoSalesSimIn,
   AutoSalesSimOut,
@@ -11,11 +12,14 @@ import type {
   DataCatalog,
   DataRows,
   DataStatus,
+  CaseTrustLedger,
   CollectionsAgent,
   CollectionsCase,
+  CollectionsChannel,
+  CollectionsOffer,
   CollectionsSimIn,
   CollectionsSimOut,
-  ComplianceRule,
+  ComplianceCheck,
   CopilotResult,
   Credit,
   CreditPricingSimIn,
@@ -28,29 +32,37 @@ import type {
   DealerLead,
   ElvEstimate,
   ExecutiveSummary,
+  Explanation,
   FinanceProduct,
   Kpi,
   LeadPitch,
   LogisticsDelaySimIn,
   LogisticsDelaySimOut,
+  LogisticsAction,
   LogisticsRoute,
+  LogisticsShipment,
   MetricTile,
   MobilityCopilotHistory,
   MobilityGraph,
   MobilityKpi,
   MobilityNodeDetail,
+  Outcome,
   PocItem,
   QaAnswer,
   Recommendation,
   RmScript,
   RoadmapPlan,
   Signal,
+  ShipmentTrustLedger,
   SimulateOffer,
+  SlaReport,
   SimulationApprovalOut,
   SimulationDriversOut,
+  ReviewerRole,
   SimulationMeta,
   SimulationSummaryOut,
   TrustDecision,
+  TrustLineageStep,
   TwinExplain,
   TwinSummary,
   WarrantyQualityCausalStatus,
@@ -182,19 +194,25 @@ export const approveCase = (caseId: string) =>
     method: "POST",
   });
 
-export const modifyCase = (caseId: string, action: string) =>
+export const modifyCase = (
+  caseId: string,
+  channel: CollectionsChannel,
+  offer: CollectionsOffer,
+  reason: string,
+) =>
   apiFetch<CollectionsCase>(`/collections/cases/${caseId}/modify`, {
     method: "POST",
-    body: { action },
+    body: { channel, offer, reason },
   });
 
-export const reviewCase = (caseId: string) =>
+export const reviewCase = (caseId: string, reviewerRole: ReviewerRole, reason: string) =>
   apiFetch<CollectionsCase>(`/collections/cases/${caseId}/review`, {
     method: "POST",
+    body: { reviewer_role: reviewerRole, reason },
   });
 
-export const fetchCaseLedger = (caseId: string) =>
-  apiFetch<string[]>(`/collections/cases/${caseId}/ledger`);
+export const fetchCaseTrustLedger = (caseId: string) =>
+  apiFetch<CaseTrustLedger>(`/collections/cases/${caseId}/ledger`);
 
 // --- Logistics ----------------------------------------------------------------
 
@@ -216,6 +234,37 @@ export const autoHealRoute = (routeId: string) =>
   apiFetch<AutoHeal>(`/logistics/routes/${routeId}/auto-heal`, {
     method: "POST",
   });
+
+export const fetchRouteSlaReport = (routeId: string) =>
+  apiFetch<SlaReport>(`/logistics/routes/${routeId}/sla-report`);
+
+export const fetchRouteShipments = (routeId: string) =>
+  apiFetch<LogisticsShipment[]>(`/logistics/routes/${routeId}/shipments`);
+
+export const approveShipment = (shipmentId: string) =>
+  apiFetch<LogisticsShipment>(`/logistics/shipments/${shipmentId}/approve`, {
+    method: "POST",
+  });
+
+export const modifyShipment = (
+  shipmentId: string,
+  action: LogisticsAction,
+  routeId: string | null,
+  reason: string,
+) =>
+  apiFetch<LogisticsShipment>(`/logistics/shipments/${shipmentId}/modify`, {
+    method: "POST",
+    body: { action, route_id: routeId, reason },
+  });
+
+export const reviewShipment = (shipmentId: string, reviewerRole: ReviewerRole, reason: string) =>
+  apiFetch<LogisticsShipment>(`/logistics/shipments/${shipmentId}/review`, {
+    method: "POST",
+    body: { reviewer_role: reviewerRole, reason },
+  });
+
+export const fetchShipmentLedger = (shipmentId: string) =>
+  apiFetch<ShipmentTrustLedger>(`/logistics/shipments/${shipmentId}/ledger`);
 
 // --- Circularity --------------------------------------------------------------
 
@@ -256,22 +305,40 @@ export const matchCreditBuyer = (creditCode: string) =>
 
 export const fetchTrustDecisions = () => apiFetch<TrustDecision[]>("/trust/decisions");
 
-export const fetchComplianceRules = () => apiFetch<ComplianceRule[]>("/trust/compliance-rules");
+export const fetchTrustDecisionLineage = (decisionCode: string) =>
+  apiFetch<TrustLineageStep[]>(`/trust/decisions/${encodeURIComponent(decisionCode)}/lineage`);
+
+export const fetchTrustDecisionCompliance = (decisionCode: string) =>
+  apiFetch<ComplianceCheck[]>(`/trust/decisions/${encodeURIComponent(decisionCode)}/compliance`);
+
+export const fetchTrustDecisionExplanation = (decisionCode: string) =>
+  apiFetch<Explanation>(`/trust/decisions/${encodeURIComponent(decisionCode)}/explanation`);
+
+export const fetchTrustDecisionEvents = (decisionCode: string) =>
+  apiFetch<AuditEvent[]>(`/trust/decisions/${encodeURIComponent(decisionCode)}/events`);
+
+export const fetchTrustDecisionOutcome = (decisionCode: string) =>
+  apiFetch<Outcome>(`/trust/decisions/${encodeURIComponent(decisionCode)}/outcome`);
 
 export const approveDecision = (decisionCode: string) =>
-  apiFetch<TrustDecision>(`/trust/decisions/${decisionCode}/approve`, {
+  apiFetch<TrustDecision>(`/trust/decisions/${encodeURIComponent(decisionCode)}/approve`, {
     method: "POST",
   });
 
 export const rejectDecision = (decisionCode: string, reason: string) =>
-  apiFetch<TrustDecision>(`/trust/decisions/${decisionCode}/reject`, {
+  apiFetch<TrustDecision>(`/trust/decisions/${encodeURIComponent(decisionCode)}/reject`, {
     method: "POST",
     body: { reason },
   });
 
-export const escalateDecision = (decisionCode: string) =>
-  apiFetch<TrustDecision>(`/trust/decisions/${decisionCode}/escalate`, {
+export const escalateDecision = (
+  decisionCode: string,
+  reviewerRole: ReviewerRole,
+  reason: string,
+) =>
+  apiFetch<TrustDecision>(`/trust/decisions/${encodeURIComponent(decisionCode)}/escalate`, {
     method: "POST",
+    body: { reviewer_role: reviewerRole, reason },
   });
 
 // --- Agents & XR ---------------------------------------------------------------
@@ -304,9 +371,12 @@ export const fetchMobilityCopilotHistory = (sessionId: string) =>
   apiFetch<MobilityCopilotHistory>(`/mobility-twin/copilot/history${q({ session_id: sessionId })}`);
 
 export const clearMobilityCopilot = (sessionId: string) =>
-  apiFetch<{ session_id: string; status: string }>(`/mobility-twin/copilot${q({ session_id: sessionId })}`, {
-    method: "DELETE",
-  });
+  apiFetch<{ session_id: string; status: string }>(
+    `/mobility-twin/copilot${q({ session_id: sessionId })}`,
+    {
+      method: "DELETE",
+    },
+  );
 
 // --- Warranty, Quality & Service early warning --------------------------------
 

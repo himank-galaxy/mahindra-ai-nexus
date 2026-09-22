@@ -626,6 +626,20 @@ class SimulationService(BaseService):
     async def reject_run(self, run_id: uuid.UUID, reason: str | None) -> SimulationApprovalOut:
         return await self._decide_run(run_id, decision="rejected", reason=reason)
 
+    async def escalate_run(self, run_id: uuid.UUID, *, reviewer_role: str, reason: str | None) -> SimulationRun:
+        """Route a still-open run to a human reviewer — a request, not a
+        decision. The eventual approve/reject still goes through
+        ``_decide_run`` and is recorded in ``simulation_approvals``, so
+        escalating never creates a second decision record."""
+        run = await self._get_run_or_404(run_id)
+        if run.status in _DECIDED_STATUSES:
+            raise ConflictError(
+                f"Simulation run '{run_id}' was already {run.status.lower()} — it cannot be escalated.",
+                code="simulation_run_already_decided",
+            )
+        await self._run_repo.create_human_review(run_id=run_id, reviewer_role=reviewer_role, reason=reason)
+        return await self._run_repo.update_status(run, "HUMAN_REVIEW_PENDING")
+
     async def _decide_run(
         self,
         run_id: uuid.UUID,

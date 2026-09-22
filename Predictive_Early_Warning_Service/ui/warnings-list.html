@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Early Warnings - Test UI</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <span class="badge local">LOCAL TEST TOOL - NOT PRODUCTION</span>
+    <h1>Predictive Early Warnings</h1>
+    <p>
+      Warnings created by the predictive models scoring live vehicle telemetry every
+      <span id="tickInterval">-</span>. This list refreshes automatically. Click
+      <b>Investigate</b> on any warning to open its causal sub-graph on a separate screen.
+    </p>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Open Warnings</h2>
+      <p class="desc">Auto-refreshes every 10 seconds. <span id="refreshNote"></span></p>
+      <div id="warningsList">
+        <p class="empty-note">Loading...</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="warnings-list.js"></script>
+</body>
+</html>

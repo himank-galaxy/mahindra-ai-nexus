@@ -27,11 +27,7 @@ def visible_metric_keys(
 
 def _display_edges(state: MobilityCausalState, visible_metrics: set[str]):
     return collapse_parallel_edges(
-        [
-            edge
-            for edge in state.edges
-            if edge.source in visible_metrics and edge.target in visible_metrics
-        ]
+        [edge for edge in state.edges if edge.source in visible_metrics and edge.target in visible_metrics]
     )
 
 
@@ -41,10 +37,133 @@ def _role(metric: str, edges, selected_metric: str | None) -> str:
     incoming = any(edge.target == metric for edge in edges)
     outgoing = any(edge.source == metric for edge in edges)
     if not incoming:
-        return "upstream driver"
+        return "upstream root"
     if outgoing:
         return "intermediate driver"
-    return "downstream outcome"
+    return "terminal outcome"
+
+
+def _components(visible: set[str], edges):
+    """Weakly connected groups in the exact directed graph shown in the view."""
+
+    neighbors = {metric: set() for metric in visible}
+    for edge in edges:
+        neighbors[edge.source].add(edge.target)
+        neighbors[edge.target].add(edge.source)
+    groups = []
+    remaining = set(visible)
+    while remaining:
+        group = set()
+        queue = [min(remaining)]
+        while queue:
+            metric = queue.pop()
+            if metric in group:
+                continue
+            group.add(metric)
+            remaining.discard(metric)
+            queue.extend(neighbors[metric] - group)
+        groups.append((group, [edge for edge in edges if edge.source in group]))
+    return sorted(groups, key=lambda item: (-len(item[0]), -len(item[1]), min(item[0])))
+
+
+def _overview_explanation(state: MobilityCausalState, visible: set[str], edges, features) -> str:
+    """Describe every displayed component before the user selects a measure."""
+
+    groups = _components(visible, edges)
+    labels = {key: feature.label for key, feature in features.items()}
+    comparison = format_comparison_window(state.comparison_minutes)
+    summary = (
+        f"The current graph shows {len(visible)} measures, {len(edges)} relationships, "
+        f"and {len(groups)} connected group(s). No measure is selected."
+    )
+    if len(groups) > 1:
+        summary += " No discovered relationship joins these groups in the current view."
+    sections = []
+    actions = []
+    for index, (members, group_edges) in enumerate(groups, start=1):
+        roots = sorted((key for key in members if not any(e.target == key for e in group_edges)), key=labels.get)
+        intermediates = sorted(
+            (
+                key
+                for key in members
+                if any(e.target == key for e in group_edges) and any(e.source == key for e in group_edges)
+            ),
+            key=labels.get,
+        )
+        outcomes = sorted(
+            (
+                key
+                for key in members
+                if not any(e.source == key for e in group_edges) and any(e.target == key for e in group_edges)
+            ),
+            key=labels.get,
+        )
+        strongest = max(group_edges, key=lambda e: abs(e.score)) if group_edges else None
+        chain = _important_chain(group_edges, None)
+        lines = [f"**Group {index}: {len(members)} measures, {len(group_edges)} relationships**"]
+        lines.append(
+            "Roots (no incoming arrows): "
+            + (", ".join(labels[key] for key in roots) or "none; this group contains a cycle")
+            + "."
+        )
+        lines.append(
+            "Intermediate nodes (incoming and outgoing arrows): "
+            + (", ".join(labels[key] for key in intermediates) or "none")
+            + "."
+        )
+        lines.append(
+            "Terminal outcomes (no outgoing arrows): "
+            + (", ".join(labels[key] for key in outcomes) or "none; this group contains a cycle")
+            + "."
+        )
+        if chain:
+            lines.append("Strongest supported path: " + " → ".join(labels[key] for key in chain) + ".")
+            for source, target in zip(chain, chain[1:], strict=False):
+                edge = next(e for e in group_edges if e.source == source and e.target == target)
+                movement = "same-direction" if edge.score >= 0 else "opposite-direction"
+                lines.append(
+                    f"{labels[source]} → {labels[target]}: strength {abs(edge.score):.2f}, "
+                    f"{movement}, lag about {format_duration_minutes(edge.lag * state.stride_hours * 60)}."
+                )
+        for key in sorted(members, key=labels.get):
+            feature = features[key]
+            current = float(state.latest[key])
+            previous = float(state.previous[key])
+            lines.append(
+                f"{labels[key]} ({_role(key, group_edges, None)}): "
+                f"{display_value(feature, current)}, {_trend_text(current, previous, comparison)}."
+            )
+        sections.append("\n".join(lines))
+        if strongest:
+            actions.append(
+                f"{len(actions) + 1}. Review the records behind {labels[strongest.source]} and "
+                f"{labels[strongest.target]} in group {index}; this is its strongest displayed relationship."
+            )
+    if not actions:
+        actions.append("1. Clear the current filter or wait for a graph with retained relationships.")
+    actions.append(f"{len(actions) + 1}. Validate relationships in business records before changing operations.")
+    return "\n\n".join(
+        [
+            "### 🔍 What's Happening\n" + summary,
+            "### 🔗 Cause-Effect Chain\n"
+            + ("\n\n".join(sections) if sections else "No connected relationship is visible in this view."),
+            "### Each Important Node Explained\n"
+            "All displayed measures and current values are listed within their connected groups above. "
+            "Roots, intermediate nodes, and terminal outcomes follow the arrows visible in this view. "
+            "Select a measure to inspect its own connected group in detail.",
+            "### 🔎 Key Drivers\n"
+            "The root nodes for each group have no discovered incoming arrows. "
+            "This does not establish them as proven causes.",
+            "### ⚠️ What Could Happen\n"
+            "The graph shows observed lagged associations within each group. "
+            "It does not support a downstream claim between disconnected groups.",
+            "### 🛠️ Recommended Actions\n" + "\n".join(actions),
+            "### 📊 How to Read This Graph\n"
+            "Arrows show the direction of observed time-lagged association. Positive relationships "
+            "move together; negative relationships move in opposite directions. These links are "
+            "statistical evidence, not proof that changing one measure will cause another to change.",
+        ]
+    )
 
 
 def _trend_text(current: float, previous: float, comparison: str) -> str:
@@ -63,14 +182,13 @@ def _important_chain(edges, selected_metric: str | None) -> list[str]:
     strongest = max(edges, key=lambda edge: abs(edge.score))
     selected = (
         selected_metric
-        if selected_metric
-        and any(selected_metric in (edge.source, edge.target) for edge in edges)
+        if selected_metric and any(selected_metric in (edge.source, edge.target) for edge in edges)
         else strongest.target
     )
     chain = [selected]
     seen = {selected}
     cursor = selected
-    for _ in range(2):
+    for _ in range(len(edges)):
         candidates = [edge for edge in edges if edge.target == cursor and edge.source not in seen]
         if not candidates:
             break
@@ -79,7 +197,7 @@ def _important_chain(edges, selected_metric: str | None) -> list[str]:
         seen.add(edge.source)
         cursor = edge.source
     cursor = selected
-    for _ in range(2):
+    for _ in range(len(edges)):
         candidates = [edge for edge in edges if edge.source == cursor and edge.target not in seen]
         if not candidates:
             break
@@ -120,6 +238,12 @@ def build_case_file(
     ]
     lines = [
         f"CURRENT DISPLAYED VIEW: {len(visible)} measures and {len(display_edges)} directed relationships.",
+        "Explanation mode: "
+        + (
+            "FOCUSED on the selected measure and its connected group."
+            if selected_metric
+            else "WHOLE-GRAPH OVERVIEW; no target is selected."
+        ),
         f"View filter: {domain_filter}; active-chain focus: {chain_focus}.",
         f"Snapshot: {state.snapshot_id}. Computed: {state.computed_at.isoformat()}.",
         f"Data coverage: {metadata.data_start.isoformat()} to {metadata.data_end.isoformat()}.",
@@ -141,6 +265,16 @@ def build_case_file(
     lines.extend(describe(edge) for edge in display_edges)
     if not display_edges:
         lines.append("No relationship is displayed in the current view.")
+    groups = _components(visible, display_edges)
+    lines.append(f"CONNECTED GROUPS: {len(groups)}; no discovered link joins separate groups in this view.")
+    for index, (members, group_edges) in enumerate(groups, start=1):
+        lines.append(f"GROUP {index}: " + ", ".join(sorted(features[key].label for key in members)))
+        for role in ("upstream root", "intermediate driver", "terminal outcome"):
+            names = sorted(features[key].label for key in members if _role(key, group_edges, None) == role)
+            lines.append(f"{role.upper()}S: " + (", ".join(names) or "none"))
+        chain = _important_chain(group_edges, selected_metric if selected_metric in members else None)
+        if chain:
+            lines.append("STRONGEST SUPPORTED PATH: " + " → ".join(features[key].label for key in chain))
 
     lines.append("CHANGES SINCE PREVIOUS COMPUTATION:")
     if prior_state is None or prior_state.snapshot_id == state.snapshot_id:
@@ -156,9 +290,7 @@ def build_case_file(
             edge = old[key]
             source_label = features[edge.source].label if edge.source in features else edge.source
             target_label = features[edge.target].label if edge.target in features else edge.target
-            changes.append(
-                f"NO LONGER DISPLAYED: {source_label} → {target_label}"
-            )
+            changes.append(f"NO LONGER DISPLAYED: {source_label} → {target_label}")
         for key in sorted(new.keys() & old.keys()):
             before, after = old[key].score, new[key].score
             if before * after < 0:
@@ -206,6 +338,10 @@ def build_default_explanation(
     features = {feature.key: feature for feature in state.source.features}
     labels = {key: feature.label for key, feature in features.items()}
     selected_metric = selected_node.metric if selected_node and selected_node.metric in visible else None
+    if selected_metric is None:
+        return _overview_explanation(state, visible, edges, features)
+    groups = _components(visible, edges)
+    selected_group = next((members for members, _ in groups if selected_metric in members), set())
     chain = _important_chain(edges, selected_metric)
     strongest = max(edges, key=lambda edge: abs(edge.score)) if edges else None
     incoming = sorted(
@@ -229,6 +365,11 @@ def build_default_explanation(
             f"The displayed graph connects it to {len(incoming)} incoming driver(s) and "
             f"{len(outgoing)} downstream relationship(s)."
         )
+        happening += f" Its connected group contains {len(selected_group)} measures."
+        if len(groups) > 1:
+            happening += (
+                f" {len(groups) - 1} other group(s) have no discovered link to this measure in the current view."
+            )
         if incoming:
             happening += (
                 f" The strongest direct driver shown is {labels[incoming[0].source]} "
@@ -259,16 +400,8 @@ def build_default_explanation(
         chain_lines.append("No cause-effect chain is visible under the current filter.")
 
     node_lines = []
-    selected_index = chain.index(selected_metric) if selected_metric in chain else -1
-    for index, metric in enumerate(chain, start=1):
-        if metric == selected_metric:
-            role = "🎯 Target Metric"
-        elif selected_index >= 0 and index - 1 > selected_index:
-            role = "⚠️ Downstream Impact"
-        elif index == 1:
-            role = "🔵 Driver"
-        else:
-            role = "🔵 Contributing Factor"
+    for index, metric in enumerate(sorted(selected_group, key=labels.get), start=1):
+        role = _role(metric, edges, selected_metric)
         feature = features[metric]
         current = display_value(feature, float(state.latest[metric]))
         node_lines.append(
@@ -377,16 +510,36 @@ def generated_explanation_is_grounded(
     features = {feature.key: feature for feature in state.source.features}
     if any(metric.lower() in lower_reply for metric in state.metrics):
         return False
-    if any(
-        feature.label.lower() in lower_reply
-        for metric, feature in features.items()
-        if metric not in visible
-    ):
+    if any(feature.label.lower() in lower_reply for metric, feature in features.items() if metric not in visible):
         return False
 
     edges = list(_display_edges(state, visible))
     selected_metric = selected_node.metric if selected_node and selected_node.metric in visible else None
-    required_metrics = set(_important_chain(edges, selected_metric))
+    groups = _components(visible, edges)
+    required_metrics = (
+        next((set(members) for members, _ in groups if selected_metric in members), set())
+        if selected_metric
+        else set(visible)
+    )
+    if not selected_metric:
+        if "selected target" in lower_reply:
+            return False
+        if any(
+            display_value(features[metric], float(state.latest[metric])).lower() not in lower_reply
+            for metric in visible
+        ):
+            return False
+        if not all(role in lower_reply for role in ("root", "intermediate", "terminal")):
+            return False
+    if (
+        not selected_metric
+        and len(groups) > 1
+        and not any(
+            term in lower_reply
+            for term in ("no discovered link", "no discovered relationship", "not connected", "disconnected")
+        )
+    ):
+        return False
     if selected_metric:
         required_metrics.add(selected_metric)
         incoming = sorted(

@@ -6,6 +6,7 @@ from app.repositories.dealer_allocation import DealerAllocationRepository
 from app.repositories.catalogue import CatalogueRepository
 from app.repositories.circularity import CircularityRepository
 from app.repositories.collections import CollectionsRepository
+from app.repositories.collections_case_decision import CollectionsCaseDecisionRepository
 from app.repositories.collections_simulation import CollectionsSimulationRepository
 from app.repositories.copilot import CopilotRepository
 from app.repositories.credit_pricing_simulation import CreditPricingSimulationRepository
@@ -13,6 +14,7 @@ from app.repositories.dealer import DealerRepository
 from app.repositories.finance import FinanceRepository, TwinRepository
 from app.repositories.logistics import LogisticsRepository
 from app.repositories.logistics_delay_simulation import LogisticsDelaySimulationRepository
+from app.repositories.logistics_route_decision import LogisticsRouteDecisionRepository
 from app.repositories.mobility import MobilityRepository
 from app.repositories.overview import OverviewRepository
 from app.repositories.poc import PocRepository
@@ -27,6 +29,7 @@ __all__ = [
     "CatalogueRepository",
     "CircularityRepository",
     "CollectionsRepository",
+    "CollectionsCaseDecisionRepository",
     "CollectionsSimulationRepository",
     "CopilotRepository",
     "CreditPricingSimulationRepository",
@@ -34,6 +37,7 @@ __all__ = [
     "FinanceRepository",
     "LogisticsDelaySimulationRepository",
     "LogisticsRepository",
+    "LogisticsRouteDecisionRepository",
     "MobilityRepository",
     "OverviewRepository",
     "PocRepository",

@@ -1,0 +1,15 @@
+{
+  "warning_id": "314b89f83dc44838a014a46c3c591b3d",
+  "vehicle_id": "VEHUNIT_SYN_0001264",
+  "vehicle_model_id": null,
+  "warning_type": "BATTERY_OVERHEATING",
+  "target_metric": "battery_temperature_c",
+  "prediction_probability": 0.6122,
+  "forecast_horizon_hours": 15,
+  "severity": "HIGH",
+  "warning_timestamp": "2026-09-02T11:12:57.970098+00:00",
+  "status": "OPEN",
+  "causal_run_id": null,
+  "last_seen_at": "2026-09-12T03:32:40.240174+00:00",
+  "forecast_gap_hours": 3
+}
